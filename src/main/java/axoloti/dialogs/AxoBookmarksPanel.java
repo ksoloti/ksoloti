@@ -21,8 +21,10 @@ package axoloti.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -36,6 +38,20 @@ public class AxoBookmarksPanel extends DefaultBookmarksPanel {
     @Override
 protected void initGUI() {
         super.initGUI();
+
+        ImageIcon newAddIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/add.gif");
+        ImageIcon newRemoveIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/remove.gif");
+        ImageIcon newMoveUpIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/arrow_up.gif");
+        ImageIcon newMoveDownIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/arrow_down.gif");
+        ImageIcon newCopyIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/copy.gif");
+        ImageIcon newPasteIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/paste.gif");
+
+        if (newAddIcon != null) m_ButtonAdd.setIcon(newAddIcon);
+        if (newRemoveIcon != null) m_ButtonRemove.setIcon(newRemoveIcon);
+        if (newMoveUpIcon != null) m_ButtonMoveUp.setIcon(newMoveUpIcon);
+        if (newMoveDownIcon != null) m_ButtonMoveDown.setIcon(newMoveDownIcon);
+        if (newCopyIcon != null) m_ButtonCopy.setIcon(newCopyIcon);
+        if (newPasteIcon != null) m_ButtonPaste.setIcon(newPasteIcon);
 
         TitledBorder bookmarksTitle = BorderFactory.createTitledBorder("Bookmarks");
 
@@ -59,5 +75,15 @@ protected void initGUI() {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(150, super.getPreferredSize().height);
+    }
+
+    private ImageIcon loadImageIcon(String path) {
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            return new ImageIcon(url);
+        } else {
+            System.err.println("Could not find icon: " + path);
+            return null;
+        }
     }
 }
