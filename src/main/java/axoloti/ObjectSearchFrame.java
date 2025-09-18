@@ -545,7 +545,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
                         p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
-                        jTextFieldObjName.setText("");
                         draggedObject = null;
                     }
                 }
