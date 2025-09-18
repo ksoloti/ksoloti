@@ -59,6 +59,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -66,8 +67,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
@@ -92,6 +95,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private int dragStartIndex = -1;
 
     private SlashColorRenderer slashColorRenderer;
+    private SlashColorTreeRenderer slashColorTreeRenderer;
 
     /* Shortcut strings */
     public static final String shortcutList[] = {
@@ -266,6 +270,76 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
                 x += fm.charWidth(c);
             }
+        }
+    }
+
+    class SlashColorTreeRenderer extends DefaultTreeCellRenderer {
+        private Color slashColor;
+
+        public SlashColorTreeRenderer(Color slashColor) {
+            this.slashColor = slashColor;
+        }
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            String nodeText = node.toString();
+
+            Color normalFg = getTextNonSelectionColor();
+            Color normalBg = getBackgroundNonSelectionColor();
+            Color selectionFg = getTextSelectionColor();
+            Color selectionBg = getBackgroundSelectionColor();
+
+            JPanel panel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                    Color textColor = selected ? selectionFg : normalFg;
+                    g2.setPaint(textColor);
+                    g2.setFont(Constants.FONT_MENU);
+                    FontMetrics fm = tree.getFontMetrics(tree.getFont());
+
+                    int y = fm.getAscent();
+                    int x = 0;
+
+                    for (int i = 0; i < nodeText.length(); i++) {
+                        char c = nodeText.charAt(i);
+                        String charStr = String.valueOf(c);
+
+                        if (c == '/') {
+                            x += 2; /* add some extra spacing before '/' */
+                            g2.setPaint(slashColor); /* Draw the slash in accent color */
+                            g2.drawString(charStr, x, y);
+                            g2.setPaint(textColor);
+                            x += 3; /* add some extra spacing after '/' */
+                        } else {
+                            g2.drawString(charStr, x, y);
+                        }
+
+                        x += fm.charWidth(c);
+                    }
+                }
+            };
+
+            panel.setOpaque(true);
+            panel.setBackground(selected ? selectionBg : normalBg);
+            panel.setForeground(selected ? selectionFg : normalFg);
+            panel.setFont(Constants.FONT_MENU);
+            FontMetrics fm = tree.getFontMetrics(tree.getFont());
+            int textWidth = fm.stringWidth(nodeText) + 5;
+            int iconWidth = getIcon() != null ? getIcon().getIconWidth() : 0;
+            int indentation = tree.getPathForRow(row).getPathCount() * 2;
+            int totalWidth = textWidth + iconWidth + indentation;
+            
+            panel.setPreferredSize(new Dimension(totalWidth, tree.getRowHeight()));
+            return panel;
         }
     }
 
@@ -674,6 +748,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             slashColorRenderer = new SlashColorRenderer(Theme.Button_Accent_Background);
             jResultList.setCellRenderer(slashColorRenderer);
         }
+        if (slashColorTreeRenderer == null) {
+            slashColorTreeRenderer = new SlashColorTreeRenderer(Theme.Button_Accent_Background);
+            jObjectTree.setCellRenderer(slashColorTreeRenderer);
+        }
 
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(false);
         snapToGrid(patchLoc);
@@ -1063,6 +1141,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jResultList.setAutoscrolls(false);
         jResultList.setDragEnabled(false);
         jResultList.setTransferHandler(null);
         jResultList.setAlignmentX(LEFT_ALIGNMENT);
@@ -1078,12 +1157,15 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
+        jObjectTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
+        jObjectTree.setAutoscrolls(false);
         jObjectTree.setDragEnabled(false);
         jObjectTree.setTransferHandler(null);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
         jObjectTree.setRootVisible(false);
         jObjectTree.setShowsRootHandles(true);
+        jObjectTree.setRowHeight(rowHeight);
         jScrollPaneObjectTree.setViewportView(jObjectTree);
 
         jSplitPaneLeft.setBottomComponent(jScrollPaneObjectTree);
