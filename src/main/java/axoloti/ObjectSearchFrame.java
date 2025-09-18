@@ -52,7 +52,9 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -69,6 +71,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -757,6 +760,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jObjectTree.setModel(tm);
         }
 
+        sortTree(tm);
+
         if (slashColorRenderer == null) {
             slashColorRenderer = new SlashColorRenderer(Theme.Button_Accent_Background);
             jResultList.setCellRenderer(slashColorRenderer);
@@ -879,6 +884,47 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         } else {
             jObjectTree.clearSelection();
+        }
+    }
+
+    public void sortTree(DefaultTreeModel model) {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        sortChildren(model, root);
+    }
+
+    private void sortChildren(DefaultTreeModel model, DefaultMutableTreeNode parent) {
+        if (parent == null || parent.getChildCount() == 0) {
+            return;
+        }
+
+        List<DefaultMutableTreeNode> children = new ArrayList<>();
+        Enumeration<TreeNode> enumeration = parent.children();
+        while (enumeration.hasMoreElements()) {
+            TreeNode child = enumeration.nextElement();
+            if (child instanceof DefaultMutableTreeNode) {
+                children.add((DefaultMutableTreeNode) child);
+            }
+        }
+
+        Collections.sort(children, new Comparator<DefaultMutableTreeNode>() {
+            @Override
+            public int compare(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2) {
+                String s1 = node1.getUserObject().toString();
+                String s2 = node2.getUserObject().toString();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+
+        parent.removeAllChildren();
+        
+        for (DefaultMutableTreeNode child : children) {
+            parent.add(child);
+        }
+        
+        model.nodeStructureChanged(parent);
+
+        for (DefaultMutableTreeNode child : children) {
+            sortChildren(model, child);
         }
     }
 
