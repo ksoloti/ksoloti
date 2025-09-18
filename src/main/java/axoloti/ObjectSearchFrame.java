@@ -81,6 +81,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private int patchLocY;
 
     private boolean accepted = false;
+
+    private AxoObjectAbstract draggedObject = null;
     private boolean dragStarted = false;
     private Point dragStartPoint = null;
     private int dragStartIndex = -1;
@@ -304,7 +306,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
 
         jObjectTree.addMouseListener(new MouseListener() {
-            private AxoObjectAbstract draggedObject = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -446,7 +447,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
 
         jResultList.addMouseListener(new MouseListener() {
-            private AxoObjectAbstract draggedObject = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
