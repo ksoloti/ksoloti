@@ -828,7 +828,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
     void Accept() {
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(true);
-        setVisible(false);
         AxoObjectAbstract x = type;
         if (x == null) {
             ArrayList<AxoObjectAbstract> objs = MainFrame.axoObjects.GetAxoObjectFromName(jTextFieldObjName.getText(), p.GetCurrentWorkingDirectory());
