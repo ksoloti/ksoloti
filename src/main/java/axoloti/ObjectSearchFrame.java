@@ -31,12 +31,14 @@ import components.ScrollPaneComponent;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -529,13 +531,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
 
-        jPanelObjectPreview.setVisible(true);
-        jScrollPaneObjectTree.setVisible(true);
-        jScrollPaneObjectInfo.setVisible(true);
-        jScrollPaneObjectPreview.setVisible(true);
-        jSplitPaneMain.setVisible(true);
-        jSplitPaneRight.setVisible(true);
-        jTextPaneObjectInfo.setVisible(true);
         jTextPaneObjectInfo.setContentType("text/html");
 
         jTextFieldObjName.addKeyListener(new KeyListener() {
@@ -900,6 +895,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelMain.setLayout(new java.awt.BorderLayout());
 
         jSplitPaneMain.setDividerLocation(260);
+        jSplitPaneMain.setResizeWeight(0.25);
         jSplitPaneMain.setMinimumSize(new java.awt.Dimension(120, 60));
         jSplitPaneMain.setPreferredSize(new java.awt.Dimension(720, 400));
 
@@ -921,13 +917,16 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelSearchField.add(jTextFieldObjName);
         jPanelSearchField.add(filler1);
 
+        Insets btnInsets = new Insets(4, 4, 4, 4);
+        Dimension btnDimension = new Dimension(28, 28);
+
         jButtonAccept.setText("✔");
-        jButtonAccept.setToolTipText("Accept");
+        jButtonAccept.setToolTipText("Accept: place selected object");
         jButtonAccept.setActionCommand("");
         jButtonAccept.setDefaultCapable(false);
         jButtonAccept.setFocusable(false);
-        jButtonAccept.setMargin(new java.awt.Insets(4, 0, 4, 0));
-        jButtonAccept.setMinimumSize(new java.awt.Dimension(30, 30));
+        jButtonAccept.setMargin(btnInsets);
+        jButtonAccept.setMinimumSize(btnDimension);
         jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAcceptActionPerformed(evt);
@@ -941,8 +940,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jButtonCancel.setActionCommand("");
         jButtonCancel.setDefaultCapable(false);
         jButtonCancel.setFocusable(false);
-        jButtonCancel.setMargin(new java.awt.Insets(4, 0, 4, 0));
-        jButtonCancel.setMinimumSize(new java.awt.Dimension(30, 30));
+        jButtonCancel.setMargin(btnInsets);
+        jButtonCancel.setMinimumSize(btnDimension);
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCancelActionPerformed(evt);
@@ -951,6 +950,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelSearchField.add(jButtonCancel);
         jPanelLeft.add(jPanelSearchField);
 
+        jSplitPaneLeft.setDividerLocation(190);
         jSplitPaneLeft.setResizeWeight(0.5);
         jSplitPaneLeft.setAlignmentX(CENTER_ALIGNMENT);
         jSplitPaneLeft.setAlignmentY(BOTTOM_ALIGNMENT);
@@ -961,7 +961,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectSearch.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jResultList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jResultList.setAutoscrolls(false);
         jResultList.setDragEnabled(false);
         jResultList.setTransferHandler(null);
         jResultList.setAlignmentX(LEFT_ALIGNMENT);
@@ -974,7 +973,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jScrollPaneObjectTree.setPreferredSize(new java.awt.Dimension(180, 160));
 
         jObjectTree.setAlignmentX(LEFT_ALIGNMENT);
-        jObjectTree.setAutoscrolls(false);
         jObjectTree.setDragEnabled(false);
         jObjectTree.setTransferHandler(null);
         jObjectTree.setMinimumSize(new java.awt.Dimension(100, 50));
@@ -988,16 +986,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jSplitPaneMain.setLeftComponent(jPanelLeft);
 
-        jSplitPaneRight.setDividerLocation(207);
+        jSplitPaneRight.setDividerLocation(220);
         jSplitPaneRight.setResizeWeight(0.5);
+        jSplitPaneRight.setMinimumSize(new java.awt.Dimension(80, 120));
         jSplitPaneRight.setPreferredSize(new java.awt.Dimension(300, 240));
-
-        jScrollPaneObjectInfo.setMinimumSize(new java.awt.Dimension(6, 120));
 
         jTextPaneObjectInfo.setEditable(false);
         jTextPaneObjectInfo.setFocusCycleRoot(false);
         jTextPaneObjectInfo.setFocusable(false);
         jTextPaneObjectInfo.setRequestFocusEnabled(false);
+
+        jScrollPaneObjectInfo.setMinimumSize(new java.awt.Dimension(6, 120));
         jScrollPaneObjectInfo.setViewportView(jTextPaneObjectInfo);
 
         jSplitPaneRight.setTopComponent(jScrollPaneObjectInfo);
