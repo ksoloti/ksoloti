@@ -899,9 +899,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelMain.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
         jPanelMain.setLayout(new java.awt.BorderLayout());
 
-        jSplitPaneMain.setDividerLocation(220);
+        jSplitPaneMain.setDividerLocation(260);
         jSplitPaneMain.setMinimumSize(new java.awt.Dimension(120, 60));
-        jSplitPaneMain.setPreferredSize(new java.awt.Dimension(640, 400));
+        jSplitPaneMain.setPreferredSize(new java.awt.Dimension(720, 400));
 
         jPanelLeft.setAlignmentX(LEFT_ALIGNMENT);
         jPanelLeft.setAlignmentY(TOP_ALIGNMENT);
