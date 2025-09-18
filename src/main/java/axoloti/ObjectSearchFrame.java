@@ -236,7 +236,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
 
         @Override
-            protected void paintComponent(Graphics g) {
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
             Graphics2D g2 = (Graphics2D) g;
@@ -246,17 +246,25 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             g2.setPaint(getForeground());
             g2.setFont(Constants.FONT_MENU);
             FontMetrics fm = g2.getFontMetrics();
+
             int y = fm.getAscent();
+            int x = 0;
 
-            g2.drawString(text, 0, y);
-
-            g2.setPaint(slashColor);
             for (int i = 0; i < text.length(); i++) {
-                if (text.charAt(i) == '/') {
-                    // Calculate the x-position of the slash
-                    int x = fm.stringWidth(text.substring(0, i));
-                    g2.drawString("/", x, y);
+                char c = text.charAt(i);
+                String charStr = String.valueOf(c);
+
+                if (c == '/') {
+                    x += 2; /* add some extra spacing before '/' */
+                    g2.setPaint(slashColor); /* Draw the slash in accent color */
+                    g2.drawString(charStr, x, y);
+                    g2.setPaint(getForeground());
+                    x += 3; /* add some extra spacing after '/' */
+                } else {
+                    g2.drawString(charStr, x, y);
                 }
+
+                x += fm.charWidth(c);
             }
         }
     }
