@@ -236,6 +236,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 setBackground(list.getBackground());
                 setForeground(list.getForeground());
             }
+
+            FontMetrics fm = list.getFontMetrics(list.getFont());
+            int textWidth = fm.stringWidth(text);
+            int totalWidth = textWidth + 10;
+            setPreferredSize(new Dimension(totalWidth, fm.getHeight()));
+
             return this;
         }
 
@@ -332,13 +338,20 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             panel.setBackground(selected ? selectionBg : normalBg);
             panel.setForeground(selected ? selectionFg : normalFg);
             panel.setFont(Constants.FONT_MENU);
+
+            TreePath path = tree.getPathForRow(row);
+            int indentation = 0;
+            if (path != null) {
+                indentation = path.getPathCount() * 3;
+            }
+
             FontMetrics fm = tree.getFontMetrics(tree.getFont());
-            int textWidth = fm.stringWidth(nodeText) + 5;
+            int textWidth = fm.stringWidth(nodeText) + 10;
             int iconWidth = getIcon() != null ? getIcon().getIconWidth() : 0;
-            int indentation = tree.getPathForRow(row).getPathCount() * 2;
             int totalWidth = textWidth + iconWidth + indentation;
-            
+
             panel.setPreferredSize(new Dimension(totalWidth, tree.getRowHeight()));
+
             return panel;
         }
     }
