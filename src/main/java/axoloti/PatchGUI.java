@@ -1407,6 +1407,9 @@ public class PatchGUI extends Patch {
     @Override
     public void Close() {
         super.Close();
+        if (osf != null) {
+            osf.dispose();
+        }
         if (NotesTextEditor != null) {
             NotesTextEditor.dispose();
         }
