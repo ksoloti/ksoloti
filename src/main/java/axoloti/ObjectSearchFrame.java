@@ -49,6 +49,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -158,8 +159,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private ScrollPaneComponent jScrollPaneObjectTree;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
     private javax.swing.JButton jButtonAccept;
     private javax.swing.JButton jButtonCancel;
+    private javax.swing.JToggleButton jToggleButtonLockWindow;
     private javax.swing.JList jResultList;
     private javax.swing.JPanel jPanelLeft;
     private javax.swing.JPanel jPanelMain;
@@ -277,6 +280,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jButtonCancel.setText(null);
             jButtonAccept.setIcon(new StringIcon(jButtonAccept.getText()));
             jButtonAccept.setText(null);
+            jToggleButtonLockWindow.setIcon(new StringIcon(jToggleButtonLockWindow.getText()));
+            jToggleButtonLockWindow.setText(null);
             // Alternative approach: use real icons
             // Unfortunately macos does not provide icons. with appropriate
             // semantics..
@@ -286,10 +291,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             // image = toolkit.getImage("NSImage://NSMenuOnStateTemplate");
             //
             // prettify buttons - macos exclusive
-            jButtonCancel.putClientProperty("JButton.buttonType", "segmented");
             jButtonAccept.putClientProperty("JButton.buttonType", "segmented");
-            jButtonCancel.putClientProperty("JButton.segmentPosition", "first");
-            jButtonAccept.putClientProperty("JButton.segmentPosition", "last");
+            jButtonCancel.putClientProperty("JButton.buttonType", "segmented");
+            jToggleButtonLockWindow.putClientProperty("JButton.buttonType", "segmented");
+
+            jButtonAccept.putClientProperty("JButton.segmentPosition", "first");
+            jButtonCancel.putClientProperty("JButton.segmentPosition", "middle");
+            jToggleButtonLockWindow.putClientProperty("JButton.segmentPosition", "last");
         }
 
         jButtonAccept.setEnabled(false);
@@ -874,7 +882,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
     void Cancel() {
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(true);
-        setVisible(false);
+        if (!jToggleButtonLockWindow.isSelected()) {
+            setVisible(false);
+        } else {
+            jTextFieldObjName.setText("");
+            Search("");
+        }
         p.repaint();
     }
 
@@ -891,12 +904,19 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         if (x != null) {
             if (target_object == null) {
                 p.AddObjectInstance(x, new Point(patchLocX, patchLocY));
+                if (jToggleButtonLockWindow.isSelected()) {
+                    /* Shift location of next placed object (if any) to improve visibility */
+                    patchLocX += Constants.X_GRID;
+                    patchLocY += Constants.Y_GRID;
+                }
             } else {
                 p.ChangeObjectInstanceType(target_object, x);
                 p.cleanUpIntermediateChangeStates(2);
             }
         }
-        setVisible(false);
+        if (!jToggleButtonLockWindow.isSelected()) {
+            setVisible(false);
+        }
         p.repaint();
     }
 
@@ -914,19 +934,27 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jTextFieldObjName = new javax.swing.JTextField();
         jButtonAccept = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
+        jToggleButtonLockWindow = new javax.swing.JToggleButton();
+
         jResultList = new JList<AxoObjectAbstract>() {
             /*
-             * Overrides scrollRectToVisible to do nothing. This prevents the
-             * JScrollPane from automatically scrolling when the user is
-             * dragging an item in the list
+             * Overrides scrollRectToVisible to do nothing while mouse dragging is active.
+             * This prevents the JScrollPane from doing unwanted scrolling.
              */
             @Override
             public void scrollRectToVisible(Rectangle rect) {
+                if (dragStarted) {
+                    return;
+                }
+                /* Otherwise, call the default implementation */
+                super.scrollRectToVisible(rect);
             }
         };
 
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
+        Dimension d = new Dimension(3, 0);
+        filler1 = new javax.swing.Box.Filler(d, d, new Dimension(3, 32767));
+        filler2 = new javax.swing.Box.Filler(d, d, new Dimension(3, 32767));
+        filler3 = new javax.swing.Box.Filler(d, d, new Dimension(3, 32767));
 
         jObjectTree = new javax.swing.JTree();
 
@@ -1005,6 +1033,16 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         });
         jPanelSearchField.add(jButtonCancel);
+        jPanelSearchField.add(filler3);
+
+        jToggleButtonLockWindow.setText("L");
+        jToggleButtonLockWindow.setToolTipText("Lock: keep the window open after losing focus and placing objects");
+        jToggleButtonLockWindow.setActionCommand("");
+        jToggleButtonLockWindow.setFocusable(false);
+        jToggleButtonLockWindow.setMargin(btnInsets);
+        jToggleButtonLockWindow.setMinimumSize(btnDimension);
+        jPanelSearchField.add(jToggleButtonLockWindow);
+
         jPanelLeft.add(jPanelSearchField);
 
         jSplitPaneLeft.setDividerLocation(190);
