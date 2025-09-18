@@ -24,6 +24,7 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect;
 import axoloti.utils.ResizableUndecoratedFrame;
 import components.ScrollPaneComponent;
@@ -293,6 +294,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     Cancel();
                     e.consume();
+                } else if (e.getKeyCode() == KeyEvent.VK_LEFT && KeyUtils.isControlOrCommandDown(e)) {
+                    int row = jObjectTree.getRowCount() - 1;
+                    while (row >= 0) {
+                        jObjectTree.collapseRow(row);
+                        row--;
+                    }
+                    e.consume();
                 }
             }
 
@@ -475,7 +483,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         Point finalPoint = new Point(screenLoc);
                         JPanel targetPanel = p.objectLayerPanel;
                         SwingUtilities.convertPointFromScreen(finalPoint, targetPanel);
-                        
+
                         p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
                         jTextFieldObjName.setText("");
@@ -734,7 +742,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
     public void Search(String s) {
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
-        // ArrayList<AxoObjectAbstract> tempList = new ArrayList<AxoObjectAbstract>();
 
         /* --- if search field is empty, show complete list --- */
         if ((s == null) || s.isEmpty()) {
@@ -909,7 +916,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         jTextFieldObjName.setAlignmentX(LEFT_ALIGNMENT);
         jTextFieldObjName.setMaximumSize(new java.awt.Dimension(2147483647, 30));
-        // jTextFieldObjName.setMinimumSize(new java.awt.Dimension(40, 20));
         jTextFieldObjName.setPreferredSize(new java.awt.Dimension(600, 30));
         jTextFieldObjName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
