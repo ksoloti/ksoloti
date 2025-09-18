@@ -639,10 +639,11 @@ public class USBBulkConnection extends Connection {
                 ClearSync();
                 new SCmdPing().Do();
                 if (!WaitSync()) {
-                    LOGGER.log(Level.SEVERE, "Core not responding - it may be stuck running a problematic patch?\nRestart the Core and try again.");
+                    LOGGER.log(Level.SEVERE, "Core not responding - it may be stuck running a problematic patch.\nRestart the Core and try again.");
                     disconnect();
                     return false;
                 }
+                Thread.sleep(20);
 
                 /* If we reach here, initial handshake is successful */
                 connected = true;
@@ -651,9 +652,11 @@ public class USBBulkConnection extends Connection {
                 /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
                 SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
                 fwVersionCmd.Do();
+                Thread.sleep(20);
 
                 SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
                 cpuRevisionCmd.Do();
+                Thread.sleep(20);
                 if (!cpuRevisionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
                 }
@@ -664,6 +667,7 @@ public class USBBulkConnection extends Connection {
 
                 SCmdMemRead boardIDCmd = new SCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
                 boardIDCmd.Do();
+                Thread.sleep(20);
                 if (!boardIDCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
                 }
