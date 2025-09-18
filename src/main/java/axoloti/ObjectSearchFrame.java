@@ -81,8 +81,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private int patchLocX;
     private int patchLocY;
 
-    private boolean accepted = false;
-
     private AxoObjectAbstract draggedObject = null;
     private boolean dragStarted = false;
     private Point dragStartPoint = null;
@@ -348,7 +346,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
                         jTextFieldObjName.setText("");
-                        accepted = false;
                         draggedObject = null;
                     }
                 }
@@ -487,7 +484,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         p.AddObjectInstance(draggedObject, snapToGrid(finalPoint));
                         getRootPane().setCursor(Cursor.getDefaultCursor());
                         jTextFieldObjName.setText("");
-                        accepted = false;
                         draggedObject = null;
                     }
                 }
@@ -613,7 +609,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
 
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(false);
-        accepted = false;
         snapToGrid(patchLoc);
         patchLocX = patchLoc.x;
         patchLocY = patchLoc.y;
@@ -655,7 +650,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             return;
         }
         else {
-            accepted = true;
             jButtonAccept.setEnabled(true);            
         }
         if (o != previewObj) {
@@ -822,7 +816,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     void Cancel() {
-        accepted = false;
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(true);
         setVisible(false);
         p.repaint();
@@ -849,7 +842,6 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         }
         setVisible(false);
         p.repaint();
-        accepted = false;
     }
 
     private void initComponents() {
@@ -1034,16 +1026,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
     private void formWindowLostFocus(java.awt.event.WindowEvent evt) {
         getRootPane().setCursor(Cursor.getDefaultCursor());
-        if ((evt.getOppositeWindow() == null)
-                || !(evt.getOppositeWindow() instanceof axoloti.PatchFrame)) {
-            Cancel();
-        } else {
-            if (accepted) {
-                Accept();
-            } else {
-                Cancel();
-            }
-        }
+        /* Always call Cancel() when the window loses focus.
+         * The previous logic was causing unwanted object placement. */
+        Cancel();
     }
 
     private void jTextFieldObjNameActionPerformed(java.awt.event.ActionEvent evt) {

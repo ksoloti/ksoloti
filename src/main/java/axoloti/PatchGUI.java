@@ -374,11 +374,6 @@ public class PatchGUI extends Patch {
                         if (me.getClickCount() == 2) {
                             ShowClassSelector(me.getPoint(), null, null, true);
                         }
-                        else {
-                            if ((osf != null) && osf.isVisible()) {
-                                osf.Accept();
-                            }
-                        }
                         
                         Layers.requestFocusInWindow();
                     }
