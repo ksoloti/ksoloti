@@ -100,36 +100,6 @@ public class PatchGUI extends Patch {
 
     private static final Logger LOGGER = Logger.getLogger(PatchGUI.class.getName());
 
-    /* KeyCode integers */
-    // static final int keyCodeList[] = {
-    //     KeyEvent.VK_A,
-    //     KeyEvent.VK_B,
-    //     KeyEvent.VK_C,
-    //     KeyEvent.VK_D,
-    //     KeyEvent.VK_E,
-    //     KeyEvent.VK_F,
-    //     KeyEvent.VK_G,
-    //     KeyEvent.VK_H,
-    //     KeyEvent.VK_I,
-    //     KeyEvent.VK_J,
-    //     KeyEvent.VK_K,
-    //     KeyEvent.VK_L,
-    //     KeyEvent.VK_M,
-    //     KeyEvent.VK_N,
-    //     KeyEvent.VK_O,
-    //     KeyEvent.VK_P,
-    //     KeyEvent.VK_Q,
-    //     KeyEvent.VK_R,
-    //     KeyEvent.VK_S,
-    //     KeyEvent.VK_T,
-    //     KeyEvent.VK_U,
-    //     KeyEvent.VK_V,
-    //     KeyEvent.VK_W,
-    //     KeyEvent.VK_X,
-    //     KeyEvent.VK_Y,
-    //     KeyEvent.VK_Z
-    // };
-
     private final static int capitalLetterOffset = 26;
     private int MousePressedBtn = 0;
     private float dspLoadPercent = 0.0f;
