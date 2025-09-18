@@ -811,8 +811,13 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             }
         }
 
-        /* show number of results */
-        this.setTitle(String.format("    %d found", listData.size()));
+        /* Get last occurrence of slash or backslash (separating path and filename) */
+        String pname = p.getFileNamePath();
+        int brk = pname.lastIndexOf(File.separator) + 1;
+        if (brk != 0) {
+            pname = pname.substring(brk); /* Display filename only */
+        }
+        this.setTitle(String.format("    %d found - " + pname, listData.size()));
     }
 
     void Cancel() {
