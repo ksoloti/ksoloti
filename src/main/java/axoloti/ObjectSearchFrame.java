@@ -29,6 +29,7 @@ import axoloti.utils.OSDetect;
 import axoloti.utils.ResizableUndecoratedFrame;
 import components.ScrollPaneComponent;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -57,6 +58,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -87,6 +89,8 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     private boolean dragStarted = false;
     private Point dragStartPoint = null;
     private int dragStartIndex = -1;
+
+    private SlashColorRenderer slashColorRenderer;
 
     /* Shortcut strings */
     public static final String shortcutList[] = {
@@ -203,6 +207,54 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         @Override
         public int getIconHeight() {
             return h;
+        }
+    }
+
+    class SlashColorRenderer extends JPanel implements ListCellRenderer<Object> {
+        private Color slashColor;
+        private String text;
+
+        public SlashColorRenderer(Color slashColor) {
+            this.slashColor = slashColor;
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            this.text = value.toString();
+
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            return this;
+        }
+
+        @Override
+            protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            g2.setPaint(getForeground());
+            g2.setFont(Constants.FONT_MENU);
+            FontMetrics fm = g2.getFontMetrics();
+            int y = fm.getAscent();
+
+            g2.drawString(text, 0, y);
+
+            g2.setPaint(slashColor);
+            for (int i = 0; i < text.length(); i++) {
+                if (text.charAt(i) == '/') {
+                    // Calculate the x-position of the slash
+                    int x = fm.stringWidth(text.substring(0, i));
+                    g2.drawString("/", x, y);
+                }
+            }
         }
     }
 
@@ -603,6 +655,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             jObjectTree.setModel(tm);
         }
 
+        if (slashColorRenderer == null) {
+            slashColorRenderer = new SlashColorRenderer(Theme.Button_Accent_Background);
+            jResultList.setCellRenderer(slashColorRenderer);
+        }
+
         MainFrame.mainframe.SetGrabFocusOnSevereErrors(false);
         snapToGrid(patchLoc);
         patchLocX = patchLoc.x;
@@ -966,6 +1023,10 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jResultList.setAlignmentX(LEFT_ALIGNMENT);
         jResultList.setMinimumSize(new java.awt.Dimension(100, 50));
         jResultList.setVisibleRowCount(6);
+        FontMetrics fm = jResultList.getFontMetrics(jResultList.getFont());
+        int rowHeight = fm.getHeight() + 2;
+        jResultList.setFixedCellHeight(rowHeight);
+
         jScrollPaneObjectSearch.setViewportView(jResultList);
 
         jSplitPaneLeft.setTopComponent(jScrollPaneObjectSearch);
