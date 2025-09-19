@@ -19,6 +19,8 @@
 package axoloti.menus;
 
 import axoloti.Axoloti;
+import axoloti.DocumentWindow;
+import axoloti.DocumentWindowList;
 
 import static axoloti.MainFrame.axoObjects;
 import static axoloti.MainFrame.mainframe;
@@ -29,6 +31,10 @@ import axoloti.PatchGUI;
 import axoloti.USBBulkConnection;
 import axoloti.dialogs.PatchBank;
 import axoloti.dialogs.PreferencesFrame;
+import axoloti.object.AxoObject;
+import axoloti.object.AxoObjectAbstract;
+import axoloti.object.AxoObjectInstance;
+import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.FileUtils;
 import axoloti.utils.KeyUtils;
@@ -46,6 +52,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -439,6 +446,32 @@ public class FileMenu extends JMenu {
 
     private void jMenuReloadObjectsActionPerformed(java.awt.event.ActionEvent evt) {
         axoObjects.LoadAxoObjects();
+        try {
+            axoObjects.LoaderThread.join();
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "Object loader thread interrupted: " + ex.getMessage());
+            ex.printStackTrace(System.out);
+            return;
+        }
+
+        /* Refresh all library objects in all currently open patches */
+        for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
+            if (docWindow != null && docWindow instanceof PatchFrame) {
+                PatchFrame frame = (PatchFrame) docWindow;
+                for (AxoObjectInstanceAbstract oia : frame.getPatchGUI().objectInstances) {
+                    String typeId = ((AxoObject) oia.getType()).toString();
+                    ArrayList<AxoObjectAbstract> newDefinitions = axoObjects.GetAxoObjectFromName(typeId, null);
+
+                    if (newDefinitions != null && !newDefinitions.isEmpty()) {
+                        AxoObject newDefinition = (AxoObject) newDefinitions.get(0);
+                        oia.setType(newDefinition);
+                        if (oia instanceof AxoObjectInstance) {
+                            ((AxoObjectInstance) oia).updateObj();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void jMenuOpenURLActionPerformed(java.awt.event.ActionEvent evt) {
