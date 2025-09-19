@@ -1309,24 +1309,6 @@ public class PatchGUI extends Patch {
         return b;
     }
 
-    public static void OpenPatch(String name, InputStream stream) {
-        Strategy strategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(strategy, new Format(2));
-        try {
-            PatchGUI patch1 = serializer.read(PatchGUI.class, stream);
-            PatchFrame pf = new PatchFrame(patch1);
-            patch1.PostContructor();
-            patch1.setFileNamePath(name);
-            pf.setVisible(true);
-            pf.setState(java.awt.Frame.NORMAL);
-            pf.repositionIfOutsideScreen();
-            pf.toFront();
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
-            ex.printStackTrace(System.out);
-        }
-    }
-
     public static PatchFrame OpenPatchInvisible(File f) {
         for (DocumentWindow dw : DocumentWindowList.GetList()) {
             if (f.equals(dw.getFile())) {
@@ -1362,6 +1344,24 @@ public class PatchGUI extends Patch {
             LOGGER.log(Level.SEVERE, "Error during open patch action: " + ex.getMessage());
             ex.printStackTrace(System.out);
             return null;
+        }
+    }
+
+    public static void OpenPatch(String name, InputStream stream) {
+        Strategy strategy = new AnnotationStrategy();
+        Serializer serializer = new Persister(strategy, new Format(2));
+        try {
+            PatchGUI patch1 = serializer.read(PatchGUI.class, stream);
+            PatchFrame pf = new PatchFrame(patch1);
+            patch1.PostContructor();
+            patch1.setFileNamePath(name);
+            pf.setVisible(true);
+            pf.setState(java.awt.Frame.NORMAL);
+            pf.repositionIfOutsideScreen();
+            pf.toFront();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error during patch open: " + ex.getMessage());
+            ex.printStackTrace(System.out);
         }
     }
 
