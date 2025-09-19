@@ -426,6 +426,10 @@ public class Patch {
         this.FileNamePath = FileNamePath;
     }
 
+    public void setFileNamePath(String FileNamePath, String parentName) {
+        this.FileNamePath = FileNamePath;
+    }
+
     public String getFileNamePath() {
         return FileNamePath;
     }

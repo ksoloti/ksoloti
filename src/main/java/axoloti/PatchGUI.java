@@ -1097,25 +1097,30 @@ public class PatchGUI extends Patch {
 
     @Override
     public void setFileNamePath(String FileNamePath) {
+        setFileNamePath(FileNamePath, null);
+    }
 
+    @Override
+    public void setFileNamePath(String FileNamePath, String parentName) {
         super.setFileNamePath(FileNamePath);
+        String title;
 
-        /* Get last occurrence of slash or backslash (separating path and filename) */
-        int brk = FileNamePath.lastIndexOf(File.separator) + 1;
-        if (brk != 0) {
-            /* Display filename first, then path in brackets */
-            String str = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
-            patchframe.setTitle(str);
+        if (getSettings() != null && getSettings().subpatchmode != SubPatchMode.no) {
+            if (parentName != null && !parentName.isEmpty()) {
+                title = FileNamePath + "  (embedded subpatch of " + parentName + ")";
+            } else {
+                title = FileNamePath + "  (subpatch)";
+            }
+            patchframe.setSaveMenuEnabled(false);
+        } else {
+            int brk = FileNamePath.lastIndexOf(File.separator) + 1;
+            if (brk != 0) {
+                title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
+            } else {
+                title = FileNamePath;
+            }
         }
-        else if (patchframe.getPatchGUI().getSettings() != null && patchframe.getPatchGUI().getSettings().subpatchmode != SubPatchMode.no) {
-            /* Subpatch */
-            patchframe.setTitle(FileNamePath + "  (subpatch)");
-            patchframe.setSaveMenuEnabled(false); /* parent has to be saved to preserve changes */
-        }
-        else {
-            /* New patch */
-            patchframe.setTitle(FileNamePath);
-        }
+        patchframe.setTitle(title);
     }
 
     @Override

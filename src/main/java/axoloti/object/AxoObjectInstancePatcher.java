@@ -28,6 +28,7 @@ import components.ButtonComponent.ActListener;
 
 // import java.awt.Component;
 import java.awt.Point;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -121,7 +122,6 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
         }
         if (pf == null) {
             pf = new PatchFrame(pg);
-            pg.setFileNamePath(getInstanceName());
 
             Icon icon = SvgIconLoader.load("/resources/appicons/ksoloti_icon_axs.svg", 32);
             if (icon != null) {
@@ -137,6 +137,17 @@ public class AxoObjectInstancePatcher extends AxoObjectInstance {
 
             pg.PostContructor();
         }
+
+        String parentName = "";
+        if (getPatch() != null && getPatch().getFileNamePath() != null) {
+            String fpath = getPatch().getFileNamePath();
+            int brk = fpath.lastIndexOf(File.separator) + 1;
+            if (brk != 0) {
+                parentName = fpath.substring(brk);
+            }
+        }
+        pg.setFileNamePath(getInstanceName(), parentName);
+
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
         pf.repositionIfOutsideScreen();
