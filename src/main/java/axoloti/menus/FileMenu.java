@@ -452,6 +452,7 @@ public class FileMenu extends JMenu {
 
             SwingUtilities.invokeLater(() -> {
                 /* Refresh all library objects in all currently open patches */
+                // TODO: find a way to reload library subpatches...
                 for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
                     if (docWindow != null && docWindow instanceof PatchFrame) {
                         PatchFrame frame = (PatchFrame) docWindow;
