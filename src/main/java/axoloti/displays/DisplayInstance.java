@@ -75,7 +75,7 @@ public abstract class DisplayInstance<T extends Display> extends JPanel implemen
 
     public void PostConstructor() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        if ((display.noLabel == null) || (display.noLabel == false)) {
+        if ((display.getNoLabel() == null) || (display.getNoLabel() == false)) {
             LabelComponent displbl = new LabelComponent(display.name);
             displbl.setBorder(new EmptyBorder(0,1,0,0));
             add(displbl);

@@ -138,13 +138,13 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         JPanel lbls = null;
-        if ((((parameter.noLabel == null) || (parameter.noLabel == false))) && (convs != null)) {
+        if ((((parameter.getNoLabel() == null) || (parameter.getNoLabel() == false))) && (convs != null)) {
             lbls = new JPanel();
             lbls.setLayout(new BoxLayout(lbls, BoxLayout.Y_AXIS));
             this.add(lbls);
         }
 
-        if ((parameter.noLabel == null) || (parameter.noLabel == false)) {
+        if ((parameter.getNoLabel() == null) || (parameter.getNoLabel() == false)) {
             LabelComponent paramlbl = new LabelComponent(GetDefinition().getName());
             paramlbl.setBorder(new EmptyBorder(0,1,0,0));
             if (lbls != null) {
@@ -434,7 +434,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     public Parameter getParameterForParent() {
         Parameter pcopy = parameter.getClone();
         pcopy.name = ControlOnParentName();
-        pcopy.noLabel = null;
+        pcopy.setNoLabel(null);
         pcopy.PropagateToChild = axoObj.getLegalName() + "_" + getLegalName();
         return pcopy;
     }

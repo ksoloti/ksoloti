@@ -427,14 +427,7 @@ public class AxoObjects {
 
     void PostProcessObject(AxoObjectAbstract o) {
         if (o instanceof AxoObject) {
-            // remove labels when there's only a single parameter
             AxoObject oo = (AxoObject) o;
-            // if ((oo.params != null) && (oo.params.size() == 1)) {
-            //     oo.params.get(0).noLabel = true;
-            // }
-            // if ((oo.displays != null) && (oo.displays.size() == 1)) {
-            //     oo.displays.get(0).noLabel = true;
-            // }
             if (oo.depends == null) {
                 oo.depends = new HashSet<String>();
             }
