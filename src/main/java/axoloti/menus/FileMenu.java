@@ -445,33 +445,35 @@ public class FileMenu extends JMenu {
     }
 
     private void jMenuReloadObjectsActionPerformed(java.awt.event.ActionEvent evt) {
-        axoObjects.LoadAxoObjects();
-        try {
-            axoObjects.LoaderThread.join();
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "Object loader thread interrupted: " + ex.getMessage());
-            ex.printStackTrace(System.out);
-            return;
-        }
+        jMenuReloadObjects.setEnabled(false);
 
-        /* Refresh all library objects in all currently open patches */
-        for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
-            if (docWindow != null && docWindow instanceof PatchFrame) {
-                PatchFrame frame = (PatchFrame) docWindow;
-                for (AxoObjectInstanceAbstract oia : frame.getPatchGUI().objectInstances) {
-                    String typeId = ((AxoObject) oia.getType()).toString();
-                    ArrayList<AxoObjectAbstract> newDefinitions = axoObjects.GetAxoObjectFromName(typeId, null);
+        Thread reloadThread = new Thread(() -> {
+            axoObjects.LoadAxoObjects();
 
-                    if (newDefinitions != null && !newDefinitions.isEmpty()) {
-                        AxoObject newDefinition = (AxoObject) newDefinitions.get(0);
-                        oia.setType(newDefinition);
-                        if (oia instanceof AxoObjectInstance) {
-                            ((AxoObjectInstance) oia).updateObj();
+            SwingUtilities.invokeLater(() -> {
+                /* Refresh all library objects in all currently open patches */
+                for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
+                    if (docWindow != null && docWindow instanceof PatchFrame) {
+                        PatchFrame frame = (PatchFrame) docWindow;
+                        for (AxoObjectInstanceAbstract oia : frame.getPatchGUI().objectInstances) {
+                            String typeId = ((AxoObject) oia.getType()).toString();
+                            ArrayList<AxoObjectAbstract> newDefinitions = axoObjects.GetAxoObjectFromName(typeId, null);
+
+                            if (newDefinitions != null && !newDefinitions.isEmpty()) {
+                                AxoObject newDefinition = (AxoObject) newDefinitions.get(0);
+                                oia.setType(newDefinition);
+                                if (oia instanceof AxoObjectInstance) {
+                                    ((AxoObjectInstance) oia).updateObj();
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
+                jMenuReloadObjects.setEnabled(true);
+            });
+        });
+        reloadThread.setName("ReloadObjectsThread");
+        reloadThread.start();
     }
 
     private void jMenuOpenURLActionPerformed(java.awt.event.ActionEvent evt) {
