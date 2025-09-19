@@ -37,6 +37,8 @@ public abstract class AxoAttribute implements AtomDefinition, Cloneable {
     String name;
     @Attribute(required = false)
     public String description;
+    @Attribute(required = false)
+    public Boolean noLabel;
 
     public AxoAttribute() {
     }
@@ -69,6 +71,22 @@ public abstract class AxoAttribute implements AtomDefinition, Cloneable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Boolean getNoLabel() {
+        return noLabel;
+    }
+
+    @Override
+    public void setNoLabel(Boolean noLabel) {
+        if (noLabel != null && noLabel == true) {
+            this.noLabel = true;
+        }
+        else {
+            this.noLabel = null;
+        }
+    }
+
 
     @Override
     public AttributeInstance CreateInstance(AxoObjectInstance o) {

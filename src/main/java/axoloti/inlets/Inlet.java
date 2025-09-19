@@ -39,6 +39,8 @@ public abstract class Inlet implements AtomDefinition, Cloneable {
     String name;
     @Attribute(required = false)
     public String description;
+    @Attribute(required = false)
+    public Boolean noLabel;
 
     public Inlet() {
     }
@@ -72,6 +74,22 @@ public abstract class Inlet implements AtomDefinition, Cloneable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Boolean getNoLabel() {
+        return noLabel;
+    }
+
+    @Override
+    public void setNoLabel(Boolean noLabel) {
+        if (noLabel != null && noLabel == true) {
+            this.noLabel = true;
+        }
+        else {
+            this.noLabel = null;
+        }
+    }
+
 
     public String GetCName() {
         return "inlet_" + charEscape(name);

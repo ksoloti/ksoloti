@@ -34,6 +34,8 @@ public interface AtomDefinition {
     abstract AtomInstance CreateInstance(AxoObjectInstance o);
     abstract String getDescription();
     abstract void setDescription(String description);
+    abstract Boolean getNoLabel();
+    abstract void setNoLabel(Boolean noLabel);
     abstract String getTypeName();
     abstract List<String> getEditableFields();
 //    abstract public AtomDefinition Factory(String name);    

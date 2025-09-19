@@ -261,7 +261,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
         jPanel1.add(jButtonMoveDown);
         jScrollPane1.setVisible(true);
         jTable1.setModel(new AbstractTableModel() {
-            private final String[] columnNames = {"Name", "Type", "Description"};
+            private final String[] columnNames = {"Name", "Type", "Description", "Hide Label"};
 
             @Override
             public int getColumnCount() {
@@ -282,6 +282,8 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         return getValueAt(0, column).getClass();
                     case 2:
                         return String.class;
+                    case 3:
+                        return Boolean.class;
                 }
                 return null;
             }
@@ -322,6 +324,11 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         GetAtomDefinition(rowIndex).setDescription((String) value);
                         AtomDefinitionsEditor.this.obj.FireObjectModified(this);
                         break;
+                    case 3:
+                        assert (value instanceof Boolean);
+                        GetAtomDefinition(rowIndex).setNoLabel((Boolean) value);
+                        AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                        break;
                 }
             }
 
@@ -346,6 +353,9 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         break;
                     case 2:
                         returnValue = GetAtomDefinitions().get(rowIndex).getDescription();
+                        break;
+                    case 3:
+                        returnValue = GetAtomDefinitions().get(rowIndex).getNoLabel();
                         break;
                 }
 
@@ -543,6 +553,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(70);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(70);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(260);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(30);
         }
 
         if (jTable2.getColumnModel().getColumnCount() > 0) {
@@ -577,8 +588,8 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             }
         }
         ((AbstractTableModel) jTable2.getModel()).fireTableDataChanged();
-        jTable2.revalidate();
         jTable1.revalidate();
+        jTable2.revalidate();
     }
 
     void setEditable(boolean editable) {

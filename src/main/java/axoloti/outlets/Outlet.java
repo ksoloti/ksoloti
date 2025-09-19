@@ -42,6 +42,8 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
     @Deprecated
     @Attribute(required = false)
     Boolean SumBuffer;
+    @Attribute(required = false)
+    public Boolean noLabel;
 
     public DataType getDatatype() {
         return null;
@@ -92,6 +94,22 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public Boolean getNoLabel() {
+        return noLabel;
+    }
+
+    @Override
+    public void setNoLabel(Boolean noLabel) {
+        if (noLabel != null && noLabel == true) {
+            this.noLabel = true;
+        }
+        else {
+            this.noLabel = null;
+        }
+    }
+
 
     @Override
     public AtomInstance CreateInstance(AxoObjectInstance o) {

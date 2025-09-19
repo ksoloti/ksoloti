@@ -67,6 +67,21 @@ public abstract class Display<T extends DisplayInstance> implements AtomDefiniti
     }
 
     @Override
+    public Boolean getNoLabel() {
+        return noLabel;
+    }
+
+    @Override
+    public void setNoLabel(Boolean noLabel) {
+        if (noLabel != null && noLabel == true) {
+            this.noLabel = true;
+        }
+        else {
+            this.noLabel = null;
+        }
+    }
+
+    @Override
     public String toString() {
         return getTypeName();
     }
