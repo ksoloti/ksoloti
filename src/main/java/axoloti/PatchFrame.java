@@ -23,6 +23,7 @@ import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.listener.BoardIDNameListener;
 import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
+import axoloti.object.AxoObjectFromPatch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstancePatcher;
 import axoloti.parameters.ParameterInstance;
@@ -342,6 +343,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuItemUnlock.setVisible(false);
             jMenuItemShowPatchMutator.setVisible(false);
         }
+
+        String filePath = patch.getFileNamePath();
+        if (filePath == null) {
+            jMenuItemOpenFileLocation.setEnabled(false);
+        } else {
+            File f = new File(filePath);
+            if (!f.exists() || !f.canRead()) {
+                jMenuItemOpenFileLocation.setEnabled(false);
+            }
+        }
+
         jMenuPreset.setVisible(false);
         patch.Layers.requestFocus();
 

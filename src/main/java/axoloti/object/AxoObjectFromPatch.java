@@ -94,20 +94,29 @@ public class AxoObjectFromPatch extends AxoObject {
             Serializer serializer = new Persister(strategy, new Format(2));
             try {
                 pg = serializer.read(PatchGUI.class, f);
-                pf = new PatchFrame(pg);
-                pg.setFileNamePath(id);
-                pg.PostContructor();
                 pg.ObjEditor = this;
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Error while parsing patch: " + f.getAbsolutePath() + ", " + ex.getMessage());
                 ex.printStackTrace(System.out);
             }
         }
+
         if (pf == null) {
             pf = new PatchFrame(pg);
-            pg.setFileNamePath(id);
             pg.PostContructor();
         }
+
+        // String title = "";
+        // String FileNamePath = f.getAbsolutePath();
+        // int brk = FileNamePath.lastIndexOf(File.separator) + 1;
+        // if (brk != 0) {
+        //     title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
+        // } else {
+        //     title = FileNamePath;
+        // }
+        // pg.setFileNamePath(title);
+        pg.setFileNamePath(f.getAbsolutePath());
+        
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
         pf.repositionIfOutsideScreen();

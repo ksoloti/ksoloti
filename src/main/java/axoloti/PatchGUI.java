@@ -1105,12 +1105,17 @@ public class PatchGUI extends Patch {
         super.setFileNamePath(FileNamePath);
         String title;
 
-        if (getSettings() != null && getSettings().subpatchmode != SubPatchMode.no) {
-            if (parentName != null && !parentName.isEmpty()) {
-                title = FileNamePath + "  (embedded subpatch of " + parentName + ")";
+        if (parentName != null && !parentName.isEmpty()) {
+            title = FileNamePath + "  (embedded subpatch - " + parentName + ")";
+            patchframe.setSaveMenuEnabled(false);
+        } else if (getSettings() != null && getSettings().subpatchmode != SubPatchMode.no) {
+            int brk = FileNamePath.lastIndexOf(File.separator) + 1;
+            if (brk != 0) {
+                title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
             } else {
-                title = FileNamePath + "  (subpatch)";
+                title = FileNamePath;
             }
+            title += "  (local subpatch)";
             patchframe.setSaveMenuEnabled(false);
         } else {
             int brk = FileNamePath.lastIndexOf(File.separator) + 1;
