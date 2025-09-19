@@ -2124,15 +2124,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     public void interactiveFirmwareUpdate() {
-        byte[] fwversion = USBBulkConnection.getInstance().getFwVersion();
-        if (fwversion[0] == 1 && fwversion[1] < 1) {
-            /* Core is currently running 1.0.x.x old firmware. v1.1 Auto */
-            LOGGER.log(Level.SEVERE, "The Core trying to connect is running v1.0.x firmware.\nTo use it with this Patcher, you must update the firmware via Rescue Mode.\nPress and hold Button S1 during power-up and select 'Board > Firmware > Flash (Rescue) to update the firmware.");
-            QCmdProcessor.getInstance().AppendToQueue(new QCmdDisconnect());
-            ShowDisconnect();
-            return;
-        }
-
         Object[] options = {"Update", "Cancel"};
         int s = KeyboardNavigableOptionPane.showOptionDialog(this,
                 "Firmware mismatch detected!\n"
