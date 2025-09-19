@@ -19,8 +19,6 @@
 package axoloti.utils;
 
 import axoloti.Axoloti;
-import axoloti.MainFrame;
-import axoloti.USBBulkConnection;
 import axoloti.Version;
 
 import java.io.File;
