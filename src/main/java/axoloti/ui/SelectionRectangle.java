@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-package axoloti;
+package axoloti.ui;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-
-import axoloti.ui.Theme;
 
 /**
  *

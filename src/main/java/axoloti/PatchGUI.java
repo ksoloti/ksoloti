@@ -29,6 +29,7 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectZombie;
 import axoloti.outlets.OutletInstance;
+import axoloti.ui.SelectionRectangle;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
