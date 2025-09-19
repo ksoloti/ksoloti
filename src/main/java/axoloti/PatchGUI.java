@@ -164,10 +164,6 @@ public class PatchGUI extends Patch {
         draggedObjectLayerPanel.setName(Constants.DRAGGED_OBJECT_LAYER_PANEL);
 
         selectionRectLayerPanel.add(selectionrectangle);
-        selectionrectangle.setLocation(100, 100);
-        selectionrectangle.setSize(100, 100);
-        selectionrectangle.setOpaque(true);
-        selectionrectangle.setVisible(false);
 
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setVisible(true);
