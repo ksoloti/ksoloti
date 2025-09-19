@@ -455,15 +455,18 @@ public class FileMenu extends JMenu {
                 for (DocumentWindow docWindow : DocumentWindowList.GetList()) {
                     if (docWindow != null && docWindow instanceof PatchFrame) {
                         PatchFrame frame = (PatchFrame) docWindow;
-                        for (AxoObjectInstanceAbstract oia : frame.getPatchGUI().objectInstances) {
-                            String typeId = ((AxoObject) oia.getType()).toString();
-                            ArrayList<AxoObjectAbstract> newDefinitions = axoObjects.GetAxoObjectFromName(typeId, null);
+                        ArrayList<AxoObjectInstanceAbstract> objectInstancesCopy = new ArrayList<>(frame.getPatchGUI().objectInstances);
+                        for (AxoObjectInstanceAbstract oia : objectInstancesCopy) {
+                            if (oia.getType() instanceof AxoObject) {
+                                String typeId = ((AxoObject) oia.getType()).toString();
+                                ArrayList<AxoObjectAbstract> newDefinitions = axoObjects.GetAxoObjectFromName(typeId, null);
 
-                            if (newDefinitions != null && !newDefinitions.isEmpty()) {
-                                AxoObject newDefinition = (AxoObject) newDefinitions.get(0);
-                                oia.setType(newDefinition);
-                                if (oia instanceof AxoObjectInstance) {
-                                    ((AxoObjectInstance) oia).updateObj();
+                                if (newDefinitions != null && !newDefinitions.isEmpty()) {
+                                    AxoObject newDefinition = (AxoObject) newDefinitions.get(0);
+                                    oia.setType(newDefinition);
+                                    if (oia instanceof AxoObjectInstance) {
+                                        ((AxoObjectInstance) oia).updateObj();
+                                    }
                                 }
                             }
                         }
