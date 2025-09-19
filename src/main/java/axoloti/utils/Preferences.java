@@ -631,32 +631,14 @@ public class Preferences {
             return;
         }
 
-        if (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti") || FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti")) {
-            /* If switching to another board model... */
+        this.FirmwareMode = FirmwareMode;
 
-            this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.populateMainframeTitle();
-            MainFrame.mainframe.refreshAppIcon();
+        boolean boardChanged = (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti")) ||
+                               (FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti"));
 
+        if (boardChanged) {
             restartRequired = true;
-
-            /* Disconnect automatically. User will have to restart the Patcher anyway. */
-            if (USBBulkConnection.getInstance().isConnected()) {
-                USBBulkConnection.getInstance().disconnect();
-            }
         }
-        else {
-
-            this.FirmwareMode = FirmwareMode;
-            MainFrame.mainframe.populateMainframeTitle();
-
-            /* If connected, offer automatic firmware update */
-            if (USBBulkConnection.getInstance().isConnected()) {
-                MainFrame.mainframe.interactiveFirmwareUpdate();
-            }
-        }
-
-        MainFrame.mainframe.populateInfoColumn();
     }
 
     public boolean getRestartRequired() {

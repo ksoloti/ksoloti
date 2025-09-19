@@ -19,6 +19,7 @@
 package axoloti.dialogs;
 
 import axoloti.MainFrame;
+import axoloti.USBBulkConnection;
 import axoloti.utils.AxoFileLibrary;
 import axoloti.utils.AxoGitLibrary;
 import axoloti.utils.AxolotiLibrary;
@@ -335,11 +336,27 @@ public class PreferencesFrame extends JFrame {
         MainFrame.mainframe.updateConsoleFont();
         Preferences.getInstance().applyTheme();
 
-        if (!Preferences.getInstance().getFirmwareMode().equals(oldFirmwareMode)) {
-            // The firmware mode has truly changed. Perform necessary actions.
+        String newFirmwareMode = Preferences.getInstance().getFirmwareMode();
+        if (!newFirmwareMode.equals(oldFirmwareMode)) {
             axoloti.Axoloti.deletePrecompiledHeaderFile();
+            
             MainFrame.mainframe.updateLinkFirmwareID();
+
+            if ((newFirmwareMode.contains("Axoloti") && !oldFirmwareMode.contains("Axoloti")) ||
+                (newFirmwareMode.contains("Ksoloti") && !oldFirmwareMode.contains("Ksoloti"))) {
+                if (USBBulkConnection.getInstance().isConnected()) {
+                    USBBulkConnection.getInstance().disconnect();
+                }
+            }
+            else {
+                if (USBBulkConnection.getInstance().isConnected()) {
+                    MainFrame.mainframe.interactiveFirmwareUpdate();
+                }
+            }
         }
+        MainFrame.mainframe.populateInfoColumn();
+        MainFrame.mainframe.populateMainframeTitle();
+        MainFrame.mainframe.refreshAppIcon();
     }
 
     final void populateLibraryTable() {
