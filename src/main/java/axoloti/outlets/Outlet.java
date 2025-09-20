@@ -97,6 +97,9 @@ public abstract class Outlet implements AtomDefinition, Cloneable {
 
     @Override
     public Boolean getNoLabel() {
+        if (noLabel == null) {
+            return false;
+        }
         return noLabel;
     }
 

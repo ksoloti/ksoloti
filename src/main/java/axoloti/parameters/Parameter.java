@@ -90,6 +90,9 @@ public abstract class Parameter<T extends ParameterInstance> implements AtomDefi
 
     @Override
     public Boolean getNoLabel() {
+        if (noLabel == null) {
+            return false;
+        }
         return noLabel;
     }
 
