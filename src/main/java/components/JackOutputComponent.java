@@ -61,11 +61,12 @@ public class JackOutputComponent extends JComponent {
         g2.setStroke(stroke);
         g2.setPaint(Color.BLACK);
         g2.drawRect(margin, margin + 1, sz - doubleMargin, sz - doubleMargin);
-        g2.setPaint(getForeground());
         if (outlet.isConnected()) {
+            g2.setPaint(getForeground());
             g2.fillRect(margin - 1, margin, sz - doubleMargin, sz - doubleMargin);
         } else {
             g2.drawOval(margin, margin + 1, sz - doubleMargin, sz - doubleMargin);
+            g2.setPaint(getForeground());
             g2.drawOval(margin - 1, margin, sz - doubleMargin, sz - doubleMargin);
         }
         g2.drawRect(margin - 1, margin, sz - doubleMargin, sz - doubleMargin);
