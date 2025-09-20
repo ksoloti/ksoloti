@@ -401,6 +401,7 @@ public class PatchGUI extends Patch {
             @Override
             public void mouseReleased(MouseEvent me) {
                     selectionrectangle.setVisible(false);
+                    draggedObjectLayerPanel.repaint();
                     me.consume();
             }
 
@@ -628,6 +629,7 @@ public class PatchGUI extends Patch {
                         selectionrectangle.setVisible(true);
                     }
 
+                    draggedObjectLayerPanel.repaint();
                     Rectangle r = selectionrectangle.getBounds();
 
                     for (AxoObjectInstanceAbstract o : objectInstances) {
