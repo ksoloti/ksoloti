@@ -343,16 +343,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jMenuItemShowPatchMutator.setVisible(false);
         }
 
-        String filePath = patch.getFileNamePath();
-        if (filePath == null) {
-            jMenuItemOpenFileLocation.setEnabled(false);
-        } else {
-            File f = new File(filePath);
-            if (!f.exists() || !f.canRead()) {
-                jMenuItemOpenFileLocation.setEnabled(false);
-            }
-        }
-
         jMenuPreset.setVisible(false);
         patch.Layers.requestFocus();
 
