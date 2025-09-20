@@ -19,6 +19,7 @@
 package generatedobjects;
 
 import axoloti.displays.DisplayBool32;
+import axoloti.displays.DisplayBool32Red;
 import axoloti.displays.DisplayFrac32SChart;
 import axoloti.displays.DisplayFrac32SDial;
 import axoloti.displays.DisplayFrac32UChart;
@@ -86,6 +87,7 @@ public class Display extends gentools {
         WriteAxoObject(catName, CreateDisplayIBar64());
         WriteAxoObject(catName, CreateDisplayVU());
         WriteAxoObject(catName, CreateDisplayBool32());
+        WriteAxoObject(catName, CreateDisplayBool32Red());
         WriteAxoObject(catName, CreateDisplayNote());
 
         {
@@ -646,6 +648,14 @@ public class Display extends gentools {
         AxoObject o = new AxoObject("bool", "display boolean");
         o.inlets.add(new InletBool32("in", "input"));
         o.displays.add(new DisplayBool32("v"));
+        o.sKRateCode = "%v%=%in%;\n";
+        return o;
+    }
+
+    static AxoObject CreateDisplayBool32Red() {
+        AxoObject o = new AxoObject("bool red", "display boolean, red light");
+        o.inlets.add(new InletBool32("in", "input"));
+        o.displays.add(new DisplayBool32Red("v"));
         o.sKRateCode = "%v%=%in%;\n";
         return o;
     }

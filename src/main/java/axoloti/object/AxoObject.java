@@ -31,6 +31,7 @@ import axoloti.attributedefinition.AxoAttributeTablename;
 import axoloti.attributedefinition.AxoAttributeTextEditor;
 import axoloti.displays.Display;
 import axoloti.displays.DisplayBool32;
+import axoloti.displays.DisplayBool32Red;
 import axoloti.displays.DisplayFrac32SChart;
 import axoloti.displays.DisplayFrac32SDial;
 import axoloti.displays.DisplayFrac32UChart;
@@ -188,6 +189,7 @@ public class AxoObject extends AxoObjectAbstract {
     @org.simpleframework.xml.Path("displays")
     @ElementListUnion({
         @ElementList(entry = DisplayBool32.TypeName, type = DisplayBool32.class, inline = true, required = false),
+        @ElementList(entry = DisplayBool32Red.TypeName, type = DisplayBool32Red.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32SChart.TypeName, type = DisplayFrac32SChart.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32UChart.TypeName, type = DisplayFrac32UChart.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac32SDial.TypeName, type = DisplayFrac32SDial.class, inline = true, required = false),

@@ -26,6 +26,7 @@ public class DisplayTypes {
 
     final static Display types[] = {
         new DisplayBool32(),
+        new DisplayBool32Red(),
         new DisplayFrac32SChart(),
         new DisplayFrac32SDial(),
         new DisplayFrac32UChart(),
