@@ -26,11 +26,11 @@ import components.displays.LedstripComponent;
  *
  * @author Johannes Taelman
  */
-public class DisplayInstanceBool32Red<T extends DisplayBool32> extends DisplayInstanceInt32 {
+public class DisplayInstanceBool32Yellow<T extends DisplayBool32> extends DisplayInstanceInt32 {
 
     private LedstripComponent readout;
 
-    public DisplayInstanceBool32Red() {
+    public DisplayInstanceBool32Yellow() {
         super();
     }
 
@@ -38,7 +38,7 @@ public class DisplayInstanceBool32Red<T extends DisplayBool32> extends DisplayIn
     public void PostConstructor() {
         super.PostConstructor();
 
-        readout = new LedstripComponent(0, 1, Color.RED);
+        readout = new LedstripComponent(0, 1, Color.YELLOW);
         add(readout);
         readout.setSize(readout.getHeight(), 80);
         setSize(getPreferredSize());

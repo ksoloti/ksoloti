@@ -18,34 +18,43 @@
  */
 package axoloti.displays;
 
-import java.awt.Color;
-
-import components.displays.LedstripComponent;
+import axoloti.datatypes.Int32;
+import java.security.MessageDigest;
 
 /**
  *
  * @author Johannes Taelman
  */
-public class DisplayInstanceBool32Red<T extends DisplayBool32> extends DisplayInstanceInt32 {
+public class DisplayBool32Yellow extends Display {
 
-    private LedstripComponent readout;
+    public DisplayBool32Yellow() {
+    }
 
-    public DisplayInstanceBool32Red() {
-        super();
+    public DisplayBool32Yellow(String name) {
+        super(name);
     }
 
     @Override
-    public void PostConstructor() {
-        super.PostConstructor();
-
-        readout = new LedstripComponent(0, 1, Color.RED);
-        add(readout);
-        readout.setSize(readout.getHeight(), 80);
-        setSize(getPreferredSize());
+    public DisplayInstanceBool32Yellow InstanceFactory() {
+        return new DisplayInstanceBool32Yellow();
     }
 
     @Override
-    public void updateV() {
-        readout.setValue(value.getInt() > 0 ? 1 : 0);
+    public void updateSHA(MessageDigest md) {
+        super.updateSHA(md);
+        md.update("bool32.yellow".getBytes());
     }
+
+    @Override
+    public Int32 getDatatype() {
+        return Int32.d;
+    }
+
+    static public final String TypeName = "bool32.yellow";
+
+    @Override
+    public String getTypeName() {
+        return TypeName;
+    }
+
 }
