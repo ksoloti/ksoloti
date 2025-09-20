@@ -149,7 +149,7 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
             if (pg == null) return;
 
             dragnet.repaint();
-            pg.selectionRectLayerPanel.remove(dragnet);
+            pg.draggedObjectLayerPanel.remove(dragnet);
             
             Net n = null;
             
@@ -207,7 +207,7 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
             dragtarget = null;
             originalNet = null;
             isRepatching = false;
-            pg.selectionRectLayerPanel.repaint();
+            pg.draggedObjectLayerPanel.repaint();
             e.consume();
         }
     }
@@ -234,7 +234,7 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
                     originalNet.updateBounds();
                 }
                 dragnet.setVisible(true);
-                getPatchGUI().selectionRectLayerPanel.add(dragnet);
+                getPatchGUI().draggedObjectLayerPanel.add(dragnet);
             }
 
             /* Handle the visual movement of the wire */

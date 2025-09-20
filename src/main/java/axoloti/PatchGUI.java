@@ -109,12 +109,10 @@ public class PatchGUI extends Patch {
     public JPanel objectLayerPanel = new JPanel();
     public JPanel draggedObjectLayerPanel = new JPanel();
     public JPanel netLayerPanel = new JPanel();
-    public JPanel selectionRectLayerPanel = new JPanel();
 
     JLayer<JComponent> objectLayer = new JLayer<JComponent>(objectLayerPanel);
     JLayer<JComponent> draggedObjectLayer = new JLayer<JComponent>(draggedObjectLayerPanel);
     JLayer<JComponent> netLayer = new JLayer<JComponent>(netLayerPanel);
-    JLayer<JComponent> selectionRectLayer = new JLayer<JComponent>(selectionRectLayerPanel);
 
     public AxoObjectFromPatch ObjEditor;
     public ObjectSearchFrame osf;
@@ -139,7 +137,7 @@ public class PatchGUI extends Patch {
 
         JComponent[] layerComponents = {
             objectLayer, objectLayerPanel, draggedObjectLayerPanel, netLayerPanel,
-            selectionRectLayerPanel, draggedObjectLayer, netLayer, selectionRectLayer};
+            draggedObjectLayer, netLayer};
         for (JComponent c : layerComponents) {
             c.setLayout(null);
             c.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
@@ -152,19 +150,16 @@ public class PatchGUI extends Patch {
         Layers.add(objectLayer, Integer.valueOf(1));
         Layers.add(netLayer, Integer.valueOf(2));
         Layers.add(draggedObjectLayer, Integer.valueOf(3));
-        Layers.add(selectionRectLayer, Integer.valueOf(4));
 
         objectLayer.setName("objectLayer");
         draggedObjectLayer.setName("draggedObjectLayer");
         netLayer.setName("netLayer");
         netLayerPanel.setName("netLayerPanel");
-        selectionRectLayerPanel.setName("selectionRectLayerPanel");
-        selectionRectLayer.setName("selectionRectLayer");
 
         objectLayerPanel.setName(Constants.OBJECT_LAYER_PANEL);
         draggedObjectLayerPanel.setName(Constants.DRAGGED_OBJECT_LAYER_PANEL);
 
-        selectionRectLayerPanel.add(selectionrectangle);
+        draggedObjectLayerPanel.add(selectionrectangle);
 
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setVisible(true);
@@ -1225,13 +1220,11 @@ public class PatchGUI extends Patch {
             Layers.add(netLayer, Integer.valueOf(1));
             Layers.add(objectLayer, Integer.valueOf(2));
             Layers.add(draggedObjectLayer, Integer.valueOf(3));
-            Layers.add(selectionRectLayer, Integer.valueOf(4));
         } else {
             Layers.removeAll();
             Layers.add(objectLayer, Integer.valueOf(1));
             Layers.add(netLayer, Integer.valueOf(2));
             Layers.add(draggedObjectLayer, Integer.valueOf(3));
-            Layers.add(selectionRectLayer, Integer.valueOf(4));
         }
     }
 
