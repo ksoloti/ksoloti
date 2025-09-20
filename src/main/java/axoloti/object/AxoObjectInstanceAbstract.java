@@ -35,6 +35,7 @@ import static axoloti.utils.CharEscape.charEscape;
 import static axoloti.utils.FileUtils.toUnixPath;
 
 import axoloti.utils.Constants;
+import axoloti.utils.KeyUtils;
 import components.LabelComponent;
 import components.TextFieldComponent;
 
@@ -336,27 +337,28 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
                 me.consume();
             } else if (!IsLocked()) {
                 if (me.getButton() == MouseEvent.BUTTON1) {
-                    // if (me.getClickCount() == 1) {
-                        if (me.isShiftDown()) {
-                            if (!patch.getPatchframe().getIgnoreShiftKey()) {
-                                SetSelected(!isSelected());
-                            }
-                            else {
-                                /* Skip shift + left click to select/unselect, clear ignoreShiftKey flag */
-                                patch.getPatchframe().setIgnoreShiftKey(false);
-                            }
-                            me.consume();
-                        }
-                        else if (Selected == false) {
-                            ((PatchGUI) patch).SelectNone();
+                    if (me.isShiftDown()) {
+                        if (!patch.getPatchframe().getIgnoreShiftKey()) {
+                            /* Shift + click: Add this object to selection */
                             SetSelected(true);
-                            me.consume();
                         }
-                    // }
-                    // if (me.getClickCount() == 2) {
-                        // ((PatchGUI) patch).ShowClassSelector(AxoObjectInstanceAbstract.this.getLocation(), AxoObjectInstanceAbstract.this, null, true);
-                        // me.consume();
-                    // }
+                        else {
+                            /* Skip shift + left click to select/unselect, clear ignoreShiftKey flag */
+                            patch.getPatchframe().setIgnoreShiftKey(false);
+                        }
+                        me.consume();
+                    }
+                    else if (KeyUtils.isControlOrCommandDown(me)) {
+                        /* Ctrl + click: Toggle selection state of this object */
+                        SetSelected(!isSelected());
+                        me.consume();
+                    }
+                    else if (Selected == false) { /* additional check makes is possible to MOVE selection without objects getting unselected */
+                        /* Normal Click: Deselect all objects, then select this one */
+                        ((PatchGUI) patch).SelectNone();
+                        SetSelected(true);
+                        me.consume();
+                    }
                 }
                 draggingObjects = new ArrayList<AxoObjectInstanceAbstract>();
                 dragAnchor = me.getLocationOnScreen();

@@ -389,14 +389,14 @@ public class PatchGUI extends Patch {
             public void mousePressed(MouseEvent me) {
                 MousePressedBtn = me.getButton();
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!me.isShiftDown()) {
+                    if (!me.isShiftDown() && !KeyUtils.isControlOrCommandDown(me)) {
+                        /* Clear selection only if no modifier keys are held */
                         for (AxoObjectInstanceAbstract o : objectInstances) {
                             o.SetSelected(false);
                         }
                     }
                     selectionRectStart = me.getPoint();
                     selectionrectangle.setBounds(me.getX(), me.getY(), 1, 1);
-                    //selectionrectangle.setVisible(true);
 
                     Layers.requestFocusInWindow();
                     me.consume();
@@ -620,32 +620,38 @@ public class PatchGUI extends Patch {
             @Override
             public void mouseDragged(MouseEvent ev) {
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    int x1 = selectionRectStart.x;
-                    int y1 = selectionRectStart.y;
                     int x2 = ev.getX();
                     int y2 = ev.getY();
-                    int xmin = x1 < x2 ? x1 : x2;
-                    int xmax = x1 > x2 ? x1 : x2;
-                    int ymin = y1 < y2 ? y1 : y2;
-                    int ymax = y1 > y2 ? y1 : y2;
+                    int xmin = selectionRectStart.x < x2 ? selectionRectStart.x : x2;
+                    int xmax = selectionRectStart.x > x2 ? selectionRectStart.x : x2;
+                    int ymin = selectionRectStart.y < y2 ? selectionRectStart.y : y2;
+                    int ymax = selectionRectStart.y > y2 ? selectionRectStart.y : y2;
                     int width = xmax - xmin;
                     int height = ymax - ymin;
                     selectionrectangle.setBounds(xmin, ymin, width, height);
-                    selectionrectangle.setVisible(true);
+                    if (!selectionrectangle.isVisible()) {
+                        selectionrectangle.setVisible(true);
+                    }
 
                     Rectangle r = selectionrectangle.getBounds();
 
                     for (AxoObjectInstanceAbstract o : objectInstances) {
                         if (!o.IsLocked()) {
+                            boolean intersects = o.getBounds().intersects(r);
                             if (ev.isShiftDown()) {
-                                /* Add unlocked objects within rectangle to current selection */
-                                if (o.getBounds().intersects(r) && !o.isSelected()) {
+                                /* Shift-drag: Add objects to selection */
+                                if (intersects) {
                                     o.SetSelected(true);
+                                }
+                            } else if (KeyUtils.isControlOrCommandDown(ev)) {
+                                /* Ctrl-drag: Remove objects from selection */
+                                if (intersects) {
+                                    o.SetSelected(false);
                                 }
                             }
                             else {
-                                /* Clear selection then add unlocked objects within rectangle to selection */
-                                o.SetSelected(o.getBounds().intersects(r));
+                                /* Normal drag: Only select intersecting objects, deselect all others */
+                                o.SetSelected(intersects);
                             }
                         }
                     }
