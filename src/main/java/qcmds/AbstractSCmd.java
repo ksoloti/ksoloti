@@ -36,7 +36,6 @@ public abstract class AbstractSCmd implements SCmd {
         this.mcuStatusCode = mcuStatusCode;
         this.commandSuccess = mcuStatusCode == 0;
         latch.countDown();
-        USBBulkConnection.getInstance().setCurrentExecutingCommand(null);
     }
 
     @Override
