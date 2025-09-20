@@ -35,6 +35,8 @@ public class LedstripComponent extends ADispComponent {
     private double value;
     private final int n;
     private static final int bsize = 11;
+    final Color c_off = Theme.Led_Strip_Off;
+    Color c_on = Theme.Led_Strip_On;
 
     public LedstripComponent(int value, int n) {
         //setInheritsPopupMenu(true);
@@ -47,8 +49,10 @@ public class LedstripComponent extends ADispComponent {
         setSize(d);
     }
 
-    final Color c_off = Theme.Led_Strip_Off;
-    final Color c_on = Theme.Led_Strip_On;
+    public LedstripComponent(int value, int n, Color color) {
+        this(value, n);
+        this.c_on = color;
+    }
 
     @Override
     public void paintComponent(Graphics g) {
