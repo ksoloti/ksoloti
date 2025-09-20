@@ -23,17 +23,23 @@ import axoloti.Patch;
 import axoloti.PatchSettings;
 import axoloti.SubPatchMode;
 import axoloti.ui.SvgIconLoader;
+import axoloti.utils.KeyUtils;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
 
 /**
@@ -101,6 +107,16 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         }
         jCheckBoxHasMidiSelector.setSelected(settings.GetMidiSelector());
         jCheckBoxSaturate.setSelected(settings.getSaturate());
+
+        this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK), "closeFrame");
+
+        this.getRootPane().getActionMap().put("closeFrame", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); 
+            }
+        });
     }
 
 

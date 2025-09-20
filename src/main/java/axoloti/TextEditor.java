@@ -20,10 +20,16 @@ package axoloti;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 
 // import javax.swing.UIManager;
@@ -33,6 +39,7 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.*;
 
 import axoloti.utils.Constants;
+import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.utils.StringRef;
 
@@ -90,6 +97,16 @@ public class TextEditor extends javax.swing.JFrame implements DocumentWindow {
         setContentPane(cp);
         textArea.setText(s.s);
         setIconImage(Constants.APP_ICON.getImage());
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK), "closeEditor");
+
+        getRootPane().getActionMap().put("closeEditor", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Close();
+            }
+        });
     }
 
     public void SetText(String s) {
