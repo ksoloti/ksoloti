@@ -44,61 +44,61 @@ public class AxoSplashScreen extends JWindow {
     private float opacity = 0.0f;
     private boolean fadeIn = false;
 
-public AxoSplashScreen(boolean fadeIn) {
-    this.fadeIn = fadeIn;
-    if (this.fadeIn) {
-        setOpacity(opacity);
-        }
-        else {
-        setOpacity(1.0f);
-    }
-
-    setBackground(new Color(0, 0, 0, 0)); /* Make window transparent */
-    setAlwaysOnTop(true);
-
-    try {
-        JLabel label = null;
-        Icon splashSvg = SvgIconLoader.load("/resources/appicons/ksoloti_splash.svg", 512);
-
-        if (splashSvg != null) {
-            label = new JLabel(splashSvg);
-        } else {
-            System.err.println("Failed to load SVG icon. Falling back to PNG.");
-            label = new JLabel(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_splash.png")));
-        }
-
-        if (label != null) {
-            label.setOpaque(false);
-            this.getContentPane().add(label);
-            this.pack();
-        }
-
-        /* Center the window on the primary screen to prevent splitting on dual screens */
-        GraphicsDevice defaultScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        Rectangle screenBounds = defaultScreen.getDefaultConfiguration().getBounds();
-        int x = screenBounds.x + (screenBounds.width - this.getWidth()) / 2;
-        int y = screenBounds.y + (screenBounds.height - this.getHeight()) / 2;
-        this.setLocation(x, y);
-
-    } catch (Exception e) {
-        System.err.println("Error loading splash screen image: " + e.getMessage());
-        e.printStackTrace(System.out);
-        this.dispose();
-    }
-
-    fadeTimer = new Timer(20, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            opacity += 0.1f; /* Increase opacity in small steps */
-            if (opacity >= 1.0f) {
-                setOpacity(1.0f); /* Ensure it reaches full opacity */
-                fadeTimer.stop();
-            } else {
-                setOpacity(opacity);
+    public AxoSplashScreen(boolean fadeIn) {
+        this.fadeIn = fadeIn;
+        if (this.fadeIn) {
+            setOpacity(opacity);
             }
+            else {
+            setOpacity(1.0f);
         }
-    });
-}
+
+        setBackground(new Color(0, 0, 0, 0)); /* Make window transparent */
+        setAlwaysOnTop(true);
+
+        try {
+            JLabel label = null;
+            Icon splashSvg = SvgIconLoader.load("/resources/appicons/ksoloti_splash.svg", 512);
+
+            if (splashSvg != null) {
+                label = new JLabel(splashSvg);
+            } else {
+                System.err.println("Failed to load SVG icon. Falling back to PNG.");
+                label = new JLabel(new ImageIcon(getClass().getResource("/resources/appicons/ksoloti_splash.png")));
+            }
+
+            if (label != null) {
+                label.setOpaque(false);
+                this.getContentPane().add(label);
+                this.pack();
+            }
+
+            /* Center the window on the primary screen to prevent splitting on dual screens */
+            GraphicsDevice defaultScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            Rectangle screenBounds = defaultScreen.getDefaultConfiguration().getBounds();
+            int x = screenBounds.x + (screenBounds.width - this.getWidth()) / 2;
+            int y = screenBounds.y + (screenBounds.height - this.getHeight()) / 2;
+            this.setLocation(x, y);
+
+        } catch (Exception e) {
+            System.err.println("Error loading splash screen image: " + e.getMessage());
+            e.printStackTrace(System.out);
+            this.dispose();
+        }
+
+        fadeTimer = new Timer(20, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                opacity += 0.1f; /* Increase opacity in small steps */
+                if (opacity >= 1.0f) {
+                    setOpacity(1.0f); /* Ensure it reaches full opacity */
+                    fadeTimer.stop();
+                } else {
+                    setOpacity(opacity);
+                }
+            }
+        });
+    }
 
     public void showSplashScreen() {
         this.setVisible(true);

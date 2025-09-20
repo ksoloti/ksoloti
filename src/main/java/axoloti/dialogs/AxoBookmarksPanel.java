@@ -36,7 +36,7 @@ public class AxoBookmarksPanel extends DefaultBookmarksPanel {
     private static final long serialVersionUID = 5409354653351018163L;
 
     @Override
-protected void initGUI() {
+    protected void initGUI() {
         super.initGUI();
 
         ImageIcon newAddIcon = loadImageIcon("/resources/icons/AxoBookmarksPanel/add.gif");
