@@ -553,7 +553,8 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(70);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(70);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(260);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(20);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(90);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(90);
         }
 
         if (jTable2.getColumnModel().getColumnCount() > 0) {
