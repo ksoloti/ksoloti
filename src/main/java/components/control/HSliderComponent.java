@@ -29,6 +29,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -38,26 +39,34 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JComponent;
+import javax.swing.SwingWorker;
+
 /**
  *
  * @author Johannes Taelman
  */
 public class HSliderComponent extends ACtrlComponent {
 
-    double value = 0;
-    double max = 128;
-    double min = -128;
-    private int MousePressedCoordX;
-    private int MousePressedCoordY;
+    private double value;
+    private double max = 128;
+    private double min = -128;
+    private double tick;
+    private int MousePressedCoordX = 0;
+    private int MousePressedCoordY = 0;
+    private int MousePressedBtn = MouseEvent.NOBUTTON;
     private String keybBuffer = "";
-
     private Robot robot;
 
+
+    private static final Stroke strokeThin = new BasicStroke(1);
+    private static final Stroke strokeThick = new BasicStroke(2);
 
     public HSliderComponent() {
         Dimension d = new Dimension(256, 12);
         setMinimumSize(d);
         setPreferredSize(d);
+        this.tick = 1.0;
         setMaximumSize(d);
         setSize(d);
         setToolTipText("Double-click to reset to 0.\n" +
@@ -79,54 +88,94 @@ public class HSliderComponent extends ACtrlComponent {
 
     @Override
     protected void mouseDragged(MouseEvent e) {
-        double t = 1.0;
-        if (KeyUtils.isControlOrCommandDown(e)) {
-            t = t * 0.1;
+        if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
+            double t = tick;
+            if (KeyUtils.isControlOrCommandDown(e)) {
+                t = t * 0.1;
+            }
+            if (e.isShiftDown()) {
+                t = t * 0.1;
+            }
+            int currentPhysicalX = MouseInfo.getPointerInfo().getLocation().x;
+            int deltaX = currentPhysicalX - MousePressedCoordX;
+            double v = getValue() + t * deltaX;
+            if (robot != null) {
+                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+            }
+            setValue(v);
+            e.consume();
         }
-        if (e.isShiftDown()) {
-            t = t * 0.1;
-        }
-        double v = value - t * ((int) Math.round((MousePressedCoordX - e.getXOnScreen())));
-        robotMoveToCenter();
-        if (robot == null) {
-            MousePressedCoordX = e.getXOnScreen();
-        }
-        setValue(v);
     }
 
     @Override
     protected void mousePressed(MouseEvent e) {
         if (!e.isPopupTrigger()) {
-            if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
-                setValue(0);
-            }
-            else {
-                grabFocus();
-                MousePressedCoordX = e.getXOnScreen();
-                MousePressedCoordY = e.getYOnScreen();
-                robot = createRobot();
-                if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
-                    getRootPane().setCursor(MainFrame.transparentCursor);
+            if (isEnabled()) {
+                if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                    setValue(0);
+                }
+                else {
+                    robot = createRobot();
+                    grabFocus();
+                    MousePressedCoordX = e.getXOnScreen();
+                    MousePressedCoordY = e.getYOnScreen();
+
+                    int lastBtn = MousePressedBtn;
+                    MousePressedBtn = e.getButton();
+
+                    if (lastBtn == MouseEvent.BUTTON1) {
+                        // now have both mouse buttons pressed...
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                    }
+
+                    if (MousePressedBtn == MouseEvent.BUTTON1) {
+                        if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
+                            JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                            glassPane.setCursor(MainFrame.transparentCursor);
+                            glassPane.setVisible(true);
+                        }
+                        fireEventAdjustmentBegin();
+                    } else {
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                    }
                 }
             }
             e.consume();
-            fireEventAdjustmentBegin();
         }
     }
 
     @Override
     protected void mouseReleased(MouseEvent e) {
-        if (!e.isPopupTrigger()) {
+        if (isEnabled() && !e.isPopupTrigger()) {
+        
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Thread.sleep(20); /* A tiny delay to let the event queue clear */
+                    return null;
+                }
+                @Override
+                protected void done() {
+                    if (robot != null) {
+                        robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                        robot = null;
+                    }
+
+                    JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                    glassPane.setCursor(Cursor.getDefaultCursor());
+                    glassPane.setVisible(false);
+                }
+            }.execute();
+            
+            MousePressedBtn = MouseEvent.NOBUTTON;
             fireEventAdjustmentFinished();
             e.consume();
         }
-        getRootPane().setCursor(Cursor.getDefaultCursor());
-        robot = null;
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        double steps = 1.0;
+        double steps = tick;
         if (ke.isShiftDown()) {
             steps = steps * 0.1; // mini steps!
             if (KeyUtils.isControlOrCommandDown(ke)) {
@@ -214,9 +263,10 @@ public class HSliderComponent extends ACtrlComponent {
             case '9':
             case '0':
             case '.':
-                keybBuffer += ke.getKeyChar();
-                ke.consume();
-                repaint();
+                if (!KeyUtils.isControlOrCommandDown(ke)) {
+                    keybBuffer += ke.getKeyChar();
+                    ke.consume();
+                }
                 break;
             default:
         }
@@ -224,22 +274,21 @@ public class HSliderComponent extends ACtrlComponent {
 
     @Override
     void keyReleased(KeyEvent ke) {
-        switch (ke.getKeyCode()) {
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_PAGE_UP:
-            case KeyEvent.VK_PAGE_DOWN:
-                fireEventAdjustmentFinished();
-                ke.consume();
-                break;
-            default:
+        if (isEnabled()) {
+            switch (ke.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_PAGE_UP:
+                case KeyEvent.VK_PAGE_DOWN:
+                    fireEventAdjustmentFinished();
+                    ke.consume();
+                    break;
+                default:
+            }
         }
     }
-
-    private static final Stroke strokeThin = new BasicStroke(1);
-    private static final Stroke strokeThick = new BasicStroke(2);
 
     @Override
     public void paintComponent(Graphics g) {
@@ -247,37 +296,38 @@ public class HSliderComponent extends ACtrlComponent {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        if (isEnabled()) {
+            int margin = 50;
+            int bwidth = getWidth() - margin;
 
-        int margin = 50;
-        int bwidth = getWidth() - margin;
+            g2.setColor(getBackground());
+            g2.fillRect(0, 0, bwidth, getHeight() - 1);
+            g2.setPaint(getForeground());
+            if (isFocusOwner()) {
+                g2.setStroke(strokeThick);
+            } else {
+                g2.setStroke(strokeThin);
+            }
+            g2.drawRect(0, 0, bwidth, getHeight() - 1);
 
-        g2.setColor(getBackground());
-        g2.fillRect(0, 0, bwidth, getHeight() - 1);
-        g2.setPaint(getForeground());
-        if (isFocusOwner()) {
-            g2.setStroke(strokeThick);
-        } else {
+            int p = (int) (1 + ((value - min) * (bwidth - 2)) / (max - min));
+            int p1 = (int) (1 + ((0 - min) * (bwidth - 2)) / (max - min));
+
             g2.setStroke(strokeThin);
-        }
-        g2.drawRect(0, 0, bwidth, getHeight() - 1);
+            g2.drawLine(p, getHeight() / 2, p1, getHeight() / 2);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawLine(p, 0, p, getHeight());
 
-        int p = (int) (1 + ((value - min) * (bwidth - 2)) / (max - min));
-        int p1 = (int) (1 + ((0 - min) * (bwidth - 2)) / (max - min));
-
-        g2.setStroke(strokeThin);
-        g2.drawLine(p, getHeight() / 2, p1, getHeight() / 2);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawLine(p, 0, p, getHeight());
-
-        Rectangle2D r = g2.getFontMetrics().getStringBounds("-99.99", g);
-        if (keybBuffer.isEmpty()) {
-            String s = String.format("%6.2f", value);
-            g2.drawString(s, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
-        }
-        else {
-            g2.setColor(Theme.Error_Text);
-            g2.setFont(Constants.FONT);
-            g2.drawString(keybBuffer, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+            Rectangle2D r = g2.getFontMetrics().getStringBounds("-99.99", g);
+            if (keybBuffer.isEmpty()) {
+                String s = String.format("%6.2f", value);
+                g2.drawString(s, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+            }
+            else {
+                g2.setColor(Theme.Error_Text);
+                g2.setFont(Constants.FONT);
+                g2.drawString(keybBuffer, bwidth + (margin / 2) - (int) (0.5 + r.getWidth() / 2), getHeight());
+            }
         }
     }
 
@@ -299,27 +349,19 @@ public class HSliderComponent extends ACtrlComponent {
         return value;
     }
 
-    public void setMinimum(double min) {
+    public void setMin(double min) {
         this.min = min;
     }
 
-    public double getMinimum() {
+    public double getMin() {
         return min;
     }
 
-    public void setMaximum(double max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public double getMaximum() {
+    public double getMax() {
         return max;
-    }
-
-    @Override
-    public void robotMoveToCenter() {
-        if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
-            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
-        }
     }
 }
