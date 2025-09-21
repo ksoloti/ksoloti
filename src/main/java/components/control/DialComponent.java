@@ -95,32 +95,30 @@ public class DialComponent extends ACtrlComponent {
 
     @Override
     protected void mouseDragged(MouseEvent e) {
-        if (isEnabled()) {
+        if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
             double v;
-            if ((MousePressedBtn == MouseEvent.BUTTON1)) {
-                if (Preferences.getInstance().getMouseDialAngular()) {
-                    int y = e.getY();
-                    int x = e.getX();
-                    int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
-                    double th = Math.atan2(x - radius, radius - y);
-                    v = min + (max - min) * (th + 0.75 * Math.PI) / (1.5 * Math.PI);
-                    if (!e.isShiftDown()) {
-                        v = Math.round(v / tick) * tick;
-                    }
-                } else {
-                    double t = tick;
-                    if (KeyUtils.isControlOrCommandDown(e)) {
-                        t = t * 0.1;
-                    }
-                    if (e.isShiftDown()) {
-                        t = t * 0.1;
-                    }
-                    v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
-                    lastMouseY = e.getYOnScreen();
+            if (Preferences.getInstance().getMouseDialAngular()) {
+                int y = e.getY();
+                int x = e.getX();
+                int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
+                double th = Math.atan2(x - radius, radius - y);
+                v = min + (max - min) * (th + 0.75 * Math.PI) / (1.5 * Math.PI);
+                if (!e.isShiftDown()) {
+                    v = Math.round(v / tick) * tick;
                 }
-                setValue(v);
-                e.consume();
+            } else {
+                double t = tick;
+                if (KeyUtils.isControlOrCommandDown(e)) {
+                    t = t * 0.1;
+                }
+                if (e.isShiftDown()) {
+                    t = t * 0.1;
+                }
+                v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
+                lastMouseY = e.getYOnScreen();
             }
+            setValue(v);
+            e.consume();
         }
     }
 
