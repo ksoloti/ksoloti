@@ -22,7 +22,6 @@ import axoloti.MainFrame;
 import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-// import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -36,9 +35,11 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JToolTip;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -47,13 +48,15 @@ import javax.swing.border.EmptyBorder;
  */
 public class VSliderComponent extends ACtrlComponent {
 
-    double value;
-    double max;
-    double min;
-    double tick;
+    private double value;
+    private double max;
+    private double min;
+    private double tick;
 
-    private int MousePressedCoordX;
-    private int MousePressedCoordY;
+    private int MousePressedCoordX = 0;
+    private int MousePressedCoordY = 0;
+    private int MousePressedBtn = MouseEvent.NOBUTTON;
+    private int lastMouseY;
 
     private static final int height = 128;
     private static final int width = 12;
@@ -62,6 +65,9 @@ public class VSliderComponent extends ACtrlComponent {
     private Robot robot;
 
     private PopupFactory popupFactory = PopupFactory.getSharedInstance();
+    private static final Stroke strokeThin = new BasicStroke(1);
+    private static final Stroke strokeThick = new BasicStroke(2);
+
     private Popup popup;
     private JToolTip popupTip = createToolTip();
 
@@ -93,7 +99,7 @@ public class VSliderComponent extends ACtrlComponent {
 
     @Override
     protected void mouseDragged(MouseEvent e) {
-        if (isEnabled() && e.getButton() == MouseEvent.BUTTON1) {
+        if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
             double t = tick;
             if (KeyUtils.isControlOrCommandDown(e)) {
                 t = t * 0.1;
@@ -101,44 +107,82 @@ public class VSliderComponent extends ACtrlComponent {
             if (e.isShiftDown()) {
                 t = t * 0.1;
             }
-            double v = value + t * ((int) Math.round((MousePressedCoordY - e.getYOnScreen())));
-            robotMoveToCenter();
-            if (robot == null) {
-                MousePressedCoordY = e.getYOnScreen();
-            }
+            
+            double v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
+            lastMouseY = e.getYOnScreen();
             setValue(v);
+            e.consume();
         }
     }
 
     @Override
     protected void mousePressed(MouseEvent e) {
-        if (!e.isPopupTrigger() && e.getButton() == MouseEvent.BUTTON1) {
-            grabFocus();
-            MousePressedCoordX = e.getXOnScreen();
-            MousePressedCoordY = e.getYOnScreen();
-            popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
-            popup.show();
-            robot = createRobot();
-            if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
-                getRootPane().setCursor(MainFrame.transparentCursor);
+        if (!e.isPopupTrigger()) {
+            if (isEnabled()) {
+                robot = createRobot();
+                grabFocus();
+                MousePressedCoordX = e.getXOnScreen();
+                MousePressedCoordY = e.getYOnScreen();
+                lastMouseY = MousePressedCoordY;
+
+                int lastBtn = MousePressedBtn;
+                MousePressedBtn = e.getButton();
+
+                if (lastBtn == MouseEvent.BUTTON1) {
+                    // now have both mouse buttons pressed...
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
+                }
+
+                popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
+                popup.show();
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                    if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()
+                        && !Preferences.getInstance().getMouseDialAngular()) {
+                        JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                        glassPane.setCursor(MainFrame.transparentCursor);
+                        glassPane.setVisible(true);
+                    }
+                    fireEventAdjustmentBegin();
+                } else {
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
+                }
             }
             e.consume();
-            fireEventAdjustmentBegin();
         }
     }
 
     @Override
     protected void mouseReleased(MouseEvent e) {
-        if (!e.isPopupTrigger()) {
-            fireEventAdjustmentFinished();
-        }
-        if (popup != null) {
-            popup.hide();
-        }
-        getRootPane().setCursor(Cursor.getDefaultCursor());
-        robot = null;
-    }
+        if (isEnabled() && !e.isPopupTrigger()) {
+        
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Thread.sleep(20); /* A tiny delay to let the event queue clear */
+                    return null;
+                }
+                @Override
+                protected void done() {
+                    if (popup != null) {
+                        popup.hide();
+                    }
+                    if (robot != null) {
+                        robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                        robot = null;
+                    }
 
+                    JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                    glassPane.setCursor(Cursor.getDefaultCursor());
+                    glassPane.setVisible(false);
+                }
+            }.execute();
+            
+            MousePressedBtn = MouseEvent.NOBUTTON;
+            fireEventAdjustmentFinished();
+            e.consume();
+        }
+    }
+    
     @Override
     public void keyPressed(KeyEvent ke) {
         double steps = tick;
@@ -229,9 +273,10 @@ public class VSliderComponent extends ACtrlComponent {
             case '9':
             case '0':
             case '.':
-                keybBuffer += ke.getKeyChar();
-                ke.consume();
-                repaint();
+                if (!KeyUtils.isControlOrCommandDown(ke)) {
+                    keybBuffer += ke.getKeyChar();
+                    ke.consume();
+                }
                 break;
             default:
         }
@@ -260,9 +305,6 @@ public class VSliderComponent extends ACtrlComponent {
     int ValToPos(double v) {
         return (int) (margin + ((max - v) * (height - 2 * margin)) / (max - min));
     }
-
-    private static final Stroke strokeThin = new BasicStroke(1);
-    private static final Stroke strokeThick = new BasicStroke(2);
 
     @Override
     public void paintComponent(Graphics g) {
@@ -325,27 +367,19 @@ public class VSliderComponent extends ACtrlComponent {
         return value;
     }
 
-    public void setMinimum(double min) {
+    public void setMin(double min) {
         this.min = min;
     }
 
-    public double getMinimum() {
+    public double getMin() {
         return min;
     }
 
-    public void setMaximum(double max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public double getMaximum() {
+    public double getMax() {
         return max;
-    }
-
-    @Override
-    public void robotMoveToCenter() {
-        if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
-            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
-        }
     }
 }
