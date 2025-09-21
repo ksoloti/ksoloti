@@ -249,6 +249,7 @@ public class HSliderComponent extends ACtrlComponent {
                 if (!KeyUtils.isControlOrCommandDown(ke)) {
                     keybBuffer += '.';
                     ke.consume();
+                    repaint();
                 }
                 break;
             case '-':
