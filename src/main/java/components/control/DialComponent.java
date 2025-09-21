@@ -54,14 +54,14 @@ public class DialComponent extends ACtrlComponent {
     private NativeToReal convs[];
     private String keybBuffer = "";
     private Robot robot;
-    int MousePressedCoordX = 0;
-    int MousePressedCoordY = 0;
-    int MousePressedBtn = MouseEvent.NOBUTTON;
-    int lastMouseY;
+    private int MousePressedCoordX = 0;
+    private int MousePressedCoordY = 0;
+    private int MousePressedBtn = MouseEvent.NOBUTTON;
+    private int lastMouseY;
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
-    final int layoutTick = 3;
+    private final int layoutTick = 3;
 
     public DialComponent(double value, double min, double max, double tick) {
         super();
