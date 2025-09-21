@@ -87,28 +87,28 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (!isLocked) {
-                ACtrlComponent.this.mousePressed(e);
+                    ACtrlComponent.this.mousePressed(e);
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (!isLocked) {
-                ACtrlComponent.this.mouseReleased(e);
+                    ACtrlComponent.this.mouseReleased(e);
                 }
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (!isLocked) {
-                ACtrlComponent.this.mouseEnteredTime = System.currentTimeMillis();
+                    ACtrlComponent.this.mouseEnteredTime = System.currentTimeMillis();
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 if (!isLocked) {
-                getRootPane().setCursor(Cursor.getDefaultCursor());
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
                 }
             }
 
@@ -118,7 +118,7 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (!isLocked) {
-                ACtrlComponent.this.mouseDragged(e);
+                    ACtrlComponent.this.mouseDragged(e);
                 }
             }
             // @Override
@@ -167,14 +167,14 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void keyPressed(KeyEvent ke) {
                 if (!isLocked) {
-                ACtrlComponent.this.keyPressed(ke);
+                    ACtrlComponent.this.keyPressed(ke);
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
                 if (!isLocked) {
-                ACtrlComponent.this.keyReleased(ke);
+                    ACtrlComponent.this.keyReleased(ke);
                 }
             }
         });
@@ -218,8 +218,7 @@ public abstract class ACtrlComponent extends JComponent {
         Object[] listeners = listenerList.getListenerList();
         for (int i = 0; i < listeners.length; i += 2) {
             if (listeners[i] == ACtrlListener.class) {
-                ((ACtrlListener) listeners[i + 1]).ACtrlAdjusted(
-                        new ACtrlEvent(this, getValue()));
+                ((ACtrlListener) listeners[i + 1]).ACtrlAdjusted(new ACtrlEvent(this, getValue()));
             }
         }
     }
@@ -228,8 +227,7 @@ public abstract class ACtrlComponent extends JComponent {
         Object[] listeners = listenerList.getListenerList();
         for (int i = 0; i < listeners.length; i += 2) {
             if (listeners[i] == ACtrlListener.class) {
-                ((ACtrlListener) listeners[i + 1]).ACtrlAdjustmentBegin(
-                        new ACtrlEvent(this, getValue()));
+                ((ACtrlListener) listeners[i + 1]).ACtrlAdjustmentBegin(new ACtrlEvent(this, getValue()));
             }
         }
     }
@@ -238,8 +236,7 @@ public abstract class ACtrlComponent extends JComponent {
         Object[] listeners = listenerList.getListenerList();
         for (int i = 0; i < listeners.length; i += 2) {
             if (listeners[i] == ACtrlListener.class) {
-                ((ACtrlListener) listeners[i + 1]).ACtrlAdjustmentFinished(
-                        new ACtrlEvent(this, getValue()));
+                ((ACtrlListener) listeners[i + 1]).ACtrlAdjustmentFinished(new ACtrlEvent(this, getValue()));
             }
         }
     }
@@ -287,20 +284,14 @@ public abstract class ACtrlComponent extends JComponent {
         };
         setTransferHandler(TH);
         InputMap inputMap = getInputMap(JComponent.WHEN_FOCUSED);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X,
-                KeyUtils.CONTROL_OR_CMD_MASK), "cut");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-                KeyUtils.CONTROL_OR_CMD_MASK), "copy");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V,
-                KeyUtils.CONTROL_OR_CMD_MASK), "paste");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyUtils.CONTROL_OR_CMD_MASK), "cut");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyUtils.CONTROL_OR_CMD_MASK), "copy");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyUtils.CONTROL_OR_CMD_MASK), "paste");
 
         ActionMap map = getActionMap();
-        map.put(TransferHandler.getCutAction().getValue(Action.NAME),
-                TransferHandler.getCutAction());
-        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
-                TransferHandler.getCopyAction());
-        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
-                TransferHandler.getPasteAction());
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME), TransferHandler.getCutAction());
+        map.put(TransferHandler.getCopyAction().getValue(Action.NAME), TransferHandler.getCopyAction());
+        map.put(TransferHandler.getPasteAction().getValue(Action.NAME), TransferHandler.getPasteAction());
 
     }
 
@@ -330,5 +321,4 @@ public abstract class ACtrlComponent extends JComponent {
     public void setCustomBackgroundColor(Color c) {
         this.customBackgroundColor = c;
     }
-
 }
