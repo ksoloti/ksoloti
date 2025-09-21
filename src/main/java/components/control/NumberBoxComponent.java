@@ -19,18 +19,16 @@
 package components.control;
 
 import axoloti.MainFrame;
-import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-// import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-// import java.awt.MouseInfo;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -38,8 +36,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -52,19 +51,22 @@ public class NumberBoxComponent extends ACtrlComponent {
     private double max;
     private double min;
     private double tick;
-    private String keybBuffer = "";
+    
+    private int MousePressedCoordX = 0;
+    private int MousePressedCoordY = 0;
+    private int MousePressedBtn = MouseEvent.NOBUTTON;
 
     private boolean hiliteUp = false;
     private boolean hiliteDown = false;
     private boolean dragging = false;
-
+    private String keybBuffer = "";
     private Robot robot;
+
+    private static final Stroke strokeThin = new BasicStroke(1);
+    private static final Stroke strokeThick = new BasicStroke(2);
 
     int rmargin = 4;
     int htick = 3;
-
-    public void setNative(NativeToReal convs[]) {
-    }
 
     public NumberBoxComponent(double value, double min, double max, double tick) {
         this(value, min, max, tick, 50, 14);
@@ -72,14 +74,14 @@ public class NumberBoxComponent extends ACtrlComponent {
 
     public NumberBoxComponent(double value, double min, double max, double tick, int hsize, int vsize) {
         setInheritsPopupMenu(true);
-        this.value = value;
-        this.min = min;
         this.max = max;
+        this.min = min;
+        this.value = value;
         this.tick = tick;
-        Dimension d = new Dimension(hsize, vsize);
-        setPreferredSize(d);
-        setMaximumSize(d);
-        setMinimumSize(d);
+        Dimension dim = new Dimension(hsize, vsize);
+        setPreferredSize(dim);
+        setMaximumSize(dim);
+        setMinimumSize(dim);
         addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -94,67 +96,70 @@ public class NumberBoxComponent extends ACtrlComponent {
         SetupTransferHandler();
     }
 
-    final int layoutTick = 3;
-
     @Override
     protected void mouseDragged(MouseEvent e) {
-        if (isEnabled() && dragging) {
-            double v;
-            if ((MousePressedBtn == MouseEvent.BUTTON1)) {
-                double t = tick;
+        if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1 && dragging) {
+            double t = tick * 0.1;
+            if (KeyUtils.isControlOrCommandDown(e)) {
                 t = t * 0.1;
-                if (e.isShiftDown()) {
-                    t = t * 0.1;
-                }
-                if (KeyUtils.isControlOrCommandDown(e)) {
-                    t = t * 0.1;
-                }
-                v = value + t * (MousePressedCoordY - e.getYOnScreen());
-                this.robotMoveToCenter();
-                if (robot == null) {
-                    MousePressedCoordY = e.getYOnScreen();
-                }
-                if (v > max) {
-                    v = max;
-                }
-                if (v < min) {
-                    v = min;
-                }
-                setValue(v);
             }
+            if (e.isShiftDown()) {
+                t = t * 0.1;
+            }
+            int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+            int deltaY = MousePressedCoordY - currentPhysicalY;
+            double v = getValue() + t * deltaY;
+            if (robot != null) {
+                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+            }
+            setValue(v);
+            e.consume();
         }
     }
-    int MousePressedCoordX = 0;
-    int MousePressedCoordY = 0;
-    int MousePressedBtn = 0;
 
     @Override
     protected void mousePressed(MouseEvent e) {
         if (!e.isPopupTrigger()) {
-            robot = createRobot();
-            grabFocus();
-            if (isEnabled() && (e.getX() >= getWidth() - rmargin - htick * 2)) {
-                dragging = false;
-                if (e.getY() > getHeight() / 2) {
-                    hiliteDown = true;
-                    fireEventAdjustmentBegin();
-                    setValue(value - tick);
-                    fireEventAdjustmentFinished();
+            if (isEnabled()) {
+                robot = createRobot();
+                grabFocus();
+                if (isEnabled() && (e.getX() >= getWidth() - rmargin - htick * 2)) {
+                    dragging = false;
+                    if (e.getY() > getHeight() / 2) {
+                        hiliteDown = true;
+                        fireEventAdjustmentBegin();
+                        setValue(value - tick);
+                        fireEventAdjustmentFinished();
+                    } else {
+                        hiliteUp = true;
+                        fireEventAdjustmentBegin();
+                        setValue(value + tick);
+                        fireEventAdjustmentFinished();
+                    }
                 } else {
-                    hiliteUp = true;
-                    fireEventAdjustmentBegin();
-                    setValue(value + tick);
-                    fireEventAdjustmentFinished();
+                    dragging = true;
+                    MousePressedCoordX = e.getXOnScreen();
+                    MousePressedCoordY = e.getYOnScreen();
+
+                    int lastBtn = MousePressedBtn;
+                    MousePressedBtn = e.getButton();
+
+                    if (lastBtn == MouseEvent.BUTTON1) {
+                        // now have both mouse buttons pressed...
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                    }
+
+                    if (MousePressedBtn == MouseEvent.BUTTON1) {
+                        if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
+                            JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                            glassPane.setCursor(MainFrame.transparentCursor);
+                            glassPane.setVisible(true);
+                        }
+                        fireEventAdjustmentBegin();
+                    } else {
+                        getRootPane().setCursor(Cursor.getDefaultCursor());
+                    }
                 }
-            } else {
-                dragging = true;
-                MousePressedCoordX = e.getXOnScreen();
-                MousePressedCoordY = e.getYOnScreen();
-                MousePressedBtn = e.getButton();
-                if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
-                    getRootPane().setCursor(MainFrame.transparentCursor);
-                }
-                fireEventAdjustmentBegin();
             }
             e.consume();
         }
@@ -162,20 +167,31 @@ public class NumberBoxComponent extends ACtrlComponent {
 
     @Override
     protected void mouseReleased(MouseEvent e) {
-        if (!e.isPopupTrigger()) {
-            if (hiliteDown) {
-                hiliteDown = false;
-                repaint();
-            } else if (hiliteUp) {
-                hiliteUp = false;
-                repaint();
-            } else {
+        if (isEnabled() && !e.isPopupTrigger()) {
+        
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Thread.sleep(20); /* A tiny delay to let the event queue clear */
+                    return null;
+                }
+                @Override
+                protected void done() {
+                    if (robot != null) {
+                        robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                        robot = null;
+                    }
+
+                    JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                    glassPane.setCursor(Cursor.getDefaultCursor());
+                    glassPane.setVisible(false);
+                }
+            }.execute();
+            
+            MousePressedBtn = MouseEvent.NOBUTTON;
                 fireEventAdjustmentFinished();
-            }
             e.consume();
         }
-        getRootPane().setCursor(Cursor.getDefaultCursor());
-        robot = null;
     }
 
     @Override
@@ -215,13 +231,13 @@ public class NumberBoxComponent extends ACtrlComponent {
                     break;
                 case KeyEvent.VK_HOME:
                     fireEventAdjustmentBegin();
-                    setValue(getMin());
+                    setValue(max);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
                 case KeyEvent.VK_END:
                     fireEventAdjustmentBegin();
-                    setValue(getMax());
+                    setValue(min);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
@@ -256,7 +272,7 @@ public class NumberBoxComponent extends ACtrlComponent {
                         keybBuffer += '.';
                         ke.consume();
                     }
-                break;
+                    break;
                 case '-':
                 case '1':
                 case '2':
@@ -269,16 +285,16 @@ public class NumberBoxComponent extends ACtrlComponent {
                 case '9':
                 case '0':
                 case '.':
-                    keybBuffer += ke.getKeyChar();
-                    ke.consume();
-                    repaint();
+                    if (!KeyUtils.isControlOrCommandDown(ke)) {
+                        keybBuffer += ke.getKeyChar();
+                        ke.consume();
+                        repaint();
+                    }
                     break;
                 default:
             }
         }
     }
-    private static final Stroke strokeThin = new BasicStroke(1);
-    private static final Stroke strokeThick = new BasicStroke(2);
 
     @Override
     public void paintComponent(Graphics g) {
@@ -359,58 +375,6 @@ public class NumberBoxComponent extends ACtrlComponent {
     }
 
     @Override
-    public void setValue(double value) {
-        if (value < min) {
-            value = min;
-        }
-        if (value > max) {
-            value = max;
-        }
-        this.value = value;
-
-        // if (convs != null) {
-        //     Point p = getParent().getLocationOnScreen();
-        //     String s = "<html>";
-        //     for (NativeToReal c : convs) {
-        //         s += c.ToReal(new ValueFrac32(value)) + "<br>";
-        //     }
-        //     this.setToolTipText(s);
-        // }
-
-        repaint();
-        fireEvent();
-    }
-
-    @Override
-    public double getValue() {
-        return value;
-    }
-
-    public double getMax() {
-        return max;
-    }
-
-    public void setMax(double max) {
-        this.max = max;
-    }
-
-    public double getMin() {
-        return min;
-    }
-
-    public void setMin(double min) {
-        this.min = min;
-    }
-
-    public double getTick() {
-        return tick;
-    }
-
-    public void setTick(double tick) {
-        this.tick = tick;
-    }
-
-    @Override
     void keyReleased(KeyEvent ke) {
         if (isEnabled()) {
             switch (ke.getKeyCode()) {
@@ -429,10 +393,45 @@ public class NumberBoxComponent extends ACtrlComponent {
     }
 
     @Override
-    public void robotMoveToCenter() {
-        if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
-            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+    public void setValue(double value) {
+        if (value > max) {
+            value = max;
         }
+        if (value < min) {
+            value = min;
+        }
+        this.value = value;
+
+        repaint();
+        fireEvent();
+    }
+
+    @Override
+    public double getValue() {
+        return value;
+    }
+
+    public void setMin(double min) {
+        this.min = min;
+    }
+
+    public double getMin() {
+        return min;
+    }
+
+    public void setMax(double max) {
+        this.max = max;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
+    public double getTick() {
+        return tick;
+    }
+
+    public void setTick(double tick) {
+        this.tick = tick;
     }
 }
