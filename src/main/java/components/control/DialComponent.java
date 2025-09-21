@@ -38,6 +38,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 
+import javax.swing.JComponent;
+import javax.swing.SwingWorker;
+
 /**
  *
  * @author Johannes Taelman
@@ -54,6 +57,7 @@ public class DialComponent extends ACtrlComponent {
     int MousePressedCoordX = 0;
     int MousePressedCoordY = 0;
     int MousePressedBtn = MouseEvent.NOBUTTON;
+    int lastMouseY;
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
@@ -104,7 +108,6 @@ public class DialComponent extends ACtrlComponent {
                         v = Math.round(v / tick) * tick;
                     }
                 } else {
-                    this.robotMoveToCenter();
                     double t = tick;
                     if (KeyUtils.isControlOrCommandDown(e)) {
                         t = t * 0.1;
@@ -112,10 +115,8 @@ public class DialComponent extends ACtrlComponent {
                     if (e.isShiftDown()) {
                         t = t * 0.1;
                     }
-                    v = value + t * ((int) Math.round((MousePressedCoordY - e.getYOnScreen())));
-                    if (robot == null) {
-                        MousePressedCoordY = e.getYOnScreen();
-                    }
+                    v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
+                    lastMouseY = e.getYOnScreen();
                 }
                 setValue(v);
                 e.consume();
@@ -131,6 +132,7 @@ public class DialComponent extends ACtrlComponent {
                 grabFocus();
                 MousePressedCoordX = e.getXOnScreen();
                 MousePressedCoordY = e.getYOnScreen();
+                lastMouseY = MousePressedCoordY;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
@@ -143,7 +145,9 @@ public class DialComponent extends ACtrlComponent {
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
                     if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()
                         && !Preferences.getInstance().getMouseDialAngular()) {
-                        getRootPane().setCursor(MainFrame.transparentCursor);
+                        JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                        glassPane.setCursor(MainFrame.transparentCursor);
+                        glassPane.setVisible(true);
                     }
                     fireEventAdjustmentBegin();
                 } else {
@@ -157,12 +161,37 @@ public class DialComponent extends ACtrlComponent {
     @Override
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
-            getRootPane().setCursor(Cursor.getDefaultCursor());
+
+            // setValue(getValue());
+
+            if (robot != null) {
+                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                robot = null;
+            }
+
+            // JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+            // glassPane.setCursor(Cursor.getDefaultCursor());
+            // glassPane.setVisible(false);
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    // A tiny delay to let the event queue clear
+                    Thread.sleep(10);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                    glassPane.setCursor(Cursor.getDefaultCursor());
+                    glassPane.setVisible(false);
+                }
+            }.execute();
+
             MousePressedBtn = MouseEvent.NOBUTTON;
             fireEventAdjustmentFinished();
             e.consume();
         }
-        robot = null;
     }
 
     @Override
@@ -405,12 +434,5 @@ public class DialComponent extends ACtrlComponent {
 
     public void setTick(double tick) {
         this.tick = tick;
-    }
-
-    public void robotMoveToCenter() {
-        if (robot != null) {
-            getRootPane().setCursor(MainFrame.transparentCursor);
-            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
-        }
     }
 }
