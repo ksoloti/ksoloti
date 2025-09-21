@@ -25,6 +25,7 @@ import axoloti.datatypes.ValueFrac32;
 import axoloti.object.AxoObjectInstance;
 import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
+import axoloti.utils.StringUtils;
 
 import static axoloti.utils.CharEscape.charEscape;
 import components.AssignMidiCCComponent;
@@ -33,6 +34,8 @@ import components.LabelComponent;
 import components.control.ACtrlComponent;
 import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
+import components.control.NumberBoxComponent;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -677,6 +680,11 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
 
         tooltipBuilder.append("<p>");
+        if (ctrl instanceof NumberBoxComponent) {
+            if (ctrl.getMin() != Double.NEGATIVE_INFINITY && ctrl.getMax() != Double.POSITIVE_INFINITY) {
+                tooltipBuilder.append("<br>").append("Range: " + (int)ctrl.getMin() + " to "+ (int)ctrl.getMax());
+            }
+        }
         double currentValue = getValue().getDouble(); 
         DecimalFormat df = new DecimalFormat("0.00####"); 
         tooltipBuilder.append("<br>").append(df.format(currentValue)); 

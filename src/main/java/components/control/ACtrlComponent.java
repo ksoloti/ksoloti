@@ -323,8 +323,12 @@ public abstract class ACtrlComponent extends JComponent {
         }
     }
 
-    public void robotMoveToCenter() {
+    public double getMin() {
+        return Double.NEGATIVE_INFINITY;
+    }
 
+    public double getMax() {
+        return Double.POSITIVE_INFINITY;
     }
 
     public void setCustomBackgroundColor(Color c) {

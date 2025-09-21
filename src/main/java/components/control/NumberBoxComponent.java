@@ -415,6 +415,7 @@ public class NumberBoxComponent extends ACtrlComponent {
         this.min = min;
     }
 
+    @Override
     public double getMin() {
         return min;
     }
@@ -423,6 +424,7 @@ public class NumberBoxComponent extends ACtrlComponent {
         this.max = max;
     }
 
+    @Override
     public double getMax() {
         return max;
     }

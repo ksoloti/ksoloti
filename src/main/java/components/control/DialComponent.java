@@ -409,6 +409,7 @@ public class DialComponent extends ACtrlComponent {
         return value;
     }
 
+    @Override
     public double getMax() {
         return max;
     }
@@ -417,6 +418,7 @@ public class DialComponent extends ACtrlComponent {
         this.max = max;
     }
 
+    @Override
     public double getMin() {
         return min;
     }
