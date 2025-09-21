@@ -656,10 +656,9 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         
         StringBuilder tooltipBuilder = new StringBuilder("<html>");
 
+        tooltipBuilder.append("<b>").append(parameter.name).append("</b>");
         if (parameter.description != null) {
-            tooltipBuilder.append(parameter.description);
-        } else {
-            tooltipBuilder.append(parameter.name);
+            tooltipBuilder.append("<br>").append(StringUtils.wrapStringLines(parameter.description, 80).replace("\n", "<br>"));
         }
 
         ctrl.setForeground(Theme.Parameter_Default_Foreground);

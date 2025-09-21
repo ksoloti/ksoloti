@@ -38,6 +38,8 @@ import axoloti.parameters.*;
 import axoloti.sd.SDFileReference;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.StringUtils;
+
 import static axoloti.utils.Constants.I;
 import components.LabelComponent;
 import components.PopupIcon;
@@ -122,34 +124,11 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     Rectangle editorBounds;
     Integer editorActiveTabIndex;
 
-    public String wrapStringLines(String str, int wrapLength) {
-        String putBackTogetherString = "";
-
-        if (str == null) { return null; }
-        else if (str.isEmpty()) { return ""; }
-
-        /* Chop up string and put it back together with line breaks */
-        String[] splitStrings = str.split(" ");
-        int lineLength = 0;
-        for (String s : splitStrings) {
-            putBackTogetherString += s + " ";
-            lineLength += (s.length()+1);
-            if (s.contains("\n")) {
-                lineLength = 0; /* Reset line length counter if there is going to be a formatted line break */
-            }
-            if (lineLength > wrapLength) {
-                putBackTogetherString += "\n"; /* Insert line break to make text wrap around */
-                lineLength = 0; /* Reset line length counter */
-            }
-        }
-        return putBackTogetherString;
-    }
-
     private void refreshTooltip() {
         String tooltiptxt = "<html>";
         tooltiptxt += "<b>" + typeName + "</b>";
         if (getType().sDescription != null && !getType().sDescription.isEmpty()) {
-            String wrappedDesc = wrapStringLines(getType().sDescription, 80);
+            String wrappedDesc = StringUtils.wrapStringLines(getType().sDescription, 80);
             tooltiptxt += "<p><br/>" + wrappedDesc.replaceAll("\n", "<br/>") + "<br/>";
         }
         if (getType().sAuthor != null && !getType().sAuthor.isEmpty()) {
