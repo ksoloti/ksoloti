@@ -280,10 +280,11 @@ public abstract class IoletAbstract extends JPanel implements MouseListener, Mou
     }
 
     public void setHighlighted(boolean highlighted) {
-        if ((getRootPane() == null
-                || getRootPane().getCursor() != MainFrame.transparentCursor)
-                && axoObj != null
-                && axoObj.patch != null) {
+        if ((getRootPane() == null ||
+            (getRootPane().getCursor() != MainFrame.transparentCursor &&
+            getRootPane().getGlassPane().getCursor() != MainFrame.transparentCursor)) &&
+            axoObj != null &&
+            axoObj.patch != null) {
             Net n = axoObj.patch.GetNet(this);
 
             if (n != null && n.getSelected() != highlighted) {
