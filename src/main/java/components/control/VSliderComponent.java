@@ -27,6 +27,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -56,7 +57,6 @@ public class VSliderComponent extends ACtrlComponent {
     private int MousePressedCoordX = 0;
     private int MousePressedCoordY = 0;
     private int MousePressedBtn = MouseEvent.NOBUTTON;
-    private int lastMouseY;
 
     private static final int height = 128;
     private static final int width = 12;
@@ -107,9 +107,12 @@ public class VSliderComponent extends ACtrlComponent {
             if (e.isShiftDown()) {
                 t = t * 0.1;
             }
-            
-            double v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
-            lastMouseY = e.getYOnScreen();
+            int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+            int deltaY = MousePressedCoordY - currentPhysicalY;
+            double v = getValue() + t * deltaY;
+            if (robot != null) {
+                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+            }
             setValue(v);
             e.consume();
         }
@@ -123,7 +126,6 @@ public class VSliderComponent extends ACtrlComponent {
                 grabFocus();
                 MousePressedCoordX = e.getXOnScreen();
                 MousePressedCoordY = e.getYOnScreen();
-                lastMouseY = MousePressedCoordY;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
