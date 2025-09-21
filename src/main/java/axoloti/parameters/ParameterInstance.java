@@ -180,6 +180,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
 //            ShowPreset(axoObj.patch.presetNo);
 
         ctrl = CreateControl();
+        ctrl.setParameterInstance(this);
         setCtrlToolTip();
 
         add(getControlComponent());
@@ -650,7 +651,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
     }
 
-    private void setCtrlToolTip() {
+    public void setCtrlToolTip() {
         if(ctrl == null) return;
         
         StringBuilder tooltipBuilder = new StringBuilder("<html>");

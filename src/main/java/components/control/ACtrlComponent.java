@@ -19,6 +19,7 @@
 package components.control;
 
 import axoloti.object.AxoObjectInstance;
+import axoloti.parameters.ParameterInstance;
 import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
@@ -63,6 +64,7 @@ public abstract class ACtrlComponent extends JComponent {
     private static final Logger LOGGER = Logger.getLogger(ACtrlComponent.class.getName());
 
     protected AxoObjectInstance axoObj;
+    protected ParameterInstance parameterInstance;
     protected Color customBackgroundColor;
     protected long mouseEnteredTime;
     protected boolean isLocked = false;
@@ -154,6 +156,9 @@ public abstract class ACtrlComponent extends JComponent {
                         else {
                             setValue(getValue() - t);
                         }
+                        if (parameterInstance != null) {
+                            parameterInstance.setCtrlToolTip();
+                        }
                     }
                 }
             }
@@ -178,6 +183,10 @@ public abstract class ACtrlComponent extends JComponent {
                 }
             }
         });
+    }
+
+    public void setParameterInstance(ParameterInstance parameterInstance) {
+        this.parameterInstance = parameterInstance;
     }
 
     abstract public double getValue();
