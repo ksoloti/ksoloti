@@ -29,6 +29,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -57,7 +58,6 @@ public class DialComponent extends ACtrlComponent {
     private int MousePressedCoordX = 0;
     private int MousePressedCoordY = 0;
     private int MousePressedBtn = MouseEvent.NOBUTTON;
-    private int lastMouseY;
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
@@ -114,8 +114,12 @@ public class DialComponent extends ACtrlComponent {
                 if (e.isShiftDown()) {
                     t = t * 0.1;
                 }
-                v = getValue() + t * ((int) Math.round((lastMouseY - e.getYOnScreen())));
-                lastMouseY = e.getYOnScreen();
+                int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+                int deltaY = MousePressedCoordY - currentPhysicalY;
+                v = getValue() + t * deltaY;
+                if (robot != null) {
+                    robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                }
             }
             setValue(v);
             e.consume();
@@ -130,7 +134,6 @@ public class DialComponent extends ACtrlComponent {
                 grabFocus();
                 MousePressedCoordX = e.getXOnScreen();
                 MousePressedCoordY = e.getYOnScreen();
-                lastMouseY = MousePressedCoordY;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
