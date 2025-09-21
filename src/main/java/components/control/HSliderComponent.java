@@ -266,6 +266,7 @@ public class HSliderComponent extends ACtrlComponent {
                 if (!KeyUtils.isControlOrCommandDown(ke)) {
                     keybBuffer += ke.getKeyChar();
                     ke.consume();
+                    repaint();
                 }
                 break;
             default:
