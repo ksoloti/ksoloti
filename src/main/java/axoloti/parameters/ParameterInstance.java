@@ -103,8 +103,8 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     void UpdateUnit() {
         if (convs != null) {
             valuelbl.setText(convs[selectedConv].ToReal(getValue()));
-            setCtrlToolTip();
         }
+        setCtrlToolTip();
     }
 
     public String GetCName() {
