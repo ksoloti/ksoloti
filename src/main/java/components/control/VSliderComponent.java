@@ -138,8 +138,7 @@ public class VSliderComponent extends ACtrlComponent {
                 popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
                 popup.show();
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
-                    if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()
-                        && !Preferences.getInstance().getMouseDialAngular()) {
+                    if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                         JComponent glassPane = (JComponent) getRootPane().getGlassPane();
                         glassPane.setCursor(MainFrame.transparentCursor);
                         glassPane.setVisible(true);
