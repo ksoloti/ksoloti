@@ -19,19 +19,16 @@
 package components.control;
 
 import axoloti.MainFrame;
-// import axoloti.datatypes.ValueFrac32;
 import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
-// import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-// import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Stroke;
@@ -39,9 +36,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-// import java.text.DecimalFormat;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
 import java.text.ParseException;
 
 /**
@@ -57,10 +51,13 @@ public class DialComponent extends ACtrlComponent {
     private NativeToReal convs[];
     private String keybBuffer = "";
     private Robot robot;
+    int MousePressedCoordX = 0;
+    int MousePressedCoordY = 0;
+    int MousePressedBtn = MouseEvent.NOBUTTON;
 
-    public void setNative(NativeToReal convs[]) {
-        this.convs = convs;
-    }
+    private static final Stroke strokeThin = new BasicStroke(1);
+    private static final Stroke strokeThick = new BasicStroke(2);
+    final int layoutTick = 3;
 
     public DialComponent(double value, double min, double max, double tick) {
         super();
@@ -87,7 +84,10 @@ public class DialComponent extends ACtrlComponent {
 
         SetupTransferHandler();
     }
-    final int layoutTick = 3;
+
+    public void setNative(NativeToReal convs[]) {
+        this.convs = convs;
+    }
 
     @Override
     protected void mouseDragged(MouseEvent e) {
@@ -122,9 +122,6 @@ public class DialComponent extends ACtrlComponent {
             }
         }
     }
-    int MousePressedCoordX = 0;
-    int MousePressedCoordY = 0;
-    int MousePressedBtn = MouseEvent.NOBUTTON;
 
     @Override
     protected void mousePressed(MouseEvent e) {
@@ -314,9 +311,6 @@ public class DialComponent extends ACtrlComponent {
             }
         }
     }
-
-    private static final Stroke strokeThin = new BasicStroke(1);
-    private static final Stroke strokeThick = new BasicStroke(2);
 
     @Override
     public void paintComponent(Graphics g) {
