@@ -162,20 +162,15 @@ public class DialComponent extends ACtrlComponent {
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
 
-            // setValue(getValue());
-
             if (robot != null) {
                 robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
                 robot = null;
             }
 
-            // JComponent glassPane = (JComponent) getRootPane().getGlassPane();
-            // glassPane.setCursor(Cursor.getDefaultCursor());
-            // glassPane.setVisible(false);
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    // A tiny delay to let the event queue clear
+                    /* A tiny delay to let the event queue clear */
                     Thread.sleep(10);
                     return null;
                 }
