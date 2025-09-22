@@ -59,8 +59,11 @@ public class DialComponent extends ACtrlComponent {
     private int MousePressedCoordY = 0;
     private int MouseLastPhysicalY = 0;
     private int MousePressedBtn = MouseEvent.NOBUTTON;
-    private static final int DEAD_ZONE = 10;
-    private static final int PIXELS_PER_STEP = 5;
+
+    private double dragAccumulator = 0;
+    private static final int DRAG_DEAD_ZONE = 10;
+    private static final int DRAG_PIXELS_PER_STEP = 10;
+    private static final double FAST_DRAG_ACCELERATION_FACTOR = 2.0;
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
@@ -116,31 +119,39 @@ public class DialComponent extends ACtrlComponent {
                 v = Math.round(v / t) * t;
                 setValue(v);
             } else {
+                int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+                double deltaY = MouseLastPhysicalY - currentPhysicalY;
+                MouseLastPhysicalY = currentPhysicalY;
+
                 if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
-                    int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
-                    double deltaY = MouseLastPhysicalY - currentPhysicalY;
-                    MouseLastPhysicalY = currentPhysicalY;
-
-                    deltaY *= t;
-                    deltaY = Math.round(deltaY / t) * t;
-                    setValue(getValue() + deltaY);
+                    double change = deltaY * t;
+                    change = Math.round(change / t) * t;
+                    setValue(getValue() + change);
                 } else { /* Regular 'hide cursor and drag' mode */
-                    int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
-                    int deltaY = MousePressedCoordY - currentPhysicalY;
-                    if (Math.abs(deltaY) > DEAD_ZONE) {
-                        double change;
-                        if (Math.abs(deltaY) < DEAD_ZONE + PIXELS_PER_STEP * 2) {
-                            change = Math.signum(deltaY) * t;
-                        } else {
-                            change = Math.signum(deltaY) * (Math.abs(deltaY) - DEAD_ZONE) / (double) PIXELS_PER_STEP;
-                            change *= t;
-                            change = Math.round(change / t) * t;
-                        }
-                        setValue(getValue() + change);
+                    dragAccumulator += deltaY;
 
-                        if (robot != null) {
-                            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                    if (Math.abs(dragAccumulator) > DRAG_DEAD_ZONE) {
+                        double change;
+                        if (Math.abs(dragAccumulator) < DRAG_DEAD_ZONE + DRAG_PIXELS_PER_STEP * 2) {
+                            change = Math.signum(dragAccumulator) * t;
+                            dragAccumulator = 0;
+                        } else {
+                            double excessDrag = Math.abs(dragAccumulator) - DRAG_DEAD_ZONE;
+                            int numSteps = (int) (excessDrag / DRAG_PIXELS_PER_STEP );
+                            change = Math.signum(dragAccumulator) * numSteps * t * FAST_DRAG_ACCELERATION_FACTOR;
+                            dragAccumulator = 0;
                         }
+                        change = Math.round(change / t) * t;
+                        setValue(getValue() + change);
+                    }
+
+                    int screenHeight = getGraphicsConfiguration().getBounds().height;
+                    if (currentPhysicalY < 50) {
+                        robot.mouseMove(MousePressedCoordX, currentPhysicalY + 100);
+                        MouseLastPhysicalY = currentPhysicalY + 100;
+                    } else if (currentPhysicalY > screenHeight - 50) {
+                        robot.mouseMove(MousePressedCoordX, currentPhysicalY - 100);
+                        MouseLastPhysicalY = currentPhysicalY - 100;
                     }
                 }
             }
@@ -157,6 +168,7 @@ public class DialComponent extends ACtrlComponent {
                 MousePressedCoordX = MouseInfo.getPointerInfo().getLocation().x;
                 MousePressedCoordY = MouseInfo.getPointerInfo().getLocation().y;
                 MouseLastPhysicalY = MousePressedCoordY;
+                dragAccumulator = 0;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
@@ -185,6 +197,7 @@ public class DialComponent extends ACtrlComponent {
     @Override
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
+            dragAccumulator = 0;
 
             new SwingWorker<Void, Void>() {
                 @Override
