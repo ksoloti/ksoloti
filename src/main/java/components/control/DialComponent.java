@@ -57,6 +57,7 @@ public class DialComponent extends ACtrlComponent {
     private Robot robot;
     private int MousePressedCoordX = 0;
     private int MousePressedCoordY = 0;
+    private int MouseLastPhysicalY = 0;
     private int MousePressedBtn = MouseEvent.NOBUTTON;
     private static final int DEAD_ZONE = 10;
     private static final int PIXELS_PER_STEP = 5;
@@ -98,41 +99,48 @@ public class DialComponent extends ACtrlComponent {
     @Override
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
+            double t = tick;
+            if (KeyUtils.isControlOrCommandDown(e)) {
+                t = t * 0.1;
+            }
+            if (e.isShiftDown()) {
+                t = t * 0.1;
+            }
+
             if (Preferences.getInstance().getMouseDialAngular()) {
                 int y = e.getY();
                 int x = e.getX();
                 int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
                 double th = Math.atan2(x - radius, radius - y);
                 double v = min + (max - min) * (th + 0.75 * Math.PI) / (1.5 * Math.PI);
-                if (!e.isShiftDown()) {
-                    v = Math.round(v / tick) * tick;
-                }
+                v = Math.round(v / t) * t;
                 setValue(v);
             } else {
-                int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
-                int deltaY = MousePressedCoordY - currentPhysicalY;
-                if (Math.abs(deltaY) > DEAD_ZONE) {
-                    double t = tick;
-                    if (KeyUtils.isControlOrCommandDown(e)) {
-                        t = t * 0.1;
-                    }
-                    if (e.isShiftDown()) {
-                        t = t * 0.1;
-                    }
-                    
-                    double change;
-                    if (Math.abs(deltaY) < DEAD_ZONE + PIXELS_PER_STEP * 2) {
-                        change = Math.signum(deltaY) * t;
-                    } else {
-                        change = Math.signum(deltaY) * (Math.abs(deltaY) - DEAD_ZONE) / (double) PIXELS_PER_STEP;
-                        change *= t;
-                        change = Math.round(change / t) * t;
-                    }
-                    double v = getValue() + change;
-                    setValue(v);
-                    
-                    if (robot != null) {
-                        robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
+                    int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+                    double deltaY = MouseLastPhysicalY - currentPhysicalY;
+                    MouseLastPhysicalY = currentPhysicalY;
+
+                    deltaY *= t;
+                    deltaY = Math.round(deltaY / t) * t;
+                    setValue(getValue() + deltaY);
+                } else { /* Regular 'hide cursor and drag' mode */
+                    int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
+                    int deltaY = MousePressedCoordY - currentPhysicalY;
+                    if (Math.abs(deltaY) > DEAD_ZONE) {
+                        double change;
+                        if (Math.abs(deltaY) < DEAD_ZONE + PIXELS_PER_STEP * 2) {
+                            change = Math.signum(deltaY) * t;
+                        } else {
+                            change = Math.signum(deltaY) * (Math.abs(deltaY) - DEAD_ZONE) / (double) PIXELS_PER_STEP;
+                            change *= t;
+                            change = Math.round(change / t) * t;
+                        }
+                        setValue(getValue() + change);
+
+                        if (robot != null) {
+                            robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                        }
                     }
                 }
             }
@@ -148,6 +156,7 @@ public class DialComponent extends ACtrlComponent {
                 grabFocus();
                 MousePressedCoordX = MouseInfo.getPointerInfo().getLocation().x;
                 MousePressedCoordY = MouseInfo.getPointerInfo().getLocation().y;
+                MouseLastPhysicalY = MousePressedCoordY;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
@@ -253,7 +262,7 @@ public class DialComponent extends ACtrlComponent {
                 case KeyEvent.VK_ENTER:
                     fireEventAdjustmentBegin();
                     boolean converted = false;
-                    
+
                     /* Iterate through the converters for this specific dial */
                     if (convs != null) {
                         for (NativeToReal c : convs) {
