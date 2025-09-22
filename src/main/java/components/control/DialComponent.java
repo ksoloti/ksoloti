@@ -124,6 +124,9 @@ public class DialComponent extends ACtrlComponent {
                 MouseLastPhysicalY = currentPhysicalY;
 
                 if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
+                    if (this.touchScreenSlowDrag) {
+                        t = t * 0.01;
+                    }
                     double change = deltaY * t;
                     change = Math.round(change / t) * t;
                     setValue(getValue() + change);
@@ -198,6 +201,7 @@ public class DialComponent extends ACtrlComponent {
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
+            this.touchScreenSlowDrag = false;
 
             new SwingWorker<Void, Void>() {
                 @Override

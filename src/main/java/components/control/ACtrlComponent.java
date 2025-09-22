@@ -68,6 +68,7 @@ public abstract class ACtrlComponent extends JComponent {
     protected Color customBackgroundColor;
     protected long mouseEnteredTime;
     protected boolean isLocked = false;
+    protected boolean touchScreenSlowDrag = false;
 
     public ACtrlComponent() {
         setFocusable(true);
@@ -111,6 +112,14 @@ public abstract class ACtrlComponent extends JComponent {
             public void mouseExited(MouseEvent e) {
                 if (!isLocked) {
                     getRootPane().setCursor(Cursor.getDefaultCursor());
+                }
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ((e.getClickCount() == 1) && (e.getButton() == MouseEvent.BUTTON1)) {
+                    /* getClickCount() == 1 translates to double-click+drag */
+                    ACtrlComponent.this.touchScreenSlowDrag = true;
                 }
             }
 
