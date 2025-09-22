@@ -100,12 +100,17 @@ public class NumberBoxComponent extends ACtrlComponent {
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1 && dragging) {
             double t = tick * 0.1;
-            if (KeyUtils.isControlOrCommandDown(e)) {
-                t = t * 0.1;
+            if (this.doubleClickSlowDrag) {
+                t = 0.01;
+            } else {
+                if (KeyUtils.isControlOrCommandDown(e)) {
+                    t = t * 0.1;
+                }
+                if (e.isShiftDown()) {
+                    t = t * 0.1;
+                }
             }
-            if (e.isShiftDown()) {
-                t = t * 0.1;
-            }
+
             int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
             int deltaY = MousePressedCoordY - currentPhysicalY;
             double v = getValue() + t * deltaY;

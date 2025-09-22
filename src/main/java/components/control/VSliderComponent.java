@@ -105,11 +105,15 @@ public class VSliderComponent extends ACtrlComponent {
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
             double t = tick;
-            if (KeyUtils.isControlOrCommandDown(e)) {
-                t = t * 0.1;
-            }
-            if (e.isShiftDown()) {
-                t = t * 0.1;
+            if (this.doubleClickSlowDrag) {
+                t = 0.01;
+            } else {
+                if (KeyUtils.isControlOrCommandDown(e)) {
+                    t = t * 0.1;
+                }
+                if (e.isShiftDown()) {
+                    t = t * 0.1;
+                }
             }
 
             int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
@@ -117,9 +121,6 @@ public class VSliderComponent extends ACtrlComponent {
             MouseLastPhysicalY = currentPhysicalY;
 
             if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
-                if (this.touchScreenSlowDrag) {
-                    t = t * 0.01;
-                }
                 double change = deltaY * t;
                 change = Math.round(change / t) * t;
                 setValue(getValue() + change);
@@ -172,7 +173,7 @@ public class VSliderComponent extends ACtrlComponent {
                     // now have both mouse buttons pressed...
                     getRootPane().setCursor(Cursor.getDefaultCursor());
                 }
-
+                
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
                     popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
                     popup.show();
@@ -194,7 +195,7 @@ public class VSliderComponent extends ACtrlComponent {
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
-            this.touchScreenSlowDrag = false;
+            this.doubleClickSlowDrag = false;
         
             new SwingWorker<Void, Void>() {
                 @Override

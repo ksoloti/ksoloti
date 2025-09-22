@@ -103,11 +103,15 @@ public class DialComponent extends ACtrlComponent {
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1) {
             double t = tick;
-            if (KeyUtils.isControlOrCommandDown(e)) {
-                t = t * 0.1;
-            }
-            if (e.isShiftDown()) {
-                t = t * 0.1;
+            if (this.doubleClickSlowDrag) {
+                t = 0.01;
+            } else {
+                if (KeyUtils.isControlOrCommandDown(e)) {
+                    t = t * 0.1;
+                }
+                if (e.isShiftDown()) {
+                    t = t * 0.1;
+                }
             }
 
             if (Preferences.getInstance().getMouseDialAngular()) {
@@ -124,9 +128,6 @@ public class DialComponent extends ACtrlComponent {
                 MouseLastPhysicalY = currentPhysicalY;
 
                 if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
-                    if (this.touchScreenSlowDrag) {
-                        t = t * 0.01;
-                    }
                     double change = deltaY * t;
                     change = Math.round(change / t) * t;
                     setValue(getValue() + change);
@@ -201,7 +202,7 @@ public class DialComponent extends ACtrlComponent {
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
-            this.touchScreenSlowDrag = false;
+            this.doubleClickSlowDrag = false;
 
             new SwingWorker<Void, Void>() {
                 @Override
