@@ -53,16 +53,20 @@ public class VSliderComponent extends ACtrlComponent {
     private double max;
     private double min;
     private double tick;
-
+    private String keybBuffer = "";
+    private Robot robot;
     private int MousePressedCoordX = 0;
     private int MousePressedCoordY = 0;
+    private int MouseLastPhysicalY = 0;
     private int MousePressedBtn = MouseEvent.NOBUTTON;
 
+    private double dragAccumulator = 0;
+    private static final int DRAG_DEAD_ZONE = 10;
+    private static final int DRAG_PIXELS_PER_STEP = 10;
+    private static final double FAST_DRAG_ACCELERATION_FACTOR = 3.0;
     private static final int height = 128;
     private static final int width = 12;
     private static final Dimension dim = new Dimension(width, height);
-    private String keybBuffer = "";
-    private Robot robot;
 
     private PopupFactory popupFactory = PopupFactory.getSharedInstance();
     private static final Stroke strokeThin = new BasicStroke(1);
@@ -107,13 +111,45 @@ public class VSliderComponent extends ACtrlComponent {
             if (e.isShiftDown()) {
                 t = t * 0.1;
             }
+
             int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
-            int deltaY = MousePressedCoordY - currentPhysicalY;
-            double v = getValue() + t * deltaY;
-            if (robot != null) {
-                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+            double deltaY = MouseLastPhysicalY - currentPhysicalY;
+            MouseLastPhysicalY = currentPhysicalY;
+
+            if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
+                if (this.touchScreenSlowDrag) {
+                    t = t * 0.01;
+                }
+                double change = deltaY * t;
+                change = Math.round(change / t) * t;
+                setValue(getValue() + change);
+            } else { /* Regular 'hide cursor and drag' mode */
+                dragAccumulator += deltaY;
+
+                if (Math.abs(dragAccumulator) > DRAG_DEAD_ZONE) {
+                    double change;
+                    if (Math.abs(dragAccumulator) < DRAG_DEAD_ZONE + DRAG_PIXELS_PER_STEP * 2) {
+                        change = Math.signum(dragAccumulator) * t;
+                        dragAccumulator = 0;
+                    } else {
+                        double excessDrag = Math.abs(dragAccumulator) - DRAG_DEAD_ZONE;
+                        int numSteps = (int) (excessDrag / DRAG_PIXELS_PER_STEP );
+                        change = Math.signum(dragAccumulator) * numSteps * t * FAST_DRAG_ACCELERATION_FACTOR;
+                        dragAccumulator = 0;
+                    }
+                    change = Math.round(change / t) * t;
+                    setValue(getValue() + change);
+                }
+
+                int screenHeight = getGraphicsConfiguration().getBounds().height;
+                if (currentPhysicalY < 50) {
+                    robot.mouseMove(MousePressedCoordX, currentPhysicalY + 100);
+                    MouseLastPhysicalY = currentPhysicalY + 100;
+                } else if (currentPhysicalY > screenHeight - 50) {
+                    robot.mouseMove(MousePressedCoordX, currentPhysicalY - 100);
+                    MouseLastPhysicalY = currentPhysicalY - 100;
+                }
             }
-            setValue(v);
             e.consume();
         }
     }
@@ -124,8 +160,10 @@ public class VSliderComponent extends ACtrlComponent {
             if (isEnabled()) {
                 robot = createRobot();
                 grabFocus();
-                MousePressedCoordX = e.getXOnScreen();
-                MousePressedCoordY = e.getYOnScreen();
+                MousePressedCoordX = MouseInfo.getPointerInfo().getLocation().x;
+                MousePressedCoordY = MouseInfo.getPointerInfo().getLocation().y;
+                MouseLastPhysicalY = MousePressedCoordY;
+                dragAccumulator = 0;
 
                 int lastBtn = MousePressedBtn;
                 MousePressedBtn = e.getButton();
@@ -155,6 +193,8 @@ public class VSliderComponent extends ACtrlComponent {
     @Override
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
+            dragAccumulator = 0;
+            this.touchScreenSlowDrag = false;
         
             new SwingWorker<Void, Void>() {
                 @Override
@@ -186,6 +226,7 @@ public class VSliderComponent extends ACtrlComponent {
     
     @Override
     public void keyPressed(KeyEvent ke) {
+        if (isEnabled()) {
         double steps = tick;
         if (ke.isShiftDown()) {
             steps = steps * 0.1; // mini steps!
@@ -282,6 +323,7 @@ public class VSliderComponent extends ACtrlComponent {
                 }
                 break;
             default:
+            }
         }
     }
 
