@@ -798,10 +798,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
             return;
         }
-        if (!p.canRead()) {
-            LOGGER.log(Level.SEVERE, "Cannot read firmware, please compile firmware! (File: {0})", pname);
-            return;
-        }
 
         setCurrentLivePatch(null);
 
