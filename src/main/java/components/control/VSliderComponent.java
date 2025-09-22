@@ -68,11 +68,11 @@ public class VSliderComponent extends ACtrlComponent {
     private static final int width = 12;
     private static final Dimension dim = new Dimension(width, height);
 
-    private PopupFactory popupFactory = PopupFactory.getSharedInstance();
+    private static final PopupFactory popupFactory = PopupFactory.getSharedInstance();
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
 
-    private Popup popup;
+    private static Popup popup;
     private JToolTip popupTip = createToolTip();
 
     public VSliderComponent(double value, double min, double max, double tick) {
@@ -173,9 +173,9 @@ public class VSliderComponent extends ACtrlComponent {
                     getRootPane().setCursor(Cursor.getDefaultCursor());
                 }
 
-                popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
-                popup.show();
                 if (MousePressedBtn == MouseEvent.BUTTON1) {
+                    popup = popupFactory.getPopup(this, popupTip, MousePressedCoordX+8, MousePressedCoordY);
+                    popup.show();
                     if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
                         JComponent glassPane = (JComponent) getRootPane().getGlassPane();
                         glassPane.setCursor(MainFrame.transparentCursor);
@@ -202,10 +202,12 @@ public class VSliderComponent extends ACtrlComponent {
                     Thread.sleep(20); /* A tiny delay to let the event queue clear */
                     return null;
                 }
+
                 @Override
                 protected void done() {
                     if (popup != null) {
                         popup.hide();
+                        popup = null;
                     }
                     if (robot != null) {
                         robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
@@ -227,102 +229,102 @@ public class VSliderComponent extends ACtrlComponent {
     @Override
     public void keyPressed(KeyEvent ke) {
         if (isEnabled()) {
-        double steps = tick;
-        if (ke.isShiftDown()) {
-            steps = steps * 0.1; // mini steps!
-            if (KeyUtils.isControlOrCommandDown(ke)) {
-                steps = steps * 0.1; // micro steps!                
+            double steps = tick;
+            if (ke.isShiftDown()) {
+                steps = steps * 0.1; // mini steps!
+                if (KeyUtils.isControlOrCommandDown(ke)) {
+                    steps = steps * 0.1; // micro steps!                
+                }
+            } else if (KeyUtils.isControlOrCommandDown(ke)) {
+                steps = steps * 10.0; //accelerate!
             }
-        } else if (KeyUtils.isControlOrCommandDown(ke)) {
-            steps = steps * 10.0; //accelerate!
-        }
-        switch (ke.getKeyCode()) {
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_RIGHT:
-                fireEventAdjustmentBegin();
-                setValue(getValue() + steps);
-                ke.consume();
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_LEFT:
-                fireEventAdjustmentBegin();
-                setValue(getValue() - steps);
-                ke.consume();
-                break;
-            case KeyEvent.VK_PAGE_UP:
-                fireEventAdjustmentBegin();
-                setValue(getValue() + 5 * steps);
-                ke.consume();
-                break;
-            case KeyEvent.VK_PAGE_DOWN:
-                fireEventAdjustmentBegin();
-                setValue(getValue() - 5 * steps);
-                ke.consume();
-                break;
-            case KeyEvent.VK_HOME:
-                fireEventAdjustmentBegin();
-                setValue(max);
-                fireEventAdjustmentFinished();
-                ke.consume();
-                break;
-            case KeyEvent.VK_END:
-                fireEventAdjustmentBegin();
-                setValue(min);
-                fireEventAdjustmentFinished();
-                ke.consume();
-                break;
-            case KeyEvent.VK_ENTER:
-                fireEventAdjustmentBegin();
-                try {
-                    setValue(Double.parseDouble(keybBuffer));
-                } catch (java.lang.NumberFormatException ex) {
-                }
-                fireEventAdjustmentFinished();
-                keybBuffer = "";
-                ke.consume();
-                repaint();
-                break;
-            case KeyEvent.VK_BACK_SPACE:
-                if (keybBuffer.length() > 0) {
-                    keybBuffer = keybBuffer.substring(0, keybBuffer.length() - 1);
-                }
-                ke.consume();
-                repaint();
-                break;
-            case KeyEvent.VK_ESCAPE:
-                keybBuffer = "";
-                ke.consume();
-                repaint();
-                break;
-            default:
-        }
-        switch (ke.getKeyChar()) {
-            case ',': /* Comma is decimal "dot" in some countries - convert to '.' */
-                if (!KeyUtils.isControlOrCommandDown(ke)) {
-                    keybBuffer += '.';
+            switch (ke.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_RIGHT:
+                    fireEventAdjustmentBegin();
+                    setValue(getValue() + steps);
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_LEFT:
+                    fireEventAdjustmentBegin();
+                    setValue(getValue() - steps);
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_PAGE_UP:
+                    fireEventAdjustmentBegin();
+                    setValue(getValue() + 5 * steps);
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_PAGE_DOWN:
+                    fireEventAdjustmentBegin();
+                    setValue(getValue() - 5 * steps);
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_HOME:
+                    fireEventAdjustmentBegin();
+                    setValue(max);
+                    fireEventAdjustmentFinished();
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_END:
+                    fireEventAdjustmentBegin();
+                    setValue(min);
+                    fireEventAdjustmentFinished();
+                    ke.consume();
+                    break;
+                case KeyEvent.VK_ENTER:
+                    fireEventAdjustmentBegin();
+                    try {
+                        setValue(Double.parseDouble(keybBuffer));
+                    } catch (java.lang.NumberFormatException ex) {
+                    }
+                    fireEventAdjustmentFinished();
+                    keybBuffer = "";
                     ke.consume();
                     repaint();
-                }
-                break;
-            case '-':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case '0':
-            case '.':
-                if (!KeyUtils.isControlOrCommandDown(ke)) {
-                    keybBuffer += ke.getKeyChar();
+                    break;
+                case KeyEvent.VK_BACK_SPACE:
+                    if (keybBuffer.length() > 0) {
+                        keybBuffer = keybBuffer.substring(0, keybBuffer.length() - 1);
+                    }
                     ke.consume();
                     repaint();
-                }
-                break;
-            default:
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    keybBuffer = "";
+                    ke.consume();
+                    repaint();
+                    break;
+                default:
+            }
+            switch (ke.getKeyChar()) {
+                case ',': /* Comma is decimal "dot" in some countries - convert to '.' */
+                    if (!KeyUtils.isControlOrCommandDown(ke)) {
+                        keybBuffer += '.';
+                        ke.consume();
+                        repaint();
+                    }
+                    break;
+                case '-':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
+                case '.':
+                    if (!KeyUtils.isControlOrCommandDown(ke)) {
+                        keybBuffer += ke.getKeyChar();
+                        ke.consume();
+                        repaint();
+                    }
+                    break;
+                default:
             }
         }
     }
