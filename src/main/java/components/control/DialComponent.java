@@ -266,13 +266,13 @@ public class DialComponent extends ACtrlComponent {
                     break;
                 case KeyEvent.VK_HOME:
                     fireEventAdjustmentBegin();
-                    setValue(getMin());
+                    setValue(min);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
                 case KeyEvent.VK_END:
                     fireEventAdjustmentBegin();
-                    setValue(getMax());
+                    setValue(max);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
@@ -304,6 +304,13 @@ public class DialComponent extends ACtrlComponent {
                     }
                     fireEventAdjustmentFinished();
                     keybBuffer = "";
+                    ke.consume();
+                    repaint();
+                    break;
+                case KeyEvent.VK_BACK_SPACE:
+                    if (keybBuffer.length() > 0) {
+                        keybBuffer = keybBuffer.substring(0, keybBuffer.length() - 1);
+                    }
                     ke.consume();
                     repaint();
                     break;
@@ -356,7 +363,6 @@ public class DialComponent extends ACtrlComponent {
                     break;
                 default:
             }
-            repaint();
         }
     }
 
