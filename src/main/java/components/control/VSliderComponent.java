@@ -142,13 +142,9 @@ public class VSliderComponent extends ACtrlComponent {
                     setValue(getValue() + change);
                 }
 
-                int screenHeight = getGraphicsConfiguration().getBounds().height;
-                if (currentPhysicalY < 50) {
-                    robot.mouseMove(MousePressedCoordX, currentPhysicalY + 100);
-                    MouseLastPhysicalY = currentPhysicalY + 100;
-                } else if (currentPhysicalY > screenHeight - 50) {
-                    robot.mouseMove(MousePressedCoordX, currentPhysicalY - 100);
-                    MouseLastPhysicalY = currentPhysicalY - 100;
+                if (robot != null) {
+                    robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                    MouseLastPhysicalY = MousePressedCoordY;
                 }
             }
             e.consume();
