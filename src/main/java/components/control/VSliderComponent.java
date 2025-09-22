@@ -192,6 +192,10 @@ public class VSliderComponent extends ACtrlComponent {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
             this.doubleClickSlowDrag = false;
+            if (popup != null) {
+                popup.hide();
+                popup = null;
+            }
         
             new SwingWorker<Void, Void>() {
                 @Override
@@ -202,10 +206,6 @@ public class VSliderComponent extends ACtrlComponent {
 
                 @Override
                 protected void done() {
-                    if (popup != null) {
-                        popup.hide();
-                        popup = null;
-                    }
                     if (robot != null) {
                         robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
                         robot = null;
