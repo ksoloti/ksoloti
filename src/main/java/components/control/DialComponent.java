@@ -63,7 +63,7 @@ public class DialComponent extends ACtrlComponent {
     private double dragAccumulator = 0;
     private static final int DRAG_DEAD_ZONE = 10;
     private static final int DRAG_PIXELS_PER_STEP = 10;
-    private static final double FAST_DRAG_ACCELERATION_FACTOR = 2.0;
+    private static final double FAST_DRAG_ACCELERATION_FACTOR = 3.0;
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
