@@ -179,7 +179,9 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
     }
 
     public void removeModulation(Modulation m) {
-        modulators.remove(m);
+        if (modulators != null) {
+            modulators.remove(m);
+        }
     }
 
     @Override
