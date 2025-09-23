@@ -94,6 +94,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private static final Logger LOGGER = Logger.getLogger(AxoObjectEditor.class.getName());
 
     final AxoObject editObj;
+    private final String patchFilePath;
+
     private String origXML;
     private final RSyntaxTextArea jTextAreaLocalData;
     private final RSyntaxTextArea jTextAreaInitCode;
@@ -389,7 +391,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
     }
 
-    public AxoObjectEditor(final AxoObject origObj) {
+    public AxoObjectEditor(final AxoObject origObj, final String patchFilePath) {
+        this.patchFilePath = patchFilePath;
         initComponents();
         setLocationRelativeTo(getParent());
 
@@ -537,7 +540,18 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("none (embedded in patch)");
-            setTitle(origObj.id);
+            if (this.patchFilePath != null) {
+                String title;
+                int brk = this.patchFilePath.lastIndexOf(File.separator) + 1;
+                if (brk != 0) {
+                    title = this.patchFilePath.substring(brk);
+                } else {
+                    title = this.patchFilePath;
+                }
+                setTitle(origObj.id + "  (embedded object - " + title + ")");
+            } else {
+                setTitle(origObj.id + "  (embedded object)");
+            }
 
             /* Embedded objects have no use for help patches */
             jTextFieldHelp.setVisible(false);
@@ -549,11 +563,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 if (sellib.isReadOnly()) {
                     SetReadOnly(true);
                     jLabelLibrary.setText(sellib.getId() + " (readonly)");
-                    setTitle(sellib.getId() + ":" + origObj.id + " (readonly)");
+                    setTitle(sellib.getId() + ": " + origObj.id + " (readonly)");
                 }
                 else {
                     jLabelLibrary.setText(sellib.getId());
-                    setTitle(sellib.getId() + ":" + origObj.id);
+                    setTitle(sellib.getId() + ":  " + origObj.id);
                 }
             }
         }
@@ -1265,7 +1279,7 @@ private void initComponents() {
         Rectangle editorBounds = this.getBounds();
         int activeTabIndex = this.getActiveTabIndex();
         Revert();
-        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(editObj);
+        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(editObj, this.patchFilePath);
         axoObjectEditor.setBounds(editorBounds);
         axoObjectEditor.setActiveTabIndex(activeTabIndex);
         axoObjectEditor.setVisible(true);

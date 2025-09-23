@@ -88,7 +88,7 @@ public class AxoObjectFromPatch extends AxoObject {
     }
 
     @Override
-    public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex) {
+    public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex, String patchFileName) {
         if (pg == null) {
             Strategy strategy = new AnnotationStrategy();
             Serializer serializer = new Persister(strategy, new Format(2));

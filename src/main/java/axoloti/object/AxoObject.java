@@ -348,9 +348,9 @@ public class AxoObject extends AxoObjectAbstract {
         }
     }
     
-    public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex) {
+    public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex, String patchFilePath) {
         if (editor == null) {
-            editor = new AxoObjectEditor(this);
+            editor = new AxoObjectEditor(this, patchFilePath);
         }
         
         setEditorBounds(editorBounds);
