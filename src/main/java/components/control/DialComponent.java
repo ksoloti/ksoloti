@@ -263,13 +263,13 @@ public class DialComponent extends ACtrlComponent {
                     break;
                 case KeyEvent.VK_HOME:
                     fireEventAdjustmentBegin();
-                    setValue(min);
+                    setValue(max);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
                 case KeyEvent.VK_END:
                     fireEventAdjustmentBegin();
-                    setValue(max);
+                    setValue(min);
                     fireEventAdjustmentFinished();
                     ke.consume();
                     break;
