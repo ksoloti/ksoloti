@@ -640,20 +640,15 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     @Override
     public int compareTo(AxoObjectInstanceAbstract o) {
-        if (o.y == this.y) {
-            if (o.x < x) {
-                return 1;
-            } else if (o.x == x) {
-                return 0;
-            } else {
-                return -1;
-            }
+        if (this.y != o.y) {
+            return Integer.compare(this.y, o.y);
         }
-        if (o.y < y) {
-            return 1;
-        } else {
-            return -1;
+
+        if (this.x != o.x) {
+            return Integer.compare(this.x, o.x);
         }
+
+        return Integer.compare(this.hashCode(), o.hashCode());
     }
 
     public String getLegalName() {
