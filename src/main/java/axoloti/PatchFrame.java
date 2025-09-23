@@ -1423,6 +1423,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Robot robot = new Robot();
             Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
+            robot.delay(10);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         }
         catch (UnsupportedFlavorException ex) {
@@ -1457,6 +1458,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             Point point = p.objectInstances.get(0).getLocationOnScreen();
             robot.mouseMove(point.x + 40,point.y + 22);
             setIgnoreShiftKey(true);
+            robot.delay(10);
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
             /* ignoreShiftKey is cleared in AxoObjectInstanceAbstract keylistener */
         }
