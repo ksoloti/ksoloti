@@ -536,7 +536,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         if (IsEmbeddedObj()) {
             jMenuItemSave.setEnabled(false);
-            jLabelLibrary.setText("Embedded");
+            jLabelLibrary.setText("none (embedded in patch)");
             setTitle(origObj.id);
 
             /* Embedded objects have no use for help patches */
@@ -692,7 +692,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // if it's an embedded object ("patch/object"), assume the parent patch is saving
         if (IsEmbeddedObj()) {
             if (hasChanged()) {
-
+                // TODO: patch.setDirty()!
             }
             Close();
             return false;
