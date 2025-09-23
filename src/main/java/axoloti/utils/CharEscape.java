@@ -24,32 +24,91 @@ package axoloti.utils;
  */
 public class CharEscape {
 
-    static public String charEscape(String s) {
-        s = s.replaceAll("_", "__");
-        s = s.replaceAll(" ", "_space_");
-        s = s.replaceAll("\\*", "_star_");
-        s = s.replaceAll("/", "_slash_");
-        s = s.replaceAll("-", "_dash_");
-        s = s.replaceAll("\\+", "_plus_");
-        s = s.replaceAll("\\~", "_tilde_");
-        s = s.replaceAll("%", "_pct_");
-        s = s.replaceAll("@", "_at_");
-        s = s.replaceAll("!", "_excl_");
-        s = s.replaceAll("#", "_hash_");
-        s = s.replaceAll("\\$", "_dollar_");
-        s = s.replaceAll("&", "_amp_");
-        s = s.replaceAll("\\(", "_bo_");
-        s = s.replaceAll("\\)", "_bc_");
-        s = s.replaceAll("\\>", "_gt_");
-        s = s.replaceAll("\\<", "_lt_");
-        s = s.replaceAll("=", "_eq_");
-        s = s.replaceAll(":", "_colon_");
-        s = s.replaceAll("\\.", "_dot_");
-        s = s.replaceAll("\\,", "_comma_");   /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\?", "_questn_");  /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\;", "_semicln_"); /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\\'", "_squot_");  /* Mildly tested! might break patch compilation */
-        s = s.replaceAll("\\\"", "_dquot_");  /* Mildly tested! might break patch compilation */
-        return s;
+    public static String charEscape(String s) {
+        StringBuilder sb = new StringBuilder(s.length() * 2);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '_':
+                    sb.append("__");
+                    break;
+                case ' ':
+                    sb.append("_space_");
+                    break;
+                case '*':
+                    sb.append("_star_");
+                    break;
+                case '/':
+                    sb.append("_slash_");
+                    break;
+                case '-':
+                    sb.append("_dash_");
+                    break;
+                case '+':
+                    sb.append("_plus_");
+                    break;
+                case '~':
+                    sb.append("_tilde_");
+                    break;
+                case '%':
+                    sb.append("_pct_");
+                    break;
+                case '@':
+                    sb.append("_at_");
+                    break;
+                case '!':
+                    sb.append("_excl_");
+                    break;
+                case '#':
+                    sb.append("_hash_");
+                    break;
+                case '$':
+                    sb.append("_dollar_");
+                    break;
+                case '&':
+                    sb.append("_amp_");
+                    break;
+                case '(':
+                    sb.append("_bo_");
+                    break;
+                case ')':
+                    sb.append("_bc_");
+                    break;
+                case '>':
+                    sb.append("_gt_");
+                    break;
+                case '<':
+                    sb.append("_lt_");
+                    break;
+                case '=':
+                    sb.append("_eq_");
+                    break;
+                case ':':
+                    sb.append("_colon_");
+                    break;
+                case '.':
+                    sb.append("_dot_");
+                    break;
+                case ',':
+                    sb.append("_comma_");
+                    break;
+                case '?':
+                    sb.append("_questn_");
+                    break;
+                case ';':
+                    sb.append("_semicln_");
+                    break;
+                case '\'':
+                    sb.append("_squot_");
+                    break;
+                case '\"':
+                    sb.append("_dquot_");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
     }
 }
