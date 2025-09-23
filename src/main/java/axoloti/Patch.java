@@ -451,7 +451,9 @@ public class Patch {
                 }
                 for (Modulator mm : m) {
                     mm.setObjInst(o);
-                    Modulators.add(mm);
+                    if (!Modulators.contains(mm)) {
+                        Modulators.add(mm);
+                    }
                 }
             }
         }
@@ -633,7 +635,9 @@ public class Patch {
                 }
                 for (Modulator mm : m) {
                     mm.setObjInst(oi);
-                    Modulators.add(mm);
+                    if (!Modulators.contains(mm)) {
+                        Modulators.add(mm);
+                    }
                 }
             }
 
