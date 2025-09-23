@@ -51,16 +51,20 @@ public class NumberBoxComponent extends ACtrlComponent {
     private double max;
     private double min;
     private double tick;
-    
-    private int MousePressedCoordX = 0;
-    private int MousePressedCoordY = 0;
-    private int MousePressedBtn = MouseEvent.NOBUTTON;
-
-    private boolean hiliteUp = false;
-    private boolean hiliteDown = false;
-    private boolean dragging = false;
     private String keybBuffer = "";
     private Robot robot;
+    private int MousePressedCoordX = 0;
+    private int MousePressedCoordY = 0;
+    private int MouseLastPhysicalY = 0;
+    private int MousePressedBtn = MouseEvent.NOBUTTON;
+
+    private double dragAccumulator = 0;
+    private static final int DRAG_DEAD_ZONE = 10;
+    private static final int DRAG_PIXELS_PER_STEP = 10;
+    private static final double FAST_DRAG_ACCELERATION_FACTOR = 3.0;
+
+    private boolean dragging = false;
+
 
     private static final Stroke strokeThin = new BasicStroke(1);
     private static final Stroke strokeThick = new BasicStroke(2);
@@ -74,9 +78,9 @@ public class NumberBoxComponent extends ACtrlComponent {
 
     public NumberBoxComponent(double value, double min, double max, double tick, int hsize, int vsize) {
         setInheritsPopupMenu(true);
-        this.max = max;
-        this.min = min;
         this.value = value;
+        this.min = min;
+        this.max = max;
         this.tick = tick;
         Dimension dim = new Dimension(hsize, vsize);
         setPreferredSize(dim);
@@ -99,25 +103,47 @@ public class NumberBoxComponent extends ACtrlComponent {
     @Override
     protected void mouseDragged(MouseEvent e) {
         if (isEnabled() && MousePressedBtn == MouseEvent.BUTTON1 && dragging) {
-            double t = tick * 0.1;
-            if (this.doubleClickSlowDrag) {
-                t = 0.01;
-            } else {
-                if (KeyUtils.isControlOrCommandDown(e)) {
-                    t = t * 0.1;
-                }
-                if (e.isShiftDown()) {
-                    t = t * 0.1;
-                }
+            double t = tick * 0.2; /* Higher speed than frac controls feels more natural */
+            if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls() && this.doubleClickSlowDrag) {
+                /* Double-click slow drag only in touchscreen mode */
+                t = t * 0.1;
+            }
+            else if (KeyUtils.isControlOrCommandDown(e) || e.isShiftDown()) {
+                /* No need for extremely slow dragging */
+                t = t * 0.1;
             }
 
             int currentPhysicalY = MouseInfo.getPointerInfo().getLocation().y;
-            int deltaY = MousePressedCoordY - currentPhysicalY;
-            double v = getValue() + t * deltaY;
-            if (robot != null) {
-                robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+            double deltaY = MouseLastPhysicalY - currentPhysicalY;
+            MouseLastPhysicalY = currentPhysicalY;
+
+            if (Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) { /* Touchscreen mode */
+                double change = deltaY * t;
+                change = Math.round(change / t) * t;
+                setValue(getValue() + change);
+            } else { /* Regular 'hide cursor and drag' mode */
+                dragAccumulator += deltaY;
+
+                if (Math.abs(dragAccumulator) > DRAG_DEAD_ZONE) {
+                    double change;
+                    if (Math.abs(dragAccumulator) < DRAG_DEAD_ZONE + DRAG_PIXELS_PER_STEP * 2) {
+                        change = Math.signum(dragAccumulator) * t;
+                        dragAccumulator = 0;
+                    } else {
+                        double excessDrag = Math.abs(dragAccumulator) - DRAG_DEAD_ZONE;
+                        int numSteps = (int) (excessDrag / DRAG_PIXELS_PER_STEP );
+                        change = Math.signum(dragAccumulator) * numSteps * t * FAST_DRAG_ACCELERATION_FACTOR;
+                        dragAccumulator = 0;
+                    }
+                    change = Math.round(change / t) * t;
+                    setValue(getValue() + change);
+                }
+
+                if (robot != null) {
+                    robot.mouseMove(MousePressedCoordX, MousePressedCoordY);
+                    MouseLastPhysicalY = MousePressedCoordY;
+                }
             }
-            setValue(v);
             e.consume();
         }
     }
@@ -128,42 +154,30 @@ public class NumberBoxComponent extends ACtrlComponent {
             if (isEnabled()) {
                 robot = createRobot();
                 grabFocus();
-                if (isEnabled() && (e.getX() >= getWidth() - rmargin - htick * 2)) {
-                    dragging = false;
-                    if (e.getY() > getHeight() / 2) {
-                        hiliteDown = true;
-                        fireEventAdjustmentBegin();
-                        setValue(value - tick);
-                        fireEventAdjustmentFinished();
-                    } else {
-                        hiliteUp = true;
-                        fireEventAdjustmentBegin();
-                        setValue(value + tick);
-                        fireEventAdjustmentFinished();
+                MousePressedCoordX = MouseInfo.getPointerInfo().getLocation().x;
+                MousePressedCoordY = MouseInfo.getPointerInfo().getLocation().y;
+                MouseLastPhysicalY = MousePressedCoordY;
+                dragAccumulator = 0;
+
+                int lastBtn = MousePressedBtn;
+                MousePressedBtn = e.getButton();
+
+                dragging = true;
+
+                if (lastBtn == MouseEvent.BUTTON1) {
+                    // now have both mouse buttons pressed...
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
+                }
+
+                if (MousePressedBtn == MouseEvent.BUTTON1) {
+                    if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
+                        JComponent glassPane = (JComponent) getRootPane().getGlassPane();
+                        glassPane.setCursor(MainFrame.transparentCursor);
+                        glassPane.setVisible(true);
                     }
+                    fireEventAdjustmentBegin();
                 } else {
-                    dragging = true;
-                    MousePressedCoordX = e.getXOnScreen();
-                    MousePressedCoordY = e.getYOnScreen();
-
-                    int lastBtn = MousePressedBtn;
-                    MousePressedBtn = e.getButton();
-
-                    if (lastBtn == MouseEvent.BUTTON1) {
-                        // now have both mouse buttons pressed...
-                        getRootPane().setCursor(Cursor.getDefaultCursor());
-                    }
-
-                    if (MousePressedBtn == MouseEvent.BUTTON1) {
-                        if (!Preferences.getInstance().getMouseDoNotRecenterWhenAdjustingControls()) {
-                            JComponent glassPane = (JComponent) getRootPane().getGlassPane();
-                            glassPane.setCursor(MainFrame.transparentCursor);
-                            glassPane.setVisible(true);
-                        }
-                        fireEventAdjustmentBegin();
-                    } else {
-                        getRootPane().setCursor(Cursor.getDefaultCursor());
-                    }
+                    getRootPane().setCursor(Cursor.getDefaultCursor());
                 }
             }
             e.consume();
@@ -173,6 +187,8 @@ public class NumberBoxComponent extends ACtrlComponent {
     @Override
     protected void mouseReleased(MouseEvent e) {
         if (isEnabled() && !e.isPopupTrigger()) {
+            dragAccumulator = 0;
+            this.doubleClickSlowDrag = false;
         
             new SwingWorker<Void, Void>() {
                 @Override
@@ -180,6 +196,7 @@ public class NumberBoxComponent extends ACtrlComponent {
                     Thread.sleep(20); /* A tiny delay to let the event queue clear */
                     return null;
                 }
+
                 @Override
                 protected void done() {
                     if (robot != null) {
@@ -203,12 +220,11 @@ public class NumberBoxComponent extends ACtrlComponent {
     public void keyPressed(KeyEvent ke) {
         if (isEnabled()) {
             double steps = tick;
+            /* In keyboard mode no mini steps are required, so lets just keep "accelerating" */
             if (ke.isShiftDown()) {
-                steps = steps * 0.1; // mini steps!
-                if (KeyUtils.isControlOrCommandDown(ke)) {
-                    steps = steps * 0.1; // micro steps!                
-                }
-            } else if (KeyUtils.isControlOrCommandDown(ke)) {
+                steps = steps * 10.0; //accelerate!
+            }
+            if (KeyUtils.isControlOrCommandDown(ke)) {
                 steps = steps * 10.0; //accelerate!
             }
             switch (ke.getKeyCode()) {
@@ -276,6 +292,7 @@ public class NumberBoxComponent extends ACtrlComponent {
                     if (!KeyUtils.isControlOrCommandDown(ke)) {
                         keybBuffer += '.';
                         ke.consume();
+                        repaint();
                     }
                     break;
                 case '-':
@@ -361,21 +378,13 @@ public class NumberBoxComponent extends ACtrlComponent {
             int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
             final int vmargin = getHeight() - htick - 3;
             int[] yp = new int[]{vmargin, vmargin, vmargin + htick};
-            if (hiliteDown) {
-                g2.drawPolygon(xp, yp, 3);
-            } else {
-                g2.fillPolygon(xp, yp, 3);
-            }
+            g2.fillPolygon(xp, yp, 3);
         }
         {
             int[] xp = new int[]{getWidth() - rmargin - htick * 2, getWidth() - rmargin, getWidth() - rmargin - htick};
             final int vmargin = 3;
             int[] yp = new int[]{vmargin + htick, vmargin + htick, vmargin};
-            if (hiliteUp) {
-                g2.drawPolygon(xp, yp, 3);
-            } else {
-                g2.fillPolygon(xp, yp, 3);
-            }
+            g2.fillPolygon(xp, yp, 3);
         }
     }
 
@@ -399,11 +408,11 @@ public class NumberBoxComponent extends ACtrlComponent {
 
     @Override
     public void setValue(double value) {
-        if (value > max) {
-            value = max;
-        }
         if (value < min) {
             value = min;
+        }
+        if (value > max) {
+            value = max;
         }
         this.value = value;
 
@@ -415,23 +424,23 @@ public class NumberBoxComponent extends ACtrlComponent {
     public double getValue() {
         return value;
     }
-
-    public void setMin(double min) {
-        this.min = min;
+    
+    @Override
+    public double getMax() {
+        return max;
+    }
+    
+    public void setMax(double max) {
+        this.max = max;
     }
 
     @Override
     public double getMin() {
         return min;
     }
-
-    public void setMax(double max) {
-        this.max = max;
-    }
-
-    @Override
-    public double getMax() {
-        return max;
+    
+    public void setMin(double min) {
+        this.min = min;
     }
 
     public double getTick() {
