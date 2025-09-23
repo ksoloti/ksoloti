@@ -485,8 +485,10 @@ public class USBBulkConnection extends Connection {
                             switch (axoloti.utils.OSDetect.getOS()) {
                                 case WIN:
                                     LOGGER.log(Level.SEVERE, "Please install the WinUSB driver for the \"STM32 Bootloader\":");
-                                    LOGGER.log(Level.SEVERE, "Launch Zadig (http://zadig.akeo.ie/) , " +
-                                        "select \"Options->List all devices\", select \"STM32 BOOTLOADER\", and \"replace\" the STTub30 driver with the WinUSB driver");                                break;
+                                    LOGGER.log(Level.SEVERE, "Launch Zadig (ksoloti/platform_win_x64/zadig-2.8.exe, OR download at http://zadig.akeo.ie/) , " +
+                                        "select \"Options->List all devices\", select \"STM32 BOOTLOADER\",\n" +
+                                        "and click \"Replace\" to install the WinUSB driver");
+                                    break;
                                 case LINUX:
                                     LOGGER.log(Level.SEVERE, "Probably need to add a udev rule.");
                                     break;
