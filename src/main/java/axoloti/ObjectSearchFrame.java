@@ -268,11 +268,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 String charStr = String.valueOf(c);
 
                 if (c == '/') {
-                    x += 2; /* add some extra spacing before '/' */
+                    x += 1; /* add some extra spacing before '/' */
                     g2.setPaint(slashColor); /* Draw the slash in accent color */
                     g2.drawString(charStr, x, y);
                     g2.setPaint(getForeground());
-                    x += 3; /* add some extra spacing after '/' */
+                    x += 2; /* add some extra spacing after '/' */
                 } else {
                     g2.drawString(charStr, x, y);
                 }
@@ -323,11 +323,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                         String charStr = String.valueOf(c);
 
                         if (c == '/') {
-                            x += 2; /* add some extra spacing before '/' */
+                            x += 1; /* add some extra spacing before '/' */
                             g2.setPaint(slashColor); /* Draw the slash in accent color */
                             g2.drawString(charStr, x, y);
                             g2.setPaint(textColor);
-                            x += 3; /* add some extra spacing after '/' */
+                            x += 2; /* add some extra spacing after '/' */
                         } else {
                             g2.drawString(charStr, x, y);
                         }
