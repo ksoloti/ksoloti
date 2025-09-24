@@ -55,6 +55,7 @@ public class RecentFileMenu extends JMenu {
                     if (!f.exists() || !f.canRead()) {
                         /* If file can't be found, still show it but greyed out */
                         mi.setEnabled(false);
+                        mi.setToolTipText("File not found! It was likely moved, renamed, or deleted.");
                     }
                     mi.setActionCommand("open:" + s);
                     mi.addActionListener(MainFrame.mainframe);
