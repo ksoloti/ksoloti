@@ -88,7 +88,7 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
         }
 
         if (aoe == null) {
-            aoe = new AxoObjectEditor(ao, patch.getFileNamePath());
+            aoe = new AxoObjectEditor(patch, ao);
         }
         else {
             aoe.updateReferenceXML();

@@ -556,7 +556,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     public void OpenEditor() {
-        getType().OpenEditor(editorBounds, editorActiveTabIndex, patch.getFileNamePath());
+        getType().OpenEditor(editorBounds, editorActiveTabIndex, patch);
     }
 
     public void updateObj() {

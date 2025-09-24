@@ -23,6 +23,7 @@ import static axoloti.MainFrame.fc;
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
 import axoloti.MainFrame;
+import axoloti.Patch;
 import axoloti.attributedefinition.AxoAttribute;
 import axoloti.dialogs.KeyboardNavigableOptionPane;
 import axoloti.displays.Display;
@@ -94,6 +95,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private static final Logger LOGGER = Logger.getLogger(AxoObjectEditor.class.getName());
 
     final AxoObject editObj;
+    private final Patch patch;
     AxolotiLibrary sellib = null;
 
     private String origXML;
@@ -391,8 +393,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
     }
 
-    public AxoObjectEditor(final AxoObject origObj, final String patchFilePath) {
-        this.patchFilePath = patchFilePath;
+    public AxoObjectEditor(final Patch patch, final AxoObject origObj) {
+        this.patch = patch;
         initComponents();
         setLocationRelativeTo(getParent());
 
@@ -705,7 +707,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // if it's an embedded object ("patch/object"), assume the parent patch is saving
         if (IsEmbeddedObj()) {
             if (hasChanged()) {
-                // TODO: patch.setDirty()!
+                patch.SetDirty();
             }
             Close();
             return false;
@@ -1283,7 +1285,7 @@ private void initComponents() {
         Rectangle editorBounds = this.getBounds();
         int activeTabIndex = this.getActiveTabIndex();
         Revert();
-        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(editObj, this.patchFilePath);
+        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(patch, editObj);
         axoObjectEditor.setBounds(editorBounds);
         axoObjectEditor.setActiveTabIndex(activeTabIndex);
         axoObjectEditor.setVisible(true);
