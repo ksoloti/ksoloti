@@ -387,16 +387,43 @@ public class AxoObjects {
     }
 
     public static String ConvertToLegalFilename(String s) {
-        s = s.replaceAll("<", "LT");
-        s = s.replaceAll(">", "GT");
-        s = s.replaceAll("\\*", "STAR");
-        s = s.replaceAll("~", "TILDE");
-        s = s.replaceAll("\\+", "PLUS");
-        s = s.replaceAll("-", "MINUS");
-        s = s.replaceAll("/", "SLASH");
-        s = s.replaceAll(":", "COLON");
-        //if (!cn.equals(o.id)) o.sCName = cn;        
-        return s;
+        if (s == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case '<':
+                    sb.append("LT");
+                    break;
+                case '>':
+                    sb.append("GT");
+                    break;
+                case '*':
+                    sb.append("STAR");
+                    break;
+                case '~':
+                    sb.append("TILDE");
+                    break;
+                case '+':
+                    sb.append("PLUS");
+                    break;
+                case '-':
+                    sb.append("MINUS");
+                    break;
+                case '/':
+                    sb.append("SLASH");
+                    break;
+                case ':':
+                    sb.append("COLON");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
     }
 
     public String getCanonicalObjectIdFromPath(File f) {
