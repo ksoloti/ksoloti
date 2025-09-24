@@ -962,36 +962,40 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 if (caseSensitiveSearch) {
                     if (o.id.equals(s) || o.id.startsWith(s) || o.id.contains(s) || (o.sDescription != null && o.sDescription.contains(s))) {
                         matches = true;
-                    }
-                    String rgx = s.replace("*", ".*");
-                    if (!s.startsWith("^")) rgx = ".*" + rgx;
-                    if (!s.endsWith("$")) rgx = rgx + ".*";
-                    try {
-                        if (Pattern.matches(rgx, o.id)) {
-                            matches = true;
+                    } else {
+                        String rgx = s.replace("*", ".*");
+                        if (!s.startsWith("^")) rgx = ".*" + rgx;
+                        if (!s.endsWith("$")) rgx = rgx + ".*";
+                        try {
+                            if (Pattern.matches(rgx, o.id)) {
+                                matches = true;
+                            }
+                        }
+                        catch (PatternSyntaxException e) {
+                            e.printStackTrace(System.out);
                         }
                     }
-                    catch (PatternSyntaxException e) {
-                        e.printStackTrace(System.out);
-                    }
+
                 }
                 else {
                     String lower_oId = o.id.toLowerCase();
                     String lower_s = s.toLowerCase();
                     if (lower_oId.equals(lower_s) || lower_oId.startsWith(lower_s) || lower_oId.contains(lower_s) || (o.sDescription != null && o.sDescription.toLowerCase().contains(lower_s))) {
                         matches = true;
-                    }
-                    String rgx = lower_s.replace("*", ".*");
-                    if (!lower_s.startsWith("^")) rgx = ".*" + rgx;
-                    if (!lower_s.endsWith("$")) rgx = rgx + ".*";
-                    try {
-                        if (Pattern.matches(rgx, lower_oId)) {
-                            matches = true;
+                    } else {
+                        String rgx = lower_s.replace("*", ".*");
+                        if (!lower_s.startsWith("^")) rgx = ".*" + rgx;
+                        if (!lower_s.endsWith("$")) rgx = rgx + ".*";
+                        try {
+                            if (Pattern.matches(rgx, lower_oId)) {
+                                matches = true;
+                            }
+                        }
+                        catch (PatternSyntaxException e) {
+                            e.printStackTrace(System.out);
                         }
                     }
-                    catch (PatternSyntaxException e) {
-                        e.printStackTrace(System.out);
-                    }
+
                 }
 
                 if (matches) {
