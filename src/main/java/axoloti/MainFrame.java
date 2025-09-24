@@ -374,7 +374,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         doLayout();
 
         keyboard = new KeyboardFrame();
-        keyboard.setTitle("Keyboard");
+        keyboard.setTitle("Virtual Keyboard");
         keyboard.setVisible(false);
 
         filemanager = new FileManagerFrame();
