@@ -1180,7 +1180,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         jPanelSearchField.add(filler3);
 
         jToggleButtonLockWindow.setText("L");
-        jToggleButtonLockWindow.setToolTipText("Lock: keep the window open after losing focus and placing objects");
+        jToggleButtonLockWindow.setToolTipText("Lock: keep the window open after losing focus and placing objects.\nYou can drag and drop objects from the result list or from the bottom node tree.\nDouble-click on objects to place them in the original trigger location of the Object Finder.\nIn the node tree, triple-click on objects to place them.");
         jToggleButtonLockWindow.setActionCommand("");
         jToggleButtonLockWindow.setFocusable(false);
         jToggleButtonLockWindow.setMargin(btnInsets);
