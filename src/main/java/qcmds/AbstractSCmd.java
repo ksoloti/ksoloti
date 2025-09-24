@@ -32,10 +32,11 @@ public abstract class AbstractSCmd implements SCmd {
     protected char expectedAckCommandByte = '\0'; /* Default value, only used by - and will be set by - subclasses that use AxoR<expectedAckCommandByte><statusbyte> */
 
     @Override
-    public void setCompletedWithStatus(int mcuStatusCode) {
+    public boolean setCompletedWithStatus(int mcuStatusCode) {
         this.mcuStatusCode = mcuStatusCode;
         this.commandSuccess = mcuStatusCode == 0;
         latch.countDown();
+        return true;
     }
 
     @Override

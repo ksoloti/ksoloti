@@ -1825,80 +1825,27 @@ public class USBBulkConnection extends Connection {
                     int commandByte = packetData[0] & 0xFF;
                     int statusCode = (packetData[0] >> 8) & 0xFF;
 
-                    if (currentExecutingCommand != null) {
-                        /* Special handling for SCmdUploadPatch's sub-commands */
-                        if (currentExecutingCommand instanceof SCmdUploadPatch) {
-                            if (commandByte == 'W') {
-                                ((SCmdUploadPatch) currentExecutingCommand).setStartMemWriteCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'w') {
-                                ((SCmdUploadPatch) currentExecutingCommand).setAppendMemWriteCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'e') {
-                                ((SCmdUploadPatch) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
-                                currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                setCurrentExecutingCommand(null);
-                            }
-                        }
-                        /* Special handling for SCmdUploadFile's sub-commands */
-                        else if (currentExecutingCommand instanceof SCmdUploadFile) {
-                            if (commandByte == 'f') {
-                                ((SCmdUploadFile) currentExecutingCommand).setCreateFileCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'a') {
-                                ((SCmdUploadFile) currentExecutingCommand).setAppendFileCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'c') {
-                                ((SCmdUploadFile) currentExecutingCommand).setCloseFileCompletedWithStatus(statusCode);
-                                currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                setCurrentExecutingCommand(null);
-                            }
-                        }
-                        /* Special handling for SCmdUploadFWSDRam's sub-commands */
-                        else if (currentExecutingCommand instanceof SCmdUploadFWSDRam) {
-                            if (commandByte == 'W') {
-                                ((SCmdUploadFWSDRam) currentExecutingCommand).setStartMemWriteCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'w') {
-                                ((SCmdUploadFWSDRam) currentExecutingCommand).setAppendMemWriteCompletedWithStatus(statusCode);
-                            }
-                            else if (commandByte == 'e') {
-                                ((SCmdUploadFWSDRam) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
-                                currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                setCurrentExecutingCommand(null);
-                            }
-                        }
-                        /* Handling for other SCmd's that expect an AxoR for their completion */
-                        else if (currentExecutingCommand instanceof SCmdStart ||
-                                 currentExecutingCommand instanceof SCmdStop ||
-                                 currentExecutingCommand instanceof SCmdChangeWorkingDirectory ||
-                                 currentExecutingCommand instanceof SCmdCreateDirectory ||
-                                 currentExecutingCommand instanceof SCmdGetFileList ||
-                                 currentExecutingCommand instanceof SCmdCopyPatchToFlash ||
-                                 currentExecutingCommand instanceof SCmdDeleteFile ||
-                                 currentExecutingCommand instanceof SCmdGetFileInfo) {
+                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
+                                    if (isComplete) {
+                                        setCurrentExecutingCommand(null);
+                                    }
+                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
+                                    if (isComplete) {
+                                        setCurrentExecutingCommand(null);
+                                    }
+                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
+                                    if (isComplete) {
+                                        setCurrentExecutingCommand(null);
+                                    }
 
                             /* Any commands with no explicitly set command byte ('\0') will fall through */
                             if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
                                 /* for example, ('l' == 'l') -> TRUE */
 
-                                try {
-                                    boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 100, TimeUnit.MILLISECONDS);
-                                    if (!offeredSuccessfully) {
-                                        LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
-                                    }
-                                    synchronized (QCmdProcessor.getInstance().getQueueLock()) {
-                                        QCmdProcessor.getInstance().getQueueLock().notifyAll();
-                                    }
-                                }
-                                catch (InterruptedException e) {
-                                    LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue: " + e.getMessage());
-                                    e.printStackTrace(System.out);
-                                    Thread.currentThread().interrupt();
-                                }
-                                finally {
-                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                    setCurrentExecutingCommand(null);
+                                        boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
+                                        if (isComplete) {
+                                            setCurrentExecutingCommand(null);
+                                        }
                                 }
                             }
                         }
@@ -2031,10 +1978,10 @@ public class USBBulkConnection extends Connection {
                         memReadBuffer.put(cc);
                         if (dataIndex == memReadLength + 7) {
                             memReadBuffer.rewind();
-                            if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead) {
-                                ((SCmdMemRead) currentExecutingCommand).setValuesRead(memReadBuffer);
-                                ((SCmdMemRead) currentExecutingCommand).setCompletedWithStatus(0);
-                                setCurrentExecutingCommand(null);
+                                    boolean isComplete = ((SCmdMemRead) currentExecutingCommand).setCompletedWithStatus(0);
+                                    if (isComplete) {
+                                        setCurrentExecutingCommand(null);
+                                    }
                             }
 
                             System.out.print(Instant.now() + " SCmdMemRead address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", length " + memReadLength + ": ");
@@ -2080,11 +2027,10 @@ public class USBBulkConnection extends Connection {
                         break;
                     case 7:
                         memRead1WordValue += (cc & 0xFF) << 24;
-                        if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead1Word) {
-                            ((SCmdMemRead1Word) currentExecutingCommand).setValueRead(memRead1WordValue);
-                            currentExecutingCommand.setCompletedWithStatus(0);
-                            setCurrentExecutingCommand(null);
-                            System.out.println(Instant.now() + " SCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
+                                boolean isComplete = currentExecutingCommand.setCompletedWithStatus(0);
+                                if (isComplete) {
+                                    setCurrentExecutingCommand(null);
+                                }
                         }
                         setIdleState();
                     default:
@@ -2139,9 +2085,10 @@ public class USBBulkConnection extends Connection {
                             LOGGER.log(Level.INFO, String.format("Core running Firmware version %d.%d.%d.%d | CRC %s\n", fwversion[0], fwversion[1], fwversion[2], fwversion[3], sFwcrc));
                             MainFrame.mainframe.setFirmwareID(sFwcrc);
                         }
-                        if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdGetFWVersion) {
-                            currentExecutingCommand.setCompletedWithStatus(0);
-                            setCurrentExecutingCommand(null);
+                                boolean isComplete = currentExecutingCommand.setCompletedWithStatus(0);
+                                if (isComplete) {
+                                    setCurrentExecutingCommand(null);
+                                }
                         }
                         setIdleState();
                         break;

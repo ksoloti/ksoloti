@@ -29,7 +29,7 @@ import axoloti.Connection;
 public interface SCmd extends QCmd { /* Used to be QCmdSerialTask */
     public static final Logger LOGGER = Logger.getLogger(SCmd.class.getName());
 
-    void setCompletedWithStatus(int statusCode);
+    boolean setCompletedWithStatus(int statusCode);
     boolean waitForCompletion(long timeoutMs) throws InterruptedException;
     boolean waitForCompletion() throws InterruptedException;
     boolean isSuccessful();
