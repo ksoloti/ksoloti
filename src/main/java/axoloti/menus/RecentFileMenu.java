@@ -44,27 +44,30 @@ public class RecentFileMenu extends JMenu {
                 ArrayList<String> r = Preferences.getInstance().getRecentFiles();
 
                 /* "Garbage bin": collects any strings that point to non-existent files (cannot remove those inside the loop - ConcurrentModificationException) */
-                ArrayList<String> filesNotFound = new ArrayList<String>();
+                // ArrayList<String> filesNotFound = new ArrayList<String>();
 
                 /* Loop through list and add all valid file references */
                 for (String s : r) {
                     File f = new File(s);
-                    if (f.exists()) {
-                        /* Add as menu entry */
-                        JMenuItem mi = new JMenuItem(s);
-                        mi.setActionCommand("open:" + s);
-                        mi.addActionListener(MainFrame.mainframe);
-                        add(mi, 0);
+                    // if (f.exists() && f.canRead()) {
+                    /* Add as menu entry */
+                    JMenuItem mi = new JMenuItem(s);
+                    if (!f.exists() || !f.canRead()) {
+                        /* If file can't be found, still show it but greyed out */
+                        mi.setEnabled(false);
                     }
-                    else {
-                        /* If file does not exist, add entry to the garbage bin */
-                        filesNotFound.add(s);
-                    }
+                    mi.setActionCommand("open:" + s);
+                    mi.addActionListener(MainFrame.mainframe);
+                    add(mi, 0);
+                    // } else {
+                    //     /* If file does not exist, add entry to the garbage bin */
+                    //     filesNotFound.add(s);
+                    // }
                 }
-                for (String s : filesNotFound) {
-                    /* Now remove any invalid strings */
-                    Preferences.getInstance().removeRecentFile(s);
-                }
+                // for (String s : filesNotFound) {
+                //     /* Now remove any invalid strings */
+                //     Preferences.getInstance().removeRecentFile(s);
+                // }
             }
 
             @Override

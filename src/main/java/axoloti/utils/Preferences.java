@@ -136,7 +136,7 @@ public class Preferences {
 
     private boolean restartRequired = false;
 
-    private final int nRecentFiles = 16;
+    private final int nRecentFiles = 20;
 
     private final int minimumPollInterval = 20;
 
