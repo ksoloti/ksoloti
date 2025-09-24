@@ -60,7 +60,7 @@ public class AxoObjectFromPatch extends AxoObject {
         shortId = f.getName().substring(0, f.getName().lastIndexOf("."));
         sObjFilePath = f.getAbsolutePath();
         UpdateObject(p); 
-        MainFrame.axoObjects.ObjectList.add(this);
+        // MainFrame.axoObjects.ObjectList.add(this);
     }
 
     final public void UpdateObject(Patch patchToCopyFrom) {
