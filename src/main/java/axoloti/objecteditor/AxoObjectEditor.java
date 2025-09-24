@@ -94,9 +94,11 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     private static final Logger LOGGER = Logger.getLogger(AxoObjectEditor.class.getName());
 
-    final AxoObject editObj;
-    private final Patch patch;
-    AxolotiLibrary sellib = null;
+    private final AxoObject editObj;
+    private final AxoObjectInstance editObjInstance;
+    private Patch patch;
+    private boolean isDirty = false;
+    private AxolotiLibrary sellib = null;
 
     private String origXML;
     private final RSyntaxTextArea jTextAreaLocalData;
@@ -393,11 +395,12 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
     }
 
-    public AxoObjectEditor(final Patch patch, final AxoObject origObj) {
+    public AxoObjectEditor(final Patch patch, final AxoObject origObj, final AxoObjectInstance origObjInstance) {
         this.patch = patch;
+        this.editObjInstance = origObjInstance;
+        
         initComponents();
         setLocationRelativeTo(getParent());
-
         acProvider = new AxoCompletionProvider();
 
         Map<Integer, Icon> customIcons = new HashMap<>();
@@ -1285,7 +1288,7 @@ private void initComponents() {
         Rectangle editorBounds = this.getBounds();
         int activeTabIndex = this.getActiveTabIndex();
         Revert();
-        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(patch, editObj);
+        AxoObjectEditor axoObjectEditor = new AxoObjectEditor(patch, editObj, editObjInstance);
         axoObjectEditor.setBounds(editorBounds);
         axoObjectEditor.setActiveTabIndex(activeTabIndex);
         axoObjectEditor.setVisible(true);

@@ -350,7 +350,7 @@ public class AxoObject extends AxoObjectAbstract {
     
     public void OpenEditor(Rectangle editorBounds, Integer editorActiveTabIndex, Patch patch) {
         if (editor == null) {
-            editor = new AxoObjectEditor(patch, this);
+            editor = new AxoObjectEditor(patch, this, null);
         }
         
         setEditorBounds(editorBounds);
