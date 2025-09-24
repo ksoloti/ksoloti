@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -897,7 +898,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
             return;
         }
 
-        List<DefaultMutableTreeNode> children = new ArrayList<>();
+        List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
         Enumeration<TreeNode> enumeration = parent.children();
         while (enumeration.hasMoreElements()) {
             TreeNode child = enumeration.nextElement();
@@ -939,15 +940,17 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     }
 
     public void Search(String s) {
+        LinkedHashSet<AxoObjectAbstract> resultSet = new LinkedHashSet<AxoObjectAbstract>();
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
-
+        
         /* --- if search field is empty, show complete list --- */
         if ((s == null) || s.isEmpty()) {
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
                 /* add complete list */
-                listData.add(o);
+                resultSet.add(o);
             }
             /* Add all to list - don't sort */
+            listData = new ArrayList<AxoObjectAbstract>(resultSet);
             jResultList.setListData(listData.toArray());
         }
         else {
@@ -991,11 +994,12 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     }
                 }
 
-                if (matches && !listData.contains(o)) {
-                    listData.add(o);
+                if (matches) {
+                    resultSet.add(o);
                 }
             }
 
+            listData = new ArrayList<AxoObjectAbstract>(resultSet);
             Collections.sort(listData, new AxoObjectIdComparator(s, caseSensitiveSearch));
             jResultList.setListData(listData.toArray());
         }
