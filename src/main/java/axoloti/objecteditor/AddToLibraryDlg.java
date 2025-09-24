@@ -349,7 +349,7 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             AxolotiLibrary lib = Preferences.getInstance().getLibrary((String) jComboBoxLibrary.getSelectedObjects()[0]);
             StringBuilder file = new StringBuilder();
  
-            file.append(lib.getLocalLocation());
+            file.append(lib.getLocalLocation()).append(File.separator);
             file.append("objects").append(File.separator);
             String cp = lib.getContributorPrefix();
             if (cp != null && cp.length() > 0) {
@@ -366,12 +366,14 @@ public class AddToLibraryDlg extends javax.swing.JDialog {
             }
             objid = AxoObjects.ConvertToLegalFilename(objid);
             objpath = objpath.replace('/', File.separatorChar);
-
-            
-            file.append(objpath).append(File.separator);
+            if (!objpath.isEmpty()) {
+                file.append(objpath).append(File.separator);
+            }
             file.append(objid);
             return file.toString() + ".axo";
-        } else return "";
+        } else {
+            return "";
+        }
     }
 
     private void modifiedData() {
