@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.simpleframework.xml.Serializer;
@@ -84,7 +85,7 @@ public class AxoObjects {
         if ((bfname != null) && (cwd != null)) {
             {
                 // try object file
-                ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
+                LinkedHashSet<AxoObjectAbstract> set = new LinkedHashSet<AxoObjectAbstract>();
                 String fnameA = bfname + ".axo";
                 LOGGER.log(Level.FINE, "Attempt to create object from object file: " + fnameA);
                 File f = new File(fnameA);
@@ -114,14 +115,14 @@ public class AxoObjects {
                             o.createdFromRelativePath = true;
                             LOGGER.log(Level.INFO, "Loaded: " + fnameA);
                             set.add(o);
-                            return set;
+                            return new ArrayList<>(set);
                         }
                     }
                 }
             }
             {
                 // try subpatch file
-                ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
+                LinkedHashSet<AxoObjectAbstract> set = new LinkedHashSet<AxoObjectAbstract>();
                 String fnameP = bfname + ".axs";
                 LOGGER.log(Level.FINE, "Attempt to create object from subpatch file in patch directory: " + fnameP);
                 File f = new File(fnameP);
@@ -134,11 +135,11 @@ public class AxoObjects {
                     o.sObjFilePath = f.getPath();
                     LOGGER.log(Level.INFO, "Subpatch loaded: " + fnameP);
                     set.add(o);
-                    return set;
+                    return new ArrayList<>(set);
                 }
             }
         }
-        ArrayList<AxoObjectAbstract> set = new ArrayList<AxoObjectAbstract>();
+        LinkedHashSet<AxoObjectAbstract> set = new LinkedHashSet<AxoObjectAbstract>();
         // need to clone ObjectList to avoid a ConcurrentModificationException?
         for (AxoObjectAbstract o : (ArrayList<AxoObjectAbstract>)ObjectList.clone()) {
             if (o.id.equals(n)) {
@@ -156,12 +157,12 @@ public class AxoObjects {
                     o.sObjFilePath = n + ".axs";
                     LOGGER.log(Level.INFO, "Subpatch loaded: " + fsname);
                     set.add(o);
-                    return set;
+                    return new ArrayList<>(set);
                 }
             }
             return null;
         } else {
-            return set;
+            return new ArrayList<>(set);
         }
     }
 
@@ -288,7 +289,9 @@ public class AxoObjects {
                                 s.Objects.add(a);
                             }
 
-                            ObjectList.add(a);
+                            if (!ObjectList.contains(a)) {
+                                ObjectList.add(a);
+                            }
 
                             if ((a.getUUID() != null) && (ObjectUUIDMap.containsKey(a.getUUID()))) {
                                 LOGGER.log(Level.SEVERE, "Duplicate UUID! {0}\nOriginal name: {1}\nPath: {2}", new Object[]{fileEntry.getAbsolutePath(), ObjectUUIDMap.get(a.getUUID()).id, ObjectUUIDMap.get(a.getUUID()).sObjFilePath});
@@ -308,7 +311,9 @@ public class AxoObjects {
                         AxoObjectUnloaded a = new AxoObjectUnloaded(fullname, fileEntry);
                         a.sObjFilePath = fileEntry.getAbsolutePath();
                         t.Objects.add(a);
-                        ObjectList.add(a);
+                        if (!ObjectList.contains(a)) {
+                            ObjectList.add(a);
+                        }
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Error: " + fileEntry.getAbsolutePath() + ", " + ex.getMessage());
                         ex.printStackTrace(System.out);

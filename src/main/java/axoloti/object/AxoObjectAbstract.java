@@ -26,6 +26,7 @@ import axoloti.outlets.Outlet;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -204,6 +205,34 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
     }
 
     public void removeObjectModifiedListener(ObjectModifiedListener oml) {
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        AxoObjectAbstract other = (AxoObjectAbstract) obj;
+
+        /* First check if UUIDs are equal */
+        if (uuid != null && other.uuid != null) {
+            return uuid.equals(other.uuid);
+        }
+        
+        /* Fallback to sObjFilePath if UUID is not available */
+        return Objects.equals(sObjFilePath, other.sObjFilePath);
+    }
+
+    @Override
+    public int hashCode() {
+        /* Hash by UUID if available, otherwise fall back to file path */
+        if (uuid != null) {
+            return uuid.hashCode();
+        }
+        return Objects.hash(sObjFilePath);
     }
 
 }
