@@ -22,6 +22,8 @@ import axoloti.MainFrame;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.Comparator;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -47,7 +49,13 @@ public class PopulatePatchMenu {
             }
         });
 
-        Arrays.sort(files);
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                return f1.getName().compareToIgnoreCase(f2.getName());
+            }
+        });
+
         for (File subdir : files) {
             JMenu fm = new JMenu(subdir.getName());
             fm.setDelay(300);
@@ -64,7 +72,7 @@ public class PopulatePatchMenu {
             }
         });
 
-        Arrays.sort(filenames);
+        Arrays.sort(filenames, String.CASE_INSENSITIVE_ORDER);
 
         for (String fn : filenames) {
             String fn2 = fn.substring(0, fn.length() - 4);
