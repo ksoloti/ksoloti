@@ -541,41 +541,59 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         }
 
+        /* Build window title from object instance name, embedded status, and patch path */
+        String t = "";
+        String fpath = patch.getFileNamePath();
+        
         if (IsEmbeddedObj()) {
+            if (editObjInstance != null && editObjInstance.getInstanceName() != null) {
+                t += editObjInstance.getInstanceName();
+            } else {
+                t += "patch/object";
+            }
+            if (fpath != null) {
+                String fn;
+                int brk = fpath.lastIndexOf(File.separator) + 1;
+                if (brk != 0) {
+                    fn = fpath.substring(brk);
+                } else {
+                    fn = fpath;
+                }
+                t += "  (embedded in " + fn + ")";
+            } else {
+                t += "  (embedded)";
+            }
             jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("none (embedded in patch)");
-            if (this.patchFilePath != null) {
-                String title;
-                int brk = this.patchFilePath.lastIndexOf(File.separator) + 1;
-                if (brk != 0) {
-                    title = this.patchFilePath.substring(brk);
-                } else {
-                    title = this.patchFilePath;
-                }
-                setTitle(origObj.id + "  (embedded object - " + title + ")");
-            } else {
-                setTitle(origObj.id + "  (embedded object)");
-            }
 
             /* Embedded objects have no use for help patches */
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
         }
-        else { // normal objects
+        else { // library objects
+            /* Get last occurrence of slash or backslash (separating path and filename) */
             if (sellib != null) {
                 jMenuItemSave.setEnabled(!sellib.isReadOnly());
                 if (sellib.isReadOnly()) {
                     SetReadOnly(true);
                     jLabelLibrary.setText(sellib.getId() + " (readonly)");
-                    setTitle(sellib.getId() + ": " + origObj.id + " (readonly)");
+                    t += sellib.getId() + ": " + origObj.id + " (readonly)";
                 }
                 else {
                     jLabelLibrary.setText(sellib.getId());
-                    setTitle(sellib.getId() + ":  " + origObj.id);
+                    t += sellib.getId() + ": " + origObj.id;
+                }
+            } else if (fpath != null) {
+                int brk = fpath.lastIndexOf(File.separator) + 1;
+                if (brk != 0) {
+                    t += editObj.sObjFilePath + " - " + fpath.substring(brk);
+                } else {
+                    t += editObj.sObjFilePath + " - " + fpath;
                 }
             }
         }
-
+        setTitle(t);
+        
         editObj.FireObjectModified(this);
         jTextDesc.requestFocus();
     }

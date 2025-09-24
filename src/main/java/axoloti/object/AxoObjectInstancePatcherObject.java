@@ -94,24 +94,6 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
             aoe.updateReferenceXML();
         }
 
-        String t; /* Build window frame title from object instance name and patch path*/
-        if (getInstanceName() != null) {
-            t = getInstanceName();
-        }
-        else {
-            t = "patch/object";
-        }
-        /* Get last occurrence of slash or backslash (separating path and filename) */
-        if (getPatch().getFileNamePath() != null) {
-            String fpath = getPatch().getFileNamePath();
-            int brk = fpath.lastIndexOf(File.separator) + 1;
-            if (brk != 0) {
-                t += "  [" + fpath.substring(brk) + "]";
-            }
-        }
-
-        aoe.setTitle(t);
-
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
