@@ -1241,10 +1241,13 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     @Override
     public void ObjectModified(Object src) {
         if (getPatch() != null) {
-            if (!getPatch().IsLocked()) {
-                updateObj();
-            } else {
-                deferredObjTypeUpdate = true;
+            if (getType().sObjFilePath == null || getType().sObjFilePath.isEmpty()) {
+                if (!getPatch().IsLocked()) {
+                    /* only updateObj if embedded */
+                    updateObj();
+                } else {
+                    deferredObjTypeUpdate = true;
+                }
             }
         }
 
@@ -1324,7 +1327,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         oi.ao.copy(ao);
         oi.ao.sObjFilePath = "";
         oi.ao.upgradeSha = null;
-        oi.ao.CloseEditor();
+        oi.ao.editor.AskClose();
         oi.setInstanceName(iname);
         oi.updateObj();
         getPatch().delete(this);

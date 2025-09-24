@@ -84,7 +84,7 @@ public class AxoObjectFromPatch extends AxoObject {
         sSRateCode = o.sSRateCode;
         helpPatch = o.helpPatch;
 
-        FireObjectModified(this);
+        FireObjectModified(AxoObjectFromPatch.this);
     }
 
     @Override

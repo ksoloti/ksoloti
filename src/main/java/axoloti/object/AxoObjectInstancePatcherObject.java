@@ -25,7 +25,6 @@ import components.ButtonComponent;
 import components.ButtonComponent.ActListener;
 // import java.awt.Component;
 import java.awt.Point;
-import java.io.File;
 
 import javax.swing.SwingUtilities;
 import org.simpleframework.xml.Element;

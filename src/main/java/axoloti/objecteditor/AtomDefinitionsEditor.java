@@ -198,7 +198,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     GetAtomDefinitions().add(o);
                     jTable1.setRowSelectionInterval(GetAtomDefinitions().size() - 1, GetAtomDefinitions().size() - 1);
                     UpdateTable2();
-                    AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                    AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Error while handling AtomDefinition: " + ex.getMessage());
                     ex.printStackTrace(System.out);
@@ -221,7 +221,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     jTable1.setRowSelectionInterval(row - 1, row - 1);
                 }
                 UpdateTable2();
-                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                 AtomDefinitionsEditor.this.revalidate();
             }
         });
@@ -237,7 +237,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                 T o = GetAtomDefinitions().remove(row);
                 GetAtomDefinitions().add(row - 1, o);
                 jTable1.setRowSelectionInterval(row - 1, row - 1);
-                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
             }
         });
         jPanel1.add(jButtonMoveUp);
@@ -254,7 +254,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                 }
                 T o = GetAtomDefinitions().remove(row);
                 GetAtomDefinitions().add(row + 1, o);
-                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                 jTable1.setRowSelectionInterval(row + 1, row + 1);
             }
         });
@@ -304,7 +304,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     case 0:
                         assert (value instanceof String);
                         GetAtomDefinition(rowIndex).setName((String) value);
-                        AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                        AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                         break;
                     case 1:
                         try {
@@ -312,7 +312,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                             j.setName(GetAtomDefinition(rowIndex).getName());
                             j.setDescription(GetAtomDefinition(rowIndex).getDescription());
                             GetAtomDefinitions().set(rowIndex, j);
-                            AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                            AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             UpdateTable2();
                         } catch (Exception ex) {
                             LOGGER.log(Level.SEVERE, "Error while handling AtomDefinition: " + ex.getMessage());
@@ -322,12 +322,12 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                     case 2:
                         assert (value instanceof String);
                         GetAtomDefinition(rowIndex).setDescription((String) value);
-                        AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                        AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                         break;
                     case 3:
                         assert (value instanceof Boolean);
                         GetAtomDefinition(rowIndex).setNoLabel((Boolean) value);
-                        AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                        AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                         break;
                 }
             }
@@ -434,7 +434,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         if (t == int.class) {
                             try {
                                 f.setInt(o, Integer.parseInt((String) value));
-                                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
                                 ex.printStackTrace(System.out);
@@ -445,7 +445,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                 l.clear();
                                 String s = (String) value;
                                 l.addAll(StringToStringArrayList(s));
-                                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
                                 ex.printStackTrace(System.out);
@@ -459,7 +459,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                     f.set(o, v);
                                 }
                                 v.setInt(Integer.parseInt((String) value));
-                                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
                                 ex.printStackTrace(System.out);
@@ -482,7 +482,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                                         /* Silent */
                                     }
                                 }
-                                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
                                 ex.printStackTrace(System.out);
@@ -490,7 +490,7 @@ abstract class AtomDefinitionsEditor<T extends AtomDefinition> extends JPanel im
                         } else if (t == String.class) {
                             try {
                                 f.set(o, (String) value);
-                                AtomDefinitionsEditor.this.obj.FireObjectModified(this);
+                                AtomDefinitionsEditor.this.obj.FireObjectModified(AtomDefinitionsEditor.this);
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
                                 LOGGER.log(Level.SEVERE, "Error trying to set value: " + value.toString() + ", " + ex.getMessage());
                                 ex.printStackTrace(System.out);

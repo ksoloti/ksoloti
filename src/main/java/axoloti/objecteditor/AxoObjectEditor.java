@@ -74,6 +74,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -107,6 +108,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private final RSyntaxTextArea jTextAreaSRateCode;
     private final RSyntaxTextArea jTextAreaDisposeCode;
     private final RSyntaxTextArea jTextAreaMidiCode;
+    private boolean isUpdatingView = false;
 
     final String fileExtension = ".axo";
 
@@ -242,17 +244,17 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
         @Override
         public void insertUpdate(DocumentEvent e) {
-            update();
+            if (!isUpdatingView) update();
         }
 
         @Override
         public void removeUpdate(DocumentEvent e) {
-            update();
+            if (!isUpdatingView) update();
         }
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-            update();
+            if (!isUpdatingView) update();
         }
     }
 
@@ -386,7 +388,8 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             Serializer serializer = new Persister(new Format(2));
             AxoObject objrev = serializer.read(AxoObject.class, origXML);
             editObj.copy(objrev);
-            editObj.FireObjectModified(this);
+            updateEditorView();
+            setDirty(false);
             Close();
         }
         catch (Exception ex) {
@@ -459,7 +462,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sAuthor = jTextFieldAuthor.getText().trim();
-                editObj.FireObjectModified(this);
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -467,7 +470,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sLicense = jTextFieldLicense.getText().trim();
-                editObj.FireObjectModified(this);
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -475,7 +478,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.helpPatch = jTextFieldHelp.getText().trim();
-                editObj.FireObjectModified(this);
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -483,7 +486,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sDescription = jTextDesc.getText().trim();
-                editObj.FireObjectModified(this);
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -491,6 +494,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sLocalData = CleanString(jTextAreaLocalData.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -498,6 +502,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sInitCode = CleanString(jTextAreaInitCode.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -505,6 +510,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sKRateCode = CleanString(jTextAreaKRateCode.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -512,6 +518,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sSRateCode = CleanString(jTextAreaSRateCode.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -519,6 +526,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sDisposeCode = CleanString(jTextAreaDisposeCode.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -526,6 +534,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             @Override
             void update() {
                 editObj.sMidiCode = CleanString(jTextAreaMidiCode.getText());
+                editObj.FireObjectModified(AxoObjectEditor.this);
             }
         });
 
@@ -541,7 +550,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             }
         }
 
-        /* Build window title from object instance name, embedded status, and patch path */
+        /* Build window title from object instance name, embedded status, and patch file */
         String t = "";
         String fpath = patch.getFileNamePath();
         
@@ -569,9 +578,10 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             /* Embedded objects have no use for help patches */
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
-        }
-        else { // library objects
-            /* Get last occurrence of slash or backslash (separating path and filename) */
+
+            /* Embedded objects cannot be reverted to library state as they are part of the patch file */
+            jMenuItemRevert.setEnabled(false);
+        } else { /* library objects */
             if (sellib != null) {
                 jMenuItemSave.setEnabled(!sellib.isReadOnly());
                 if (sellib.isReadOnly()) {
@@ -594,12 +604,12 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
         setTitle(t);
         
-        editObj.FireObjectModified(this);
+        updateEditorView();
         jTextDesc.requestFocus();
     }
 
     boolean IsEmbeddedObj() {
-        return (editObj.sObjFilePath == null || editObj.sObjFilePath.length() == 0);
+        return (editObj.sObjFilePath == null || editObj.sObjFilePath.isEmpty());
     }
 
     void SetReadOnly(boolean readonly) {
@@ -648,7 +658,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         }
 
         // this updates text editors
-        ObjectModified(null);
+        updateEditorView();
     }
 
     boolean compareField(String oVal, String nVal) {
@@ -676,23 +686,22 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         return !(origXML.equals(editOS.toString()));
     }
 
-    @Override
-    public void ObjectModified(Object source) {
-        if (source != this) {
-            jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
-            jTextAreaLocalData.setCaretPosition(0);
-            jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
-            jTextAreaInitCode.setCaretPosition(0);
-            jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
-            jTextAreaKRateCode.setCaretPosition(0);
-            jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
-            jTextAreaSRateCode.setCaretPosition(0);
-            jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
-            jTextAreaDisposeCode.setCaretPosition(0);
-            jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
-            jTextAreaMidiCode.setCaretPosition(0);
-        }
+    private void updateEditorView() {
+        isUpdatingView = true;
 
+        jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
+        jTextAreaLocalData.setCaretPosition(0);
+        jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
+        jTextAreaInitCode.setCaretPosition(0);
+        jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
+        jTextAreaKRateCode.setCaretPosition(0);
+        jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
+        jTextAreaSRateCode.setCaretPosition(0);
+        jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
+        jTextAreaDisposeCode.setCaretPosition(0);
+        jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
+        jTextAreaMidiCode.setCaretPosition(0);
+        
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
 
@@ -715,63 +724,97 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         updateAcProvider(editObj);
 
         editObj.CreateInstance(null, "test", new Point(0, 0));
+
+        isUpdatingView = false;
+    }
+
+    @Override
+    public void ObjectModified(Object src) {
+        if (src instanceof AxoObjectEditor) {
+            setDirty();
+        }
+        
+        SwingUtilities.invokeLater(() -> {
+            updateEditorView();
+        });
     }
 
     public void initEditFromOrig() {
         editObj.addObjectModifiedListener(this);
-        editObj.FireObjectModified(this);
         initFields();
+        updateEditorView();
+    }
+
+    public void setDirty(boolean isDirty) {
+        this.isDirty = isDirty;
+        setUnsavedAsterisk(isDirty);
+        if (isDirty && IsEmbeddedObj() && patch != null) {
+            patch.SetDirty();
+        }
+    }
+
+    public void setDirty() {
+        setDirty(true);
+    }
+
+    public boolean isDirty() {
+        return this.isDirty;
+    }
+
+    public void setUnsavedAsterisk(boolean b) {
+        if (b && !getTitle().startsWith("*")) {
+            setTitle("*" + getTitle()); /* asterisk to indicate unsaved state */
+        }
+
+        else if (!b && getTitle().startsWith("*")) {
+            setTitle(getTitle().substring(1)); /* else clear asterisk */
+        }
     }
 
     @Override
     public boolean AskClose() {
         // if it's an embedded object ("patch/object"), assume the parent patch is saving
-        if (IsEmbeddedObj()) {
-            if (hasChanged()) {
-                patch.SetDirty();
-            }
-            Close();
-            return false;
-        }
-        // warn if changes, and its not an embedded object
-        if (hasChanged()) {
-            if (!readonly) {
-                String lib = "";
-                if (sellib != null) {
-                    lib += sellib.getId() + ": ";
-                }
+        if (isDirty() || hasChanged()) {
+            if (IsEmbeddedObj()) {
+                Close();
+                return false;
+            } else { /* not an embedded object */
+                if (!readonly) {
+                    String lib = "";
+                    if (sellib != null) {
+                        lib += sellib.getId() + ": ";
+                    }
 
-                Object[] options = {"Save", "Discard", "Cancel"};
-                int n = KeyboardNavigableOptionPane.showOptionDialog(
-                        this,
-                        "Save changes to \"" + lib + editObj.getCName() + "\" ?",
-                        "Unsaved Changes",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-                switch (n) {
-                    case JOptionPane.YES_OPTION:
-                        jMenuItemSaveActionPerformed(null);
-                        Close();
-                        return false;
-                    case JOptionPane.NO_OPTION:
-                        Revert();
-                        Close();
-                        return false;
-                    case JOptionPane.CANCEL_OPTION:
-                    default: // closed
-                        return true;
+                    Object[] options = {"Save", "Discard", "Cancel"};
+                    int n = KeyboardNavigableOptionPane.showOptionDialog(
+                            this,
+                            "Save changes to \"" + lib + editObj.getCName() + "\" ?",
+                            "Unsaved Changes",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+                    switch (n) {
+                        case JOptionPane.YES_OPTION:
+                            jMenuItemSaveActionPerformed(null);
+                            Close();
+                            return false;
+                        case JOptionPane.NO_OPTION:
+                            Revert();
+                            Close();
+                            return false;
+                        case JOptionPane.CANCEL_OPTION:
+                        default: // closed
+                            return true;
+                    }
+                } else {
+                    LOGGER.log(Level.SEVERE, "AxoObject was changed but is readonly: should not happen");
+                    return true;
                 }
             }
-            else {
-                LOGGER.log(Level.SEVERE, "AxoObject was changed but is readonly: should not happen");
-                return true;
-            }
-        }
-        else {
-            // no changes
+        } else {
+            /* no changes */
             Close();
             return false;
         }
@@ -786,7 +829,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         editObj.removeObjectModifiedListener(outletDefinitionsEditorPanel1);
         editObj.removeObjectModifiedListener(paramDefinitionsEditorPanel1);
         dispose();
-        editObj.CloseEditor();
     }
 
     public int getActiveTabIndex() {
@@ -1280,19 +1322,19 @@ private void initComponents() {
     }
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {
-        editObj.FireObjectModified(this);
-        if (!isCompositeObject()) {
+        updateEditorView();
+        if (isCompositeObject()) {
+            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
+                    + "Your changes are NOT saved!");
+        } else {
             MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
             updateReferenceXML();
             MainFrame.axoObjects.LoadAxoObjects();
-        } else {
-            JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
-                    + "Your changes are NOT saved!");
         }
     }
 
     private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
-        editObj.FireObjectModified(this);
+        updateEditorView();
         SaveAsDialog();
     }
 
@@ -1303,6 +1345,29 @@ private void initComponents() {
     }
 
     private void jMenuItemRevertActionPerformed(java.awt.event.ActionEvent evt) {
+        if (IsEmbeddedObj()) {
+            return; /* should never reach here */
+        }
+
+        String info = "";
+        if (sellib != null) {
+            info = sellib.getId() + ": ";
+        }
+        info += editObj.getCName();
+
+        Object[] options = {"Revert", "Cancel"};
+        int n = KeyboardNavigableOptionPane.showOptionDialog(this,
+                "Revert object \"" + info + "\" to saved state?",
+                "Revert object",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if (n != JOptionPane.YES_OPTION) {
+            return;
+        }
+
         Rectangle editorBounds = this.getBounds();
         int activeTabIndex = this.getActiveTabIndex();
         Revert();
@@ -1314,8 +1379,6 @@ private void initComponents() {
 
     private void formWindowLostFocus(java.awt.event.WindowEvent evt) {
     }
-
-
 
     @Override
     public JFrame GetFrame() {

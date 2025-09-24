@@ -360,11 +360,6 @@ public class AxoObject extends AxoObjectAbstract {
         editor.setVisible(true);
     }
 
-    public void CloseEditor() {
-        FireObjectModified(this);
-        editor = null;
-    }
-
     public static AxoObject loadAxoObjectFromFile(Path path) {
         File file = path.toFile();
         Serializer serializer = new Persister(new Format(2));
