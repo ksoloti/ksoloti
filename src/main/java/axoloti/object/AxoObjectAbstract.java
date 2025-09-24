@@ -212,13 +212,18 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        /* Check if the object is an instance of AxoObjectAbstract, allowing comparison between subclasses */
+        if (!(obj instanceof AxoObjectAbstract)) {
             return false;
         }
         AxoObjectAbstract other = (AxoObjectAbstract) obj;
 
-        /* First check if UUIDs are equal */
-        if (uuid != null && other.uuid != null) {
+        /* Check to see if the UUIDs are valid before comparing them */
+        boolean hasValidUUID = (uuid != null && !this.uuid.equals("unloaded"));
+        boolean otherHasValidUUID = (other.uuid != null && !other.uuid.equals("unloaded"));
+        
+        /* Compare by UUID if both objects have a valid one */
+        if (hasValidUUID && otherHasValidUUID) {
             return uuid.equals(other.uuid);
         }
         
