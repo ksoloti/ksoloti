@@ -181,7 +181,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                     if (droppedFiles.size() > 1) {
                         Object[] options = {"Upload", "Cancel"};
                         int n = KeyboardNavigableOptionPane.showOptionDialog(
-                            null,
+                            this.getComponent(),
                             "Upload " + droppedFiles.size() + " files to SD card?",
                             "Upload multiple Files",
                             JOptionPane.YES_NO_OPTION,
