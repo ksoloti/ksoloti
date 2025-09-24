@@ -94,7 +94,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private static final Logger LOGGER = Logger.getLogger(AxoObjectEditor.class.getName());
 
     final AxoObject editObj;
-    private final String patchFilePath;
+    AxolotiLibrary sellib = null;
 
     private String origXML;
     private final RSyntaxTextArea jTextAreaLocalData;
@@ -528,7 +528,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         rSyntaxTextAreaXML.setEditable(false);
 
         // is it from the factory?
-        AxolotiLibrary sellib = null;
         for (AxolotiLibrary lib : Preferences.getInstance().getLibraries()) {
             if (editObj.sObjFilePath != null && editObj.sObjFilePath.startsWith(lib.getLocalLocation())) {
                 if (sellib == null || sellib.getLocalLocation().length() < lib.getLocalLocation().length()) {
@@ -714,10 +713,15 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         // warn if changes, and its not an embedded object
         if (hasChanged()) {
             if (!readonly) {
+                String lib = "";
+                if (sellib != null) {
+                    lib += sellib.getId() + ": ";
+                }
+
                 Object[] options = {"Save", "Discard", "Cancel"};
                 int n = KeyboardNavigableOptionPane.showOptionDialog(
                         this,
-                        "Save changes to \"" + editObj.getCName() + "\" ?",
+                        "Save changes to \"" + lib + editObj.getCName() + "\" ?",
                         "Unsaved Changes",
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
