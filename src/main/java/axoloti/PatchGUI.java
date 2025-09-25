@@ -19,6 +19,7 @@
 package axoloti;
 
 import axoloti.datatypes.DataType;
+import axoloti.dialogs.FindTextDialog;
 import axoloti.inlets.InletInstance;
 import axoloti.iolet.IoletAbstract;
 import axoloti.object.AxoObject;
@@ -36,9 +37,14 @@ import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.utils.StringRef;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -108,11 +114,15 @@ public class PatchGUI extends Patch {
     public JLayeredPane Layers = new JLayeredPane();
     public JPanel objectLayerPanel = new JPanel();
     public JPanel draggedObjectLayerPanel = new JPanel();
-    public JPanel netLayerPanel = new JPanel();
+    public JPanel netLayerPanel;
 
     JLayer<JComponent> objectLayer = new JLayer<JComponent>(objectLayerPanel);
     JLayer<JComponent> draggedObjectLayer = new JLayer<JComponent>(draggedObjectLayerPanel);
-    JLayer<JComponent> netLayer = new JLayer<JComponent>(netLayerPanel);
+    JLayer<JComponent> netLayer;
+
+    private ArrayList<AxoObjectInstanceAbstract> searchResults = new ArrayList<>();
+    private int currentMatchIndex = -1;
+    private String currentSearchText = "";
 
     public AxoObjectFromPatch ObjEditor;
     public ObjectSearchFrame osf;
@@ -134,6 +144,41 @@ public class PatchGUI extends Patch {
         Layers.setSize(Constants.PATCH_SIZE, Constants.PATCH_SIZE);
         Layers.setLocation(0, 0);
         Layers.setFont(Constants.FONT);
+
+        netLayerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                
+                if (searchResults.isEmpty()) {
+                    return;
+                }
+                Graphics2D g2d = (Graphics2D) g;
+                
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                for (axoloti.object.AxoObjectInstanceAbstract obj : searchResults) {
+                    boolean isCurrentMatch = (searchResults.indexOf(obj) == currentMatchIndex);
+
+                    Color highlightColor = /*isCurrentMatch ?*/ new Color(255,128,0,160) /*: new Color(255,128,0,160)*/;
+                    int strokeWidth = isCurrentMatch ? 6 : 2;
+                    BasicStroke highlightStroke = new BasicStroke(strokeWidth);
+                    
+                    int strokeOffs = strokeWidth / 2;
+                    
+                    g2d.setColor(highlightColor);
+                    g2d.setStroke(highlightStroke);
+                    
+                    g2d.drawRect(obj.getX() - strokeOffs,
+                                 obj.getY() - strokeOffs,
+                                 obj.getWidth() + strokeWidth-1,
+                                 obj.getHeight() + strokeWidth-1);
+                }
+            }
+        };
+        netLayer = new JLayer<JComponent>(netLayerPanel);
 
         JComponent[] layerComponents = {
             objectLayer, objectLayerPanel, draggedObjectLayerPanel, netLayerPanel,
@@ -1227,6 +1272,56 @@ public class PatchGUI extends Patch {
             Layers.add(objectLayer, Integer.valueOf(1));
             Layers.add(netLayer, Integer.valueOf(2));
             Layers.add(draggedObjectLayer, Integer.valueOf(3));
+        }
+    }
+
+    public void findAndHighlight(String searchText, int direction, FindTextDialog dialog) {
+        if (searchText.isEmpty()) {
+            currentSearchText = searchText;
+            searchResults.clear();
+            currentMatchIndex = -1;
+        } else if (!searchText.equals(currentSearchText)) {
+            currentSearchText = searchText;
+            searchResults.clear();
+            currentMatchIndex = -1;
+
+            for (AxoObjectInstanceAbstract obj : objectInstances) {
+                if (obj.getInstanceName() != null) {
+                    if (obj.getInstanceName().toLowerCase().contains(searchText.toLowerCase())) {
+                        if (!searchResults.contains(obj)) {
+                            searchResults.add(obj);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!searchResults.isEmpty()) {
+            currentMatchIndex += direction;
+            if (currentMatchIndex >= searchResults.size()) {
+                currentMatchIndex = 0;
+            } else if (currentMatchIndex < 0) {
+                currentMatchIndex = searchResults.size() - 1;
+            }
+
+            if (dialog != null) {
+                dialog.updateResults(currentMatchIndex, searchResults.size());
+            }
+            AxoObjectInstanceAbstract obj = searchResults.get(currentMatchIndex);
+            getPatchframe().scrollPatchViewTo(new Rectangle(obj.getX(),
+                                            obj.getY(),
+                                            obj.getWidth(),
+                                            obj.getHeight()));
+
+            if (netLayerPanel != null) {
+                netLayerPanel.repaint(); 
+            }
+        } else {
+            currentMatchIndex = -1; 
+
+            if (dialog != null) {
+                dialog.updateResults(currentMatchIndex, searchResults.size());
+            }
         }
     }
 

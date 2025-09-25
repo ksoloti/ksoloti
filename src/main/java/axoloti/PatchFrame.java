@@ -20,6 +20,7 @@
 package axoloti;
 
 import axoloti.dialogs.KeyboardNavigableOptionPane;
+import axoloti.dialogs.FindTextDialog;
 import axoloti.listener.BoardIDNameListener;
 import axoloti.listener.ConnectionStatusListener;
 import axoloti.listener.SDCardMountStatusListener;
@@ -31,6 +32,7 @@ import axoloti.sd.SDCardInfo;
 import axoloti.sd.SDFileReference;
 import axoloti.ui.SvgIconLoader;
 import axoloti.ui.Theme;
+import axoloti.utils.Constants;
 import axoloti.utils.FileUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect.OS;
@@ -111,6 +113,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private boolean firstShow = true;
     private boolean ignoreShiftKey = false;
 
+    private FindTextDialog findTextDialog; 
     private axoloti.menus.FileMenu fileMenuP;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
@@ -124,6 +127,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuClose;
     private javax.swing.JMenuItem jMenuCompileCode;
     private javax.swing.JMenu jMenuEdit;
+    private javax.swing.JMenuItem jMenuItemFindText;
     private javax.swing.JMenuItem jMenuItemGenerateAndCompileCode;
     private javax.swing.JMenuItem jMenuItemGenerateCode;
     private javax.swing.JMenuItem jMenuItemAddObj;
@@ -723,6 +727,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD = new javax.swing.JMenuItem();
         jMenuItemUploadSDStart = new javax.swing.JMenuItem();
         jMenuItemUploadInternalFlash = new javax.swing.JMenuItem();
+        jMenuItemFindText = new javax.swing.JMenuItem();
         jMenuItemGenerateAndCompileCode = new javax.swing.JMenuItem();
         jMenuItemGenerateCode = new javax.swing.JMenuItem();
         jMenuCompileCode = new javax.swing.JMenuItem();
@@ -761,8 +766,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jToolbarPanel.setAlignmentX(RIGHT_ALIGNMENT);
         jToolbarPanel.setAlignmentY(TOP_ALIGNMENT);
-        jToolbarPanel.setMaximumSize(new java.awt.Dimension(32767, 0));
-        jToolbarPanel.setPreferredSize(new java.awt.Dimension(212, 49));
+        jToolbarPanel.setMaximumSize(new java.awt.Dimension(32767, 48));
+        jToolbarPanel.setPreferredSize(new java.awt.Dimension(212, 48));
         jToolbarPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 5));
         jToolbarPanel.setLayout(new javax.swing.BoxLayout(jToolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -986,6 +991,16 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             }
         });
         jMenuTools.add(jMenuItemShowPatchMutator);
+
+        jMenuItemFindText.setMnemonic('F');
+        jMenuItemFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyUtils.CONTROL_OR_CMD_MASK));
+        jMenuItemFindText.setText("Find Text...");
+        jMenuItemFindText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemFindTextActionPerformed(evt);
+            }
+        });
+        jMenuTools.add(jMenuItemFindText);
 
         jMenuTools.add(jSeparator2);
 
@@ -1633,6 +1648,17 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         patch.ShowClassSelector(new Point(20, 20), null, null, true);
     }
 
+    private void jMenuItemFindTextActionPerformed(java.awt.event.ActionEvent evt) {
+        if (findTextDialog == null) {
+            findTextDialog = new FindTextDialog(patch);
+            Rectangle frameBounds = PatchFrame.this.getBounds();
+            int x = frameBounds.x + frameBounds.width - findTextDialog.getWidth() - 10;
+            int y = frameBounds.y + 30; 
+            findTextDialog.setLocation(x, y);
+        }
+        findTextDialog.showAndFocus();
+    }
+
     private void jMenuCloseActionPerformed(java.awt.event.ActionEvent evt) {
         AskClose();
     }
@@ -1825,6 +1851,20 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             jLabelBoardIDName.setText("Board Name:   " + nameToDisplay);
             jLabelBoardIDName.setToolTipText("Showing the name defined in Board > Select Device... > Name.\n" +
                                                 "This setting is saved in the local ksoloti.prefs file.");
+        }
+    }
+
+    public void scrollPatchViewTo(Rectangle bounds) {
+        if (jScrollPane1 != null && jScrollPane1.getViewport() != null) {
+            final int BASE_PADDING = Constants.X_GRID * 2;
+            Rectangle viewRelativeBounds = SwingUtilities.convertRectangle(patch.Layers, bounds, this);
+            Rectangle adjustedBounds = new Rectangle(
+                viewRelativeBounds.x      - BASE_PADDING,
+                viewRelativeBounds.y      - BASE_PADDING - 80, /* No idea why we need to shift by 80px. Seems to be a thing. */
+                viewRelativeBounds.width  + (BASE_PADDING * 2),
+                viewRelativeBounds.height + (BASE_PADDING * 2)
+            );
+            jScrollPane1.getViewport().scrollRectToVisible(adjustedBounds);
         }
     }
 }
