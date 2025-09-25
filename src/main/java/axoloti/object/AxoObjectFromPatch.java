@@ -18,7 +18,6 @@
  */
 package axoloti.object;
 
-import axoloti.MainFrame;
 import axoloti.Patch;
 import axoloti.PatchFrame;
 import axoloti.PatchGUI;
@@ -116,7 +115,7 @@ public class AxoObjectFromPatch extends AxoObject {
         // }
         // pg.setFileNamePath(title);
         pg.setFileNamePath(f.getAbsolutePath());
-        
+
         pf.setState(java.awt.Frame.NORMAL);
         pf.setVisible(true);
         pf.repositionIfOutsideScreen();
