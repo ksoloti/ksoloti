@@ -124,8 +124,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private javax.swing.JMenuItem jMenuClose;
     private javax.swing.JMenuItem jMenuCompileCode;
     private javax.swing.JMenu jMenuEdit;
-    private javax.swing.JMenuItem jMenuGenerateAndCompileCode;
-    private javax.swing.JMenuItem jMenuGenerateCode;
+    private javax.swing.JMenuItem jMenuItemGenerateAndCompileCode;
+    private javax.swing.JMenuItem jMenuItemGenerateCode;
     private javax.swing.JMenuItem jMenuItemAddObj;
     private javax.swing.JMenuItem jMenuItemAdjScroll;
     private javax.swing.JMenuItem jMenuItemShowPatchMutator;
@@ -334,8 +334,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         if (!Preferences.getInstance().getExpertMode()) {
             jSeparator6.setVisible(false);
             jMenuItemLock.setVisible(false);
-            jMenuGenerateAndCompileCode.setVisible(false);
-            jMenuGenerateCode.setVisible(false);
+            jMenuItemGenerateAndCompileCode.setVisible(false);
+            jMenuItemGenerateCode.setVisible(false);
             jMenuCompileCode.setVisible(false);
             jMenuUploadCode.setVisible(false);
             jMenuItemLock.setVisible(false);
@@ -723,8 +723,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuItemUploadSD = new javax.swing.JMenuItem();
         jMenuItemUploadSDStart = new javax.swing.JMenuItem();
         jMenuItemUploadInternalFlash = new javax.swing.JMenuItem();
-        jMenuGenerateAndCompileCode = new javax.swing.JMenuItem();
-        jMenuGenerateCode = new javax.swing.JMenuItem();
+        jMenuItemGenerateAndCompileCode = new javax.swing.JMenuItem();
+        jMenuItemGenerateCode = new javax.swing.JMenuItem();
         jMenuCompileCode = new javax.swing.JMenuItem();
         jMenuUploadCode = new javax.swing.JMenuItem();
         jMenuItemLock = new javax.swing.JMenuItem();
@@ -1066,22 +1066,22 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         jMenuPatch.add(jMenuItemUploadInternalFlash);
         jMenuPatch.add(jSeparator6);
 
-        jMenuGenerateAndCompileCode.setText("Generate & compile code");
-        jMenuGenerateAndCompileCode.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemGenerateAndCompileCode.setText("Generate & compile code");
+        jMenuItemGenerateAndCompileCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuGenerateAndCompileCodeActionPerformed(evt);
             }
         });
-        jMenuPatch.add(jMenuGenerateAndCompileCode);
+        jMenuPatch.add(jMenuItemGenerateAndCompileCode);
 
-        jMenuGenerateCode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyUtils.CONTROL_OR_CMD_MASK));
-        jMenuGenerateCode.setText("Generate code");
-        jMenuGenerateCode.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemGenerateCode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyUtils.CONTROL_OR_CMD_MASK));
+        jMenuItemGenerateCode.setText("Generate code");
+        jMenuItemGenerateCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuGenerateCodeActionPerformed(evt);
             }
         });
-        jMenuPatch.add(jMenuGenerateCode);
+        jMenuPatch.add(jMenuItemGenerateCode);
 
         jMenuCompileCode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuCompileCode.setText("Compile code");
