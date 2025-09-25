@@ -689,18 +689,35 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private void updateEditorView() {
         isUpdatingView = true;
 
-        jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
-        jTextAreaLocalData.setCaretPosition(0);
-        jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
-        jTextAreaInitCode.setCaretPosition(0);
-        jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
-        jTextAreaKRateCode.setCaretPosition(0);
-        jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
-        jTextAreaSRateCode.setCaretPosition(0);
-        jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
-        jTextAreaDisposeCode.setCaretPosition(0);
-        jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
-        jTextAreaMidiCode.setCaretPosition(0);
+        if (!jTextAreaLocalData.isFocusOwner()) {
+            jTextAreaLocalData.setText(editObj.sLocalData == null ? "" : editObj.sLocalData);
+            jTextAreaLocalData.setCaretPosition(0);
+        }
+        
+        if (!jTextAreaInitCode.isFocusOwner()) {
+            jTextAreaInitCode.setText(editObj.sInitCode == null ? "" : editObj.sInitCode);
+            jTextAreaInitCode.setCaretPosition(0); 
+        }
+        
+        if (!jTextAreaKRateCode.isFocusOwner()) {
+            jTextAreaKRateCode.setText(editObj.sKRateCode == null ? "" : editObj.sKRateCode);
+            jTextAreaKRateCode.setCaretPosition(0); 
+        }
+        
+        if (!jTextAreaSRateCode.isFocusOwner()) {
+            jTextAreaSRateCode.setText(editObj.sSRateCode == null ? "" : editObj.sSRateCode);
+            jTextAreaSRateCode.setCaretPosition(0); 
+        }
+        
+        if (!jTextAreaDisposeCode.isFocusOwner()) {
+            jTextAreaDisposeCode.setText(editObj.sDisposeCode == null ? "" : editObj.sDisposeCode);
+            jTextAreaDisposeCode.setCaretPosition(0); 
+        }
+        
+        if (!jTextAreaMidiCode.isFocusOwner()) {
+            jTextAreaMidiCode.setText(editObj.sMidiCode == null ? "" : editObj.sMidiCode);
+            jTextAreaMidiCode.setCaretPosition(0);
+        }
         
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream os = new ByteArrayOutputStream(2048);
