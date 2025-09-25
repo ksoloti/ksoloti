@@ -67,6 +67,8 @@ public class FindTextDialog extends JDialog implements ActionListener {
         add(resultLabel);
 
         pack();
+        setResizable(false);
+
         resultLabel.setText("0/0");
 
         AbstractAction closeAction = new AbstractAction() {
