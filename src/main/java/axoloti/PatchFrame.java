@@ -989,7 +989,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuTools.add(jSeparator2);
 
-        jMenuItemOpenFileLocation.setMnemonic('F');
+        jMenuItemOpenFileLocation.setMnemonic('L');
         jMenuItemOpenFileLocation.setText("Open File Location");
         jMenuItemOpenFileLocation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
