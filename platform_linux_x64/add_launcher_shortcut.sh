@@ -8,8 +8,8 @@ DEST_FILE="Ksoloti.desktop"
 APP_DIR="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )" )"
 
 # Define the full paths for Exec and Icon using the home directory
-EXECUTABLE_PATH="$APP_DIR/Ksoloti"
-ICON_PATH="$APP_DIR/ksoloti_icon_512.png"
+EXECUTABLE_PATH="$APP_DIR/Ksoloti %F"
+ICON_PATH="$APP_DIR/platform_linux_x64/ksoloti_icon.svg"
 
 # Define the destination directory for desktop files
 DEST_DIR="$HOME/.local/share/applications"
@@ -31,7 +31,7 @@ StartupWMClass=axoloti-Axoloti
 EOF
 
 # Use sed to replace the placeholders with the actual paths and copy to the destination
-sed -e "s|<<CHANGE_ME>>/Ksoloti %F|$EXECUTABLE_PATH %F|" \
+sed -e "s|<<CHANGE_ME>>/Ksoloti %F|$EXECUTABLE_PATH|" \
     -e "s|<<CHANGE_ME>>/platform_linux_x64/ksoloti_icon.svg|$ICON_PATH|" \
     "$TEMPLATE_FILE" > "$DEST_DIR/$DEST_FILE"
 
