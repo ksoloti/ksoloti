@@ -60,7 +60,7 @@ public class HSliderComponent extends ACtrlComponent {
     private int MousePressedBtn = MouseEvent.NOBUTTON;
 
     private double dragAccumulator = 0;
-    private static final int DRAG_DEAD_ZONE = 5;
+    private static final int DRAG_DEAD_ZONE = 8;
     private static final int DRAG_PIXELS_PER_STEP = 10;
     private static final double FAST_DRAG_ACCELERATION_FACTOR = 3.0;
 
