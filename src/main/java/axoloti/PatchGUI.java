@@ -1040,26 +1040,20 @@ public class PatchGUI extends Patch {
 
     void MoveSelectedAxoObjInstances(Direction dir, int xsteps, int ysteps) {
         if (!locked) {
-            int xgrid = 1;
-            int ygrid = 1;
-            int xstep = 0;
-            int ystep = 0;
+            int xgrid = 1; int xstep = 0;
+            int ygrid = 1; int ystep = 0;
             switch (dir) {
                 case DOWN:
-                    ystep = ysteps;
-                    ygrid = ysteps;
+                    ystep = ysteps; ygrid = ysteps;
                     break;
                 case UP:
-                    ystep = -ysteps;
-                    ygrid = ysteps;
+                    ystep = -ysteps; ygrid = ysteps;
                     break;
                 case LEFT:
-                    xstep = -xsteps;
-                    xgrid = xsteps;
+                    xstep = -xsteps; xgrid = xsteps;
                     break;
                 case RIGHT:
-                    xstep = xsteps;
-                    xgrid = xsteps;
+                    xstep = xsteps; xgrid = xsteps;
                     break;
             }
             boolean isUpdate = false;
