@@ -123,6 +123,7 @@ public class PatchGUI extends Patch {
 
     private ArrayList<AxoObjectInstanceAbstract> findTextResults = new ArrayList<>();
     private int currentFindTextMatchIndex = -1;
+    private int currentFindCheckmask = 0;
     private String currentFindTextString = "";
 
     public AxoObjectFromPatch ObjEditor;
@@ -1281,14 +1282,16 @@ public class PatchGUI extends Patch {
 
         if (searchText.isEmpty()) {
             currentFindTextString = searchText;
+            currentFindCheckmask = checkmask; 
             findTextResults.clear();
             currentFindTextMatchIndex = -1;
             isNewSearch = true; 
             if (netLayerPanel != null) {
                 netLayerPanel.repaint();
             }
-        } else if (!searchText.equals(currentFindTextString)) {
+        } else if (!searchText.equals(currentFindTextString) || checkmask != currentFindCheckmask) {
             currentFindTextString = searchText;
+            currentFindCheckmask = checkmask;
             findTextResults.clear();
             isNewSearch = true;
             final String lowerSearchText = searchText.toLowerCase();

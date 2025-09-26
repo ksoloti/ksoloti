@@ -20,6 +20,9 @@
 package axoloti.dialogs;
 
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -34,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -51,7 +53,6 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
     private JButton nextButton;
     private JLabel resultLabel;
     private PatchGUI patchGUI;
-    private Timer searchTimer;
     private JCheckBox searchNameBox;
     private JCheckBox searchLabelBox;
     private JCheckBox searchAttributesBox;
@@ -67,37 +68,29 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
     public FindTextDialog(PatchGUI patchGUI) {
         super(patchGUI.getPatchframe(), "Find in " + patchGUI.getPatchframe().getTitle(), false);
         this.patchGUI = patchGUI;
-        setLayout(new FlowLayout());
-
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
         searchField = new JTextField(20);
+        searchField.getDocument().addDocumentListener(this);
+        searchField.getInputMap(JComponent.WHEN_FOCUSED).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "none"
+        );
+
         prevButton = new JButton("<");
+        prevButton.addActionListener(this);
+
         nextButton = new JButton(">");
+        nextButton.addActionListener(this);
+
         resultLabel = new JLabel("99/99"); /* Set largest width until pack() call below */
 
-        searchField.getDocument().addDocumentListener(this);
-        prevButton.addActionListener(this);
-        nextButton.addActionListener(this);
-        searchField.addActionListener(this);
-
-        searchTimer = new Timer(250, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                FindTextDialog.this.runLiveSearch(); 
-            }
-        });
-        searchTimer.setRepeats(false);
-
-        add(new JLabel("Find text:"));
-        add(searchField);
-        add(prevButton);
-        add(nextButton);
-        add(resultLabel);
-
-        searchNameBox = new JCheckBox("Name");
-        searchLabelBox = new JCheckBox("Label");
-        searchAttributesBox = new JCheckBox("Attributes");
-        searchParametersBox = new JCheckBox("Parameters");
-        searchIoletsBox = new JCheckBox("Iolets");
+        JPanel searchRowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchRowPanel.add(new JLabel("Find text:"));
+        searchRowPanel.add(searchField);
+        searchRowPanel.add(prevButton);
+        searchRowPanel.add(nextButton);
+        searchRowPanel.add(resultLabel);
 
         ActionListener checkboxListener = new ActionListener() {
             @Override
@@ -105,11 +98,36 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
                 FindTextDialog.this.runLiveSearch();
             }
         };
+
+        searchNameBox = new JCheckBox("Name");
+        searchNameBox.setMnemonic(KeyEvent.VK_N);
+        searchNameBox.setSelected(true);
         searchNameBox.addActionListener(checkboxListener);
+        searchNameBox.setToolTipText("Search in object TypeName/ID fields.\nPress ALT+N to toggle.");
+
+        searchLabelBox = new JCheckBox("Label");
+        searchLabelBox.setMnemonic(KeyEvent.VK_L);
+        searchLabelBox.setSelected(true);
         searchLabelBox.addActionListener(checkboxListener);
+        searchLabelBox.setToolTipText("Search in object Instance Label fields.\nPress ALT+L to toggle.");
+
+        searchAttributesBox = new JCheckBox("Attributes");
+        searchAttributesBox.setMnemonic(KeyEvent.VK_A);
+        searchAttributesBox.setSelected(true);
         searchAttributesBox.addActionListener(checkboxListener);
+        searchAttributesBox.setToolTipText("Search in bject Attribute name fields.\nPress ALT+A to toggle.");
+
+        searchParametersBox = new JCheckBox("Parameters");
+        searchParametersBox.setMnemonic(KeyEvent.VK_P);
+        searchParametersBox.setSelected(true);
         searchParametersBox.addActionListener(checkboxListener);
+        searchParametersBox.setToolTipText("Search in object Parameter name fields.\nPress ALT+P to toggle.");
+
+        searchIoletsBox = new JCheckBox("Iolets");
+        searchIoletsBox.setMnemonic(KeyEvent.VK_I);
+        searchIoletsBox.setSelected(true);
         searchIoletsBox.addActionListener(checkboxListener);
+        searchIoletsBox.setToolTipText("Search in object Inlet/Outlet name fields.\nPress ALT+I to toggle.");
 
         JPanel targetsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         targetsPanel.add(searchNameBox);
@@ -117,19 +135,21 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         targetsPanel.add(searchAttributesBox);
         targetsPanel.add(searchParametersBox);
         targetsPanel.add(searchIoletsBox);
-        add(targetsPanel); 
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 0, 5);
+        gbc.weightx = 1.0;
+        add(searchRowPanel, gbc);
 
-        searchNameBox.setSelected(true);
-        searchLabelBox.setSelected(true);
-        searchAttributesBox.setSelected(true);
-        searchParametersBox.setSelected(true);
-        searchIoletsBox.setSelected(true);
-
-        searchNameBox.setToolTipText("Search in Object TypeName/ID fields ");
-        searchLabelBox.setToolTipText("Search in Object Instance Label fields");
-        searchAttributesBox.setToolTipText("Search in Object Attribute name fields");
-        searchParametersBox.setToolTipText("Search in Object Parameter name fields");
-        searchIoletsBox.setToolTipText("Search in Object Inlet/Outlet name fields");
+        gbc.gridy = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 5, 5, 5);
+        gbc.weightx = 1.0; 
+        add(targetsPanel, gbc);
 
         pack();
         setResizable(false);
@@ -195,15 +215,6 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         patchGUI.findAndHighlight(text, 0, this, checkmask);
     }
 
-    private void triggerSearch() {
-        if (searchField.getText().isEmpty()) {
-            searchTimer.stop();
-            FindTextDialog.this.runLiveSearch(); /* trigger search immediately, clearing the highlights */
-        } else {
-            searchTimer.restart(); 
-        }
-    }
-
     private int getSearchCheckmask() {
         int mask = 0;
         if (searchNameBox.isSelected()) {
@@ -226,22 +237,22 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-        triggerSearch();
+        runLiveSearch();
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
-        triggerSearch();
+        runLiveSearch();
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
-        triggerSearch();
+        runLiveSearch();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == searchField || e.getSource() == nextButton) {
+        if (e.getSource() == nextButton) { 
             patchGUI.findAndHighlight(searchField.getText(), 1, this, getSearchCheckmask());
         } else if (e.getSource() == prevButton) {
             patchGUI.findAndHighlight(searchField.getText(), -1, this, getSearchCheckmask());
