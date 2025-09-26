@@ -30,6 +30,7 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectZombie;
 import axoloti.outlets.OutletInstance;
+import axoloti.ui.MaterialColors;
 import axoloti.ui.SelectionRectangle;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
@@ -150,31 +151,31 @@ public class PatchGUI extends Patch {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                
+
+                /* Set up find text highlight handler */
                 if (searchResults.isEmpty()) {
                     return;
                 }
                 Graphics2D g2d = (Graphics2D) g;
-                
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                // g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
                 for (axoloti.object.AxoObjectInstanceAbstract obj : searchResults) {
                     boolean isCurrentMatch = (searchResults.indexOf(obj) == currentMatchIndex);
 
-                    Color highlightColor = /*isCurrentMatch ?*/ new Color(255,128,0,160) /*: new Color(255,128,0,160)*/;
+                    Color highlightColor = MaterialColors.PURPLE_A700;
                     int strokeWidth = isCurrentMatch ? 6 : 2;
                     BasicStroke highlightStroke = new BasicStroke(strokeWidth);
-                    
-                    int strokeOffs = strokeWidth / 2;
-                    
+                    int halfStroke = strokeWidth / 2;
+
                     g2d.setColor(highlightColor);
                     g2d.setStroke(highlightStroke);
-                    
-                    g2d.drawRect(obj.getX() - strokeOffs,
-                                 obj.getY() - strokeOffs,
-                                 obj.getWidth() + strokeWidth-1,
-                                 obj.getHeight() + strokeWidth-1);
+
+                    g2d.drawRect(obj.getX() - halfStroke,
+                                 obj.getY() - halfStroke,
+                                 obj.getWidth() + strokeWidth,
+                                 obj.getHeight() + strokeWidth);
                 }
             }
         };
@@ -411,7 +412,7 @@ public class PatchGUI extends Patch {
                         if (me.getClickCount() == 2) {
                             ShowClassSelector(me.getPoint(), null, null, true);
                         }
-                        
+
                         Layers.requestFocusInWindow();
                     }
                     me.consume();
@@ -584,7 +585,7 @@ public class PatchGUI extends Patch {
                                         } else {
                                             loadedObject.id = absolutePath.substring(0, absolutePath.lastIndexOf('.'));
                                         }
-                                        
+
                                         abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
                                         if (abstractInstance != null) {
                                             /* Embed the newly created subpatch to avoid zombiism */
@@ -620,7 +621,7 @@ public class PatchGUI extends Patch {
 
                                     Point instanceLocation = new Point(alignedDropLocation.x + xOffset, alignedDropLocation.y);
                                     AxoObjectInstanceAbstract abstractInstance = AddObjectInstance(loadedObject, instanceLocation);
-                                    
+
                                     if (abstractInstance != null) {
                                         AxoObjectInstance concreteInstance = (AxoObjectInstance) abstractInstance;
                                         concreteInstance.ConvertToPatchPatcher(); 
@@ -721,12 +722,10 @@ public class PatchGUI extends Patch {
             HashMap<String, String> dict = new HashMap<String, String>();
             ArrayList<AxoObjectInstanceAbstract> obj2 = (ArrayList<AxoObjectInstanceAbstract>) p.objectInstances.clone();
 
-            // System.out.println(Instant.now() + " Starting first pass: Pre-processing objects.");
             for (AxoObjectInstanceAbstract o : obj2) {
                 o.patch = this;
                 AxoObjectAbstract obj = o.resolveType();
                 if (obj != null) {
-                    // System.out.println(Instant.now() + " Found object type for: " + o.getInstanceName());
                     Modulator[] m = obj.getModulators();
                     if (m != null) {
                         if (Modulators == null) {
@@ -785,7 +784,6 @@ public class PatchGUI extends Patch {
                 }
             } while (hasCollision);
 
-            // System.out.println(Instant.now() + " Starting second pass: Naming and positioning objects.");
             for (AxoObjectInstanceAbstract o : p.objectInstances) {
                 String original_name = o.getInstanceName();
                 if (original_name != null) {
@@ -793,27 +791,23 @@ public class PatchGUI extends Patch {
 
                     if (!new_name.equals(original_name)) {
                         o.setInstanceName(new_name);
-                        // System.out.println(Instant.now() + " Renamed object from: " + original_name + " to: " + new_name);
                     }
                     dict.put(original_name, new_name);
-                    // System.out.println(Instant.now() + " Dictionary mapping: " + original_name + " -> " + new_name);
                 }
-                
+
                 objectInstances.add(o);
                 objectLayerPanel.add(o, 0);
                 o.PostConstructor();
-                
+
                 int newposx = o.getX() + xOffset + xCollisionShift;
                 int newposy = o.getY() + yOffset + yCollisionShift;
 
                 o.setLocation(newposx, newposy);
                 o.SetSelected(true);
-                // System.out.println(Instant.now() + " Pasted object: " + o.getInstanceName() + " at new location: (" + newposx + ", " + newposy + ")");
             }
 
             objectLayerPanel.validate();
 
-            // System.out.println(Instant.now() + " Starting third pass: Recreating wires (nets).");
             Map<OutletInstance, List<InletInstance>> externalConnectionsToMake = null;
             if (applyWiresFromExternalOutlets) {
                 externalConnectionsToMake = new HashMap<>();
@@ -840,11 +834,7 @@ public class PatchGUI extends Patch {
                                     OutletInstance newOutletInstance = newObj.GetOutletInstance(outletname);
                                     if (newOutletInstance != null) {
                                         source2.add(newOutletInstance);
-                                        // System.out.println(Instant.now() + " Found internal outlet and retrieved new instance: " + objname + ":" + outletname + " -> " + on2 + ":" + outletname);
                                     }
-                                    // else {
-                                    //     System.out.println(Instant.now() + " Could not find outlet instance for new object: " + on2 + ":" + outletname);
-                                    // }
                                 }
                             }
                             else if (applyWiresFromExternalOutlets) {
@@ -854,7 +844,6 @@ public class PatchGUI extends Patch {
                                     OutletInstance oi = obj.GetOutletInstance(outletname);
                                     if (oi != null) {
                                         connectedOutlet = oi;
-                                        // System.out.println(Instant.now() + " Found external outlet: " + objname + ":" + outletname);
                                     }
                                 }
                             }
@@ -866,7 +855,6 @@ public class PatchGUI extends Patch {
                 /* Handles the destination (inlets) of the net. */
                 ArrayList<InletInstance> dest2 = new ArrayList<InletInstance>();
                 if (n.dest != null && n.dest.size() > 0) {
-                    // System.out.println(Instant.now() + " Net: " + n.GetCName() + " has " + n.dest.size() + " destinations in clipboard.");
                     for (InletInstance o : n.dest) {
                         String objname = o.getObjname();
                         String inletname = o.getInletname();
@@ -879,11 +867,7 @@ public class PatchGUI extends Patch {
                                     InletInstance newInletInstance = newObj.GetInletInstance(inletname);
                                     if (newInletInstance != null) {
                                         dest2.add(newInletInstance);
-                                        // System.out.println(Instant.now() + " Found internal inlet and retrieved new instance: " + objname + ":" + inletname + " -> " + on2 + ":" + inletname);
                                     }
-                                    // else {
-                                    //     System.out.println(Instant.now() + " Could not find inlet instance for new object: " + on2 + ":" + inletname);
-                                    // }
                                 }
                             }
                         }
@@ -897,7 +881,6 @@ public class PatchGUI extends Patch {
                     n.PostConstructor();
                     nets.add(n);
                     netLayerPanel.add(n);
-                    // System.out.println(Instant.now() + " Creating internal net: " + n.GetCName());
                 }
                 else if (connectedOutlet != null && n.dest.size() > 0 && applyWiresFromExternalOutlets) {
                     /* Net has an external source and needs to be connected to the new inlets */
@@ -905,18 +888,15 @@ public class PatchGUI extends Patch {
                         externalConnectionsToMake.put(connectedOutlet, new ArrayList<>());
                     }
                     externalConnectionsToMake.get(connectedOutlet).addAll(n.dest);
-                    // System.out.println(Instant.now() + " Queuing external connection from: " + connectedOutlet.GetCName() + " to " + n.dest.size() + " new inlets.");
                 }
                 else if (n.source.size() == 0 && n.dest.size() > 1) {
                     /* Floating net: the net connects two or more inlets in the group but the connection to the external outlet is severed. */
                     n.PostConstructor();
                     nets.add(n);
                     netLayerPanel.add(n);
-                    // System.out.println(Instant.now() + " Pasting a 'floating' net with two or more destinations but no source.");
                 }
             }
-            
-            // Fourth Pass: Create the new external connections
+
             if (applyWiresFromExternalOutlets && externalConnectionsToMake != null) {
                 for (Map.Entry<OutletInstance, List<InletInstance>> entry : externalConnectionsToMake.entrySet()) {
                     OutletInstance sourceOutlet = entry.getKey();
@@ -942,7 +922,7 @@ public class PatchGUI extends Patch {
     public String getSimpleUniqueName(String baseName) {
         int suffix = 1;
         String uniqueName;
-        
+
         while (true) {
             uniqueName = baseName + "_" + suffix;
             if (GetObjectInstance(uniqueName) == null) {
@@ -967,7 +947,7 @@ public class PatchGUI extends Patch {
                 baseName = desiredName;
             }
         }
-        
+
         String uniqueName;
         while (true) {
             uniqueName = baseName + "_" + suffix;
@@ -1095,7 +1075,6 @@ public class PatchGUI extends Patch {
                     p.x = xgrid * (p.x / xgrid);
                     p.y = ygrid * (p.y / ygrid);
                     o.SetLocation(p.x, p.y);
-                    // o.repaint();
                     if (boundsToRepaint == null) {
                         boundsToRepaint = o.getBounds();
                     } else {
@@ -1276,14 +1255,17 @@ public class PatchGUI extends Patch {
     }
 
     public void findAndHighlight(String searchText, int direction, FindTextDialog dialog) {
+        boolean isNewSearch = false; 
+
         if (searchText.isEmpty()) {
             currentSearchText = searchText;
             searchResults.clear();
             currentMatchIndex = -1;
+            isNewSearch = true; 
         } else if (!searchText.equals(currentSearchText)) {
             currentSearchText = searchText;
             searchResults.clear();
-            currentMatchIndex = -1;
+            isNewSearch = true;
 
             for (AxoObjectInstanceAbstract obj : objectInstances) {
                 if (obj.getInstanceName() != null) {
@@ -1294,16 +1276,20 @@ public class PatchGUI extends Patch {
                     }
                 }
             }
+
+            currentMatchIndex = searchResults.isEmpty() ? -1 : 0; 
         }
 
-        if (!searchResults.isEmpty()) {
+        if (!searchResults.isEmpty() && !isNewSearch && direction != 0) { 
             currentMatchIndex += direction;
             if (currentMatchIndex >= searchResults.size()) {
                 currentMatchIndex = 0;
             } else if (currentMatchIndex < 0) {
                 currentMatchIndex = searchResults.size() - 1;
             }
+        }
 
+        if (!searchResults.isEmpty() && currentMatchIndex != -1) {
             if (dialog != null) {
                 dialog.updateResults(currentMatchIndex, searchResults.size());
             }
@@ -1318,7 +1304,6 @@ public class PatchGUI extends Patch {
             }
         } else {
             currentMatchIndex = -1; 
-
             if (dialog != null) {
                 dialog.updateResults(currentMatchIndex, searchResults.size());
             }

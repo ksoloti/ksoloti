@@ -32,6 +32,9 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import axoloti.PatchGUI;
 
@@ -39,12 +42,13 @@ import axoloti.PatchGUI;
  * 
  * @author Ksoloti
  */
-public class FindTextDialog extends JDialog implements ActionListener {
+public class FindTextDialog extends JDialog implements ActionListener, DocumentListener {
     private JTextField searchField;
     private JButton prevButton;
     private JButton nextButton;
     private JLabel resultLabel;
     private PatchGUI patchGUI;
+    private Timer searchTimer;
 
     public FindTextDialog(PatchGUI patchGUI) {
         super(patchGUI.getPatchframe(), "Find in " + patchGUI.getPatchframe().getTitle(), false);
@@ -56,9 +60,18 @@ public class FindTextDialog extends JDialog implements ActionListener {
         nextButton = new JButton(">");
         resultLabel = new JLabel("99/99"); /* Set largest width until pack() call below */
 
+        searchField.getDocument().addDocumentListener(this);
         prevButton.addActionListener(this);
         nextButton.addActionListener(this);
         searchField.addActionListener(this);
+
+        searchTimer = new Timer(250, new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                FindTextDialog.this.runLiveSearch(); 
+            }
+        });
+        searchTimer.setRepeats(false);
 
         add(new JLabel("Find text:"));
         add(searchField);
@@ -112,6 +125,36 @@ public class FindTextDialog extends JDialog implements ActionListener {
         this.toFront();
         searchField.requestFocusInWindow(); 
         searchField.selectAll(); 
+    }
+
+    private void runLiveSearch() {
+        String text = searchField.getText();
+        
+        /* Only trigger the search if the text length is 2 or more */
+        if (text.length() > 1) { 
+            patchGUI.findAndHighlight(text, 0, this); 
+        } else if (text.isEmpty()) {
+            patchGUI.findAndHighlight("", 0, this);
+        }
+    }
+
+    private void triggerSearch() {
+        searchTimer.restart(); 
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        triggerSearch();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        triggerSearch();
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        triggerSearch();
     }
 
     @Override
