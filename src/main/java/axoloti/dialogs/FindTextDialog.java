@@ -27,9 +27,11 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
@@ -50,6 +52,17 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
     private JLabel resultLabel;
     private PatchGUI patchGUI;
     private Timer searchTimer;
+    private JCheckBox searchNameBox;
+    private JCheckBox searchLabelBox;
+    private JCheckBox searchAttributesBox;
+    private JCheckBox searchParametersBox;
+    private JCheckBox searchIoletsBox;
+
+    public static final int FIND_TARGET_NAME        = 1;    /* Bit 0: Object TypeName/ID */
+    public static final int FIND_TARGET_LABEL       = 2;    /* Bit 1: Instance Name (Label) */
+    public static final int FIND_TARGET_ATTRIBUTES  = 4;    /* Bit 2: AttributeInstance Names */
+    public static final int FIND_TARGET_PARAMETERS  = 8;    /* Bit 3: ParameterInstance Names */
+    public static final int FIND_TARGET_IOLETS      = 16;   /* Bit 4: Inlet/Outlet Names */
 
     public FindTextDialog(PatchGUI patchGUI) {
         super(patchGUI.getPatchframe(), "Find in " + patchGUI.getPatchframe().getTitle(), false);
@@ -80,6 +93,44 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         add(nextButton);
         add(resultLabel);
 
+        searchNameBox = new JCheckBox("Name");
+        searchLabelBox = new JCheckBox("Label");
+        searchAttributesBox = new JCheckBox("Attributes");
+        searchParametersBox = new JCheckBox("Parameters");
+        searchIoletsBox = new JCheckBox("Iolets");
+
+        ActionListener checkboxListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FindTextDialog.this.runLiveSearch();
+            }
+        };
+        searchNameBox.addActionListener(checkboxListener);
+        searchLabelBox.addActionListener(checkboxListener);
+        searchAttributesBox.addActionListener(checkboxListener);
+        searchParametersBox.addActionListener(checkboxListener);
+        searchIoletsBox.addActionListener(checkboxListener);
+
+        JPanel targetsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        targetsPanel.add(searchNameBox);
+        targetsPanel.add(searchLabelBox);
+        targetsPanel.add(searchAttributesBox);
+        targetsPanel.add(searchParametersBox);
+        targetsPanel.add(searchIoletsBox);
+        add(targetsPanel); 
+
+        searchNameBox.setSelected(true);
+        searchLabelBox.setSelected(true);
+        searchAttributesBox.setSelected(true);
+        searchParametersBox.setSelected(true);
+        searchIoletsBox.setSelected(true);
+
+        searchNameBox.setToolTipText("Search in Object TypeName/ID fields ");
+        searchLabelBox.setToolTipText("Search in Object Instance Label fields");
+        searchAttributesBox.setToolTipText("Search in Object Attribute name fields");
+        searchParametersBox.setToolTipText("Search in Object Parameter name fields");
+        searchIoletsBox.setToolTipText("Search in Object Inlet/Outlet name fields");
+
         pack();
         setResizable(false);
 
@@ -107,7 +158,7 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         AbstractAction nextAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                patchGUI.findAndHighlight(searchField.getText(), 1, FindTextDialog.this);
+                patchGUI.findAndHighlight(searchField.getText(), 1, FindTextDialog.this, getSearchCheckmask());
             }
         };
         this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "NEXT_RESULT");
@@ -116,7 +167,7 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         AbstractAction prevAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                patchGUI.findAndHighlight(searchField.getText(), -1, FindTextDialog.this);
+                patchGUI.findAndHighlight(searchField.getText(), -1, FindTextDialog.this, getSearchCheckmask());
             }
         };
         this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK), "PREV_RESULT");
@@ -140,7 +191,8 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
     private void runLiveSearch() {
         String text = searchField.getText();
-        patchGUI.findAndHighlight(text, 0, this);
+        int checkmask = getSearchCheckmask();
+        patchGUI.findAndHighlight(text, 0, this, checkmask);
     }
 
     private void triggerSearch() {
@@ -150,6 +202,26 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         } else {
             searchTimer.restart(); 
         }
+    }
+
+    private int getSearchCheckmask() {
+        int mask = 0;
+        if (searchNameBox.isSelected()) {
+            mask |= FIND_TARGET_NAME;
+        }
+        if (searchLabelBox.isSelected()) {
+            mask |= FIND_TARGET_LABEL;
+        }
+        if (searchAttributesBox.isSelected()) {
+            mask |= FIND_TARGET_ATTRIBUTES;
+        }
+        if (searchParametersBox.isSelected()) {
+            mask |= FIND_TARGET_PARAMETERS;
+        }
+        if (searchIoletsBox.isSelected()) {
+            mask |= FIND_TARGET_IOLETS;
+        }
+        return mask;
     }
 
     @Override
@@ -170,9 +242,9 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == searchField || e.getSource() == nextButton) {
-            patchGUI.findAndHighlight(searchField.getText(), 1, this);
+            patchGUI.findAndHighlight(searchField.getText(), 1, this, getSearchCheckmask());
         } else if (e.getSource() == prevButton) {
-            patchGUI.findAndHighlight(searchField.getText(), -1, this);
+            patchGUI.findAndHighlight(searchField.getText(), -1, this, getSearchCheckmask());
         }
     }
 }

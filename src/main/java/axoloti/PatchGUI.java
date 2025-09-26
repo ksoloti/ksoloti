@@ -1275,7 +1275,7 @@ public class PatchGUI extends Patch {
         }
     }
 
-    public void findAndHighlight(String searchText, int direction, FindTextDialog dialog) {
+    public void findAndHighlight(String searchText, int direction, FindTextDialog dialog, int checkmask) {
         boolean isNewSearch = false; 
 
         if (searchText.isEmpty()) {
@@ -1293,41 +1293,56 @@ public class PatchGUI extends Patch {
             for (AxoObjectInstanceAbstract obj : objectInstances) {
                 boolean isMatch = false;
 
-                if (obj.typeName != null && obj.typeName.toLowerCase().contains(lowerSearchText)) {
-                    isMatch = true;
+                if ((checkmask & FindTextDialog.FIND_TARGET_NAME) != 0) {
+                    if (obj.typeName != null && obj.typeName.toLowerCase().contains(lowerSearchText)) {
+                        isMatch = true;
+                    }
                 }
-                if (!isMatch && obj.getInstanceName() != null && obj.getInstanceName().toLowerCase().contains(lowerSearchText)) {
-                    isMatch = true;
+
+                if ((checkmask & FindTextDialog.FIND_TARGET_LABEL) != 0) {
+                    if (!isMatch && obj.getInstanceName() != null && obj.getInstanceName().toLowerCase().contains(lowerSearchText)) {
+                        isMatch = true;
+                    }
                 }
-                if (!isMatch && obj.getAttributeInstances() != null) {
-                    for (AttributeInstance ai : obj.getAttributeInstances()) {
-                        if (ai.getName().toLowerCase().contains(lowerSearchText)) {
-                            isMatch = true;
-                            break;
+
+                if ((checkmask & FindTextDialog.FIND_TARGET_ATTRIBUTES) != 0) {
+                    if (!isMatch && obj.getAttributeInstances() != null) {
+                        for (AttributeInstance ai : obj.getAttributeInstances()) {
+                            if (ai.getName().toLowerCase().contains(lowerSearchText)) {
+                                isMatch = true;
+                                break;
+                            }
                         }
                     }
                 }
-                if (!isMatch && obj.getParameterInstances() != null) {
-                    for (ParameterInstance pi : obj.getParameterInstances()) {
-                        if (pi.getName().toLowerCase().contains(lowerSearchText)) {
-                            isMatch = true;
-                            break;
+
+                if ((checkmask & FindTextDialog.FIND_TARGET_PARAMETERS) != 0) {
+                    if (!isMatch && obj.getParameterInstances() != null) {
+                        for (ParameterInstance pi : obj.getParameterInstances()) {
+                            if (pi.getName().toLowerCase().contains(lowerSearchText)) {
+                                isMatch = true;
+                                break;
+                            }
                         }
                     }
                 }
-                if (!isMatch && obj.getInletInstances() != null) {
-                    for (InletInstance ii : obj.getInletInstances()) {
-                        if (ii.getInletname().toLowerCase().contains(lowerSearchText)) {
-                            isMatch = true;
-                            break;
+
+                if ((checkmask & FindTextDialog.FIND_TARGET_IOLETS) != 0) {
+                    if (!isMatch && obj.getInletInstances() != null) {
+                        for (InletInstance ii : obj.getInletInstances()) {
+                            if (ii.getInletname().toLowerCase().contains(lowerSearchText)) {
+                                isMatch = true;
+                                break;
+                            }
                         }
                     }
-                }
-                if (!isMatch && obj.getOutletInstances() != null) {
-                    for (OutletInstance ii : obj.getOutletInstances()) {
-                        if (ii.getOutletname().toLowerCase().contains(lowerSearchText)) {
-                            isMatch = true;
-                            break;
+
+                    if (!isMatch && obj.getOutletInstances() != null) {
+                        for (OutletInstance ii : obj.getOutletInstances()) {
+                            if (ii.getOutletname().toLowerCase().contains(lowerSearchText)) {
+                                isMatch = true;
+                                break;
+                            }
                         }
                     }
                 }
