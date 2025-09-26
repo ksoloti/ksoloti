@@ -1056,29 +1056,60 @@ public class PatchGUI extends Patch {
                     xstep = xsteps; xgrid = xsteps;
                     break;
             }
+
             boolean isUpdate = false;
             Rectangle boundsToRepaint = null;
+            Rectangle netLayerBoundsToRepaint = null;
+            final int PADDING = xsteps + ysteps;
+
             for (AxoObjectInstanceAbstract o : objectInstances) {
                 if (o.isSelected()) {
                     isUpdate = true;
+
+                    Rectangle oldBounds = o.getBounds();
                     Point p = o.getLocation();
                     p.x = p.x + xstep;
                     p.y = p.y + ystep;
                     p.x = xgrid * (p.x / xgrid);
                     p.y = ygrid * (p.y / ygrid);
                     o.SetLocation(p.x, p.y);
-                    if (boundsToRepaint == null) {
-                        boundsToRepaint = o.getBounds();
+
+                    Rectangle newBounds = o.getBounds();
+                    Rectangle paddedOldBounds = new Rectangle(
+                        oldBounds.x - PADDING, oldBounds.y - PADDING,
+                        oldBounds.width + 2 * PADDING, oldBounds.height + 2 * PADDING
+                    );
+                    Rectangle paddedNewBounds = new Rectangle(
+                        newBounds.x - PADDING, newBounds.y - PADDING,
+                        newBounds.width + 2 * PADDING, newBounds.height + 2 * PADDING
+                    );
+
+                    if (netLayerBoundsToRepaint == null) {
+                        netLayerBoundsToRepaint = paddedOldBounds;
                     } else {
-                        boundsToRepaint.add(o.getBounds());
+                        netLayerBoundsToRepaint.add(paddedOldBounds);
+                    }
+                    netLayerBoundsToRepaint.add(paddedNewBounds);
+
+                    if (boundsToRepaint == null) {
+                        boundsToRepaint = newBounds;
+                    } else {
+                        boundsToRepaint.add(newBounds);
                     }
                 }
             }
+
             if (isUpdate) {
                 AdjustSize();
                 SetDirty();
+
                 if (boundsToRepaint != null) {
                     objectLayerPanel.repaint(boundsToRepaint); /* Repaint only the combined area */
+
+                }
+
+                if (netLayerBoundsToRepaint != null) {
+                    netLayerPanel.repaint(netLayerBoundsToRepaint);
                 }
             }
         } else {
