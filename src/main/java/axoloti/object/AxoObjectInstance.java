@@ -576,7 +576,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public InletInstance GetInletInstance(String n) {
+    public InletInstance getInletInstance(String n) {
         for (InletInstance o : inletInstances) {
             if (n.equals(o.GetLabel())) {
                 return o;
@@ -592,7 +592,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public OutletInstance GetOutletInstance(String n) {
+    public OutletInstance getOutletInstance(String n) {
         for (OutletInstance o : outletInstances) {
             if (n.equals(o.GetLabel())) {
                 return o;
@@ -647,12 +647,12 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public ArrayList<InletInstance> GetInletInstances() {
+    public ArrayList<InletInstance> getInletInstances() {
         return inletInstances;
     }
 
     @Override
-    public ArrayList<OutletInstance> GetOutletInstances() {
+    public ArrayList<OutletInstance> getOutletInstances() {
         return outletInstances;
     }
 
@@ -1182,8 +1182,8 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         ranking = new int[candidates.size()];
         /* auto-choose depending on 1st connected inlet */
 
-        //      InletInstance i = null;// = GetInletInstances().get(0);
-        for (InletInstance j : GetInletInstances()) {
+        //      InletInstance i = null;// = getInletInstances().get(0);
+        for (InletInstance j : getInletInstances()) {
             Net n = patch.GetNet(j);
             if (n == null) {
                 continue;
@@ -1195,7 +1195,7 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
             String name = j.getInlet().getName();
             for (int i = 0; i < candidates.size(); i++) {
                 AxoObjectAbstract o = candidates.get(i);
-                Inlet i2 = o.GetInlet(name);
+                Inlet i2 = o.getInlet(name);
                 if (i2 == null) {
                     continue;
                 }

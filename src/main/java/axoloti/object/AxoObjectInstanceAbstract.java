@@ -451,14 +451,14 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         this.y = y;
         if (patch != null) {
             repaint();
-            for (InletInstance i : GetInletInstances()) {
+            for (InletInstance i : getInletInstances()) {
                 Net n = getPatch().GetNet(i);
                 if (n != null) {
                     n.updateBounds();
                     n.repaint();
                 }
             }
-            for (OutletInstance i : GetOutletInstances()) {
+            for (OutletInstance i : getOutletInstances()) {
                 Net n = getPatch().GetNet(i);
                 if (n != null) {
                     n.updateBounds();
@@ -567,11 +567,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return "";
     }
 
-    public ArrayList<InletInstance> GetInletInstances() {
+    public ArrayList<InletInstance> getInletInstances() {
         return new ArrayList<InletInstance>();
     }
 
-    public ArrayList<OutletInstance> GetOutletInstances() {
+    public ArrayList<OutletInstance> getOutletInstances() {
         return new ArrayList<OutletInstance>();
     }
 
@@ -587,11 +587,11 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
         return new ArrayList<DisplayInstance>();
     }
 
-    public InletInstance GetInletInstance(String n) {
+    public InletInstance getInletInstance(String n) {
         return null;
     }
 
-    public OutletInstance GetOutletInstance(String n) {
+    public OutletInstance getOutletInstance(String n) {
         return null;
     }
 

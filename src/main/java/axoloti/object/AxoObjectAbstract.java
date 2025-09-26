@@ -97,19 +97,19 @@ public abstract class AxoObjectAbstract implements Comparable, Cloneable {
         this.upgradeSha = null;
     }
 
-    Inlet GetInlet(String n) {
+    Inlet getInlet(String n) {
         return null;
     }
 
-    Outlet GetOutlet(String n) {
+    Outlet getOutlet(String n) {
         return null;
     }
 
-    public ArrayList<Inlet> GetInlets() {
+    public ArrayList<Inlet> getInlets() {
         return null;
     }
 
-    public ArrayList<Outlet> GetOutlets() {
+    public ArrayList<Outlet> getOutlets() {
         return null;
     }
 

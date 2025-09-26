@@ -260,7 +260,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public InletInstance GetInletInstance(String n) {
+    public InletInstance getInletInstance(String n) {
         if (inletInstances != null) {
             for (InletInstance i : inletInstances) {
                 if (i.GetLabel().equals(n)) {
@@ -276,7 +276,7 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public OutletInstance GetOutletInstance(String n) {
+    public OutletInstance getOutletInstance(String n) {
         if (outletInstances != null) {
             for (OutletInstance i : outletInstances) {
                 if (n.equals(i.GetLabel())) {
@@ -297,12 +297,12 @@ public class AxoObjectInstanceZombie extends AxoObjectInstanceAbstract {
     }
 
     @Override
-    public ArrayList<InletInstance> GetInletInstances() {
+    public ArrayList<InletInstance> getInletInstances() {
         return inletInstances;
     }
 
     @Override
-    public ArrayList<OutletInstance> GetOutletInstances() {
+    public ArrayList<OutletInstance> getOutletInstances() {
         return outletInstances;
     }
 }

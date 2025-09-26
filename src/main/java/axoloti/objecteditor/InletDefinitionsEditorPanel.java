@@ -34,7 +34,7 @@ public class InletDefinitionsEditorPanel extends AtomDefinitionsEditor<Inlet> {
 
     @Override
     ArrayList<Inlet> GetAtomDefinitions() {
-        return obj.GetInlets();
+        return obj.getInlets();
     }
 
     @Override

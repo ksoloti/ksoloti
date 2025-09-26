@@ -829,7 +829,7 @@ public class PatchGUI extends Patch {
                                 /* It's an internal connection. Get the new, valid instance */
                                 AxoObjectInstanceAbstract newObj = GetObjectInstance(on2);
                                 if (newObj != null) {
-                                    OutletInstance newOutletInstance = newObj.GetOutletInstance(outletname);
+                                    OutletInstance newOutletInstance = newObj.getOutletInstance(outletname);
                                     if (newOutletInstance != null) {
                                         source2.add(newOutletInstance);
                                     }
@@ -839,7 +839,7 @@ public class PatchGUI extends Patch {
                                 /* It's an external connection */
                                 AxoObjectInstanceAbstract obj = GetObjectInstance(objname);
                                 if ((obj != null) && (connectedOutlet == null)) {
-                                    OutletInstance oi = obj.GetOutletInstance(outletname);
+                                    OutletInstance oi = obj.getOutletInstance(outletname);
                                     if (oi != null) {
                                         connectedOutlet = oi;
                                     }
@@ -862,7 +862,7 @@ public class PatchGUI extends Patch {
                                 /* It's an internal connection. Get the new, valid instance */
                                 AxoObjectInstanceAbstract newObj = GetObjectInstance(on2);
                                 if (newObj != null) {
-                                    InletInstance newInletInstance = newObj.GetInletInstance(inletname);
+                                    InletInstance newInletInstance = newObj.getInletInstance(inletname);
                                     if (newInletInstance != null) {
                                         dest2.add(newInletInstance);
                                     }
@@ -1223,14 +1223,14 @@ public class PatchGUI extends Patch {
             AxoObjectInstanceAbstract o = objectInstances.get(i);
             Point p_obj = SwingUtilities.convertPoint(Layers, p, o);
 
-            for (InletInstance inlet : o.GetInletInstances()) {
+            for (InletInstance inlet : o.getInletInstances()) {
                 Point p_inlet = SwingUtilities.convertPoint(o, p_obj, inlet);
                 if (inlet.contains(p_inlet)) {
                     return inlet;
                 }
             }
 
-            for (OutletInstance outlet : o.GetOutletInstances()) {
+            for (OutletInstance outlet : o.getOutletInstances()) {
                 Point p_outlet = SwingUtilities.convertPoint(o, p_obj, outlet);
                 if (outlet.contains(p_outlet)) {
                     return outlet;

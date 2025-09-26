@@ -457,7 +457,7 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     @Override
-    public Inlet GetInlet(String n) {
+    public Inlet getInlet(String n) {
         for (Inlet i : inlets) {
             if (i.getName().equals(n)) {
                 return i;
@@ -467,7 +467,7 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     @Override
-    public Outlet GetOutlet(String n) {
+    public Outlet getOutlet(String n) {
         for (Outlet i : outlets) {
             if (i.getName().equals(n)) {
                 return i;
@@ -477,12 +477,12 @@ public class AxoObject extends AxoObjectAbstract {
     }
 
     @Override
-    public ArrayList<Inlet> GetInlets() {
+    public ArrayList<Inlet> getInlets() {
         return inlets;
     }
 
     @Override
-    public ArrayList<Outlet> GetOutlets() {
+    public ArrayList<Outlet> getOutlets() {
         return outlets;
     }
 

@@ -93,7 +93,7 @@ public class Net extends JComponent {
                 patch.nets.remove(this);
                 return;
             }
-            OutletInstance r = o.GetOutletInstance(outletname);
+            OutletInstance r = o.getOutletInstance(outletname);
             if (r == null) {
                 LOGGER.log(Level.SEVERE, "Could not resolve net source outlet: {0}::{1}", new Object[]{i.getObjname(), i.getOutletname()});
                 patch.nets.remove(this);
@@ -111,7 +111,7 @@ public class Net extends JComponent {
                 patch.nets.remove(this);
                 return;
             }
-            InletInstance r = o.GetInletInstance(inletname);
+            InletInstance r = o.getInletInstance(inletname);
             if (r == null) {
                 LOGGER.log(Level.SEVERE, "Could not resolve net dest inlet: {0}::{1}", new Object[]{i.getObjname(), i.getInletname()});
                 patch.nets.remove(this);
@@ -345,7 +345,7 @@ public class Net extends JComponent {
             return true;
         }
         for (AxoObjectInstanceAbstract o : patch.objectInstances) {
-            for (OutletInstance i : o.GetOutletInstances()) {
+            for (OutletInstance i : o.getOutletInstances()) {
                 if (source.contains(i)) {
                     // o is first objectinstance connected to this net
                     return oi == i;

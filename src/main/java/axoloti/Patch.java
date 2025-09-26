@@ -481,8 +481,8 @@ public class Patch {
                 zombie.patch = this;
                 zombie.typeName = o.typeName;
                 zombie.typeUUID = o.typeUUID;
-                zombie.inletInstances = o.GetInletInstances();
-                zombie.outletInstances = o.GetOutletInstances();
+                zombie.inletInstances = o.getInletInstances();
+                zombie.outletInstances = o.getOutletInstances();
                 zombie.attributeInstances = o.getAttributeInstances();
                 zombie.parameterInstances = o.getParameterInstances();
                 zombie.PostConstructor();
@@ -823,11 +823,11 @@ public class Patch {
             return;
         }
 
-        for (InletInstance ii : o.GetInletInstances()) {
+        for (InletInstance ii : o.getInletInstances()) {
             disconnect(ii);
         }
 
-        for (OutletInstance oi : o.GetOutletInstances()) {
+        for (OutletInstance oi : o.getOutletInstances()) {
             disconnect(oi);
         }
 
@@ -1128,7 +1128,7 @@ public class Patch {
         LinkedList<AxoObjectInstanceAbstract> parents = new LinkedList<AxoObjectInstanceAbstract>();
 
         /* get the parents */
-        for (InletInstance il : o.GetInletInstances()) {
+        for (InletInstance il : o.getInletInstances()) {
             Net n = GetNet(il);
             if (n != null) {
                 for (OutletInstance ol: n.GetSource()) {
@@ -1162,12 +1162,12 @@ public class Patch {
 
         /* start with all objects without outlets (end points) */
         for (AxoObjectInstanceAbstract o : objectInstances) {
-            if (o.GetOutletInstances().isEmpty()) {
+            if (o.getOutletInstances().isEmpty()) {
                 endpoints.add(o);
             }
             else {
                 int count = 0;
-                for (OutletInstance ol : o.GetOutletInstances()) {
+                for (OutletInstance ol : o.getOutletInstances()) {
                     if (GetNet(ol) != null)
                         count++;
                 }
@@ -1659,7 +1659,7 @@ public class Patch {
 //            c += I+I + o.GenerateDoFunctionName() + "(this";
         boolean needsComma = false;
 
-        for (InletInstance i : o.GetInletInstances()) {
+        for (InletInstance i : o.getInletInstances()) {
             if (needsComma) {
                 c += ", ";
             }
@@ -1692,7 +1692,7 @@ public class Patch {
             }
             needsComma = true;
         }
-        for (OutletInstance i : o.GetOutletInstances()) {
+        for (OutletInstance i : o.getOutletInstances()) {
             if (needsComma) {
                 c += ", ";
             }
@@ -3015,7 +3015,7 @@ public class Patch {
             return null;
         }
 
-        return o.GetInletInstance(inletname);
+        return o.getInletInstance(inletname);
     }
 
     public OutletInstance getOutletByReference(String objname, String outletname) {
@@ -3032,7 +3032,7 @@ public class Patch {
             return null;
         }
 
-        return o.GetOutletInstance(outletname);
+        return o.getOutletInstance(outletname);
     }
 
     public String GetCurrentWorkingDirectory() {

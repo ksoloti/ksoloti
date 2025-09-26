@@ -40,12 +40,12 @@ public class AxoObjectZombie extends AxoObjectAbstract {
     }
 
     @Override
-    Inlet GetInlet(String n) {
+    Inlet getInlet(String n) {
         return null;
     }
 
     @Override
-    Outlet GetOutlet(String n) {
+    Outlet getOutlet(String n) {
         return null;
     }
 

@@ -100,7 +100,7 @@ public class OutletInstance<T extends Outlet> extends IoletAbstract implements C
         setMaximumSize(new Dimension(32767, 14));
         setBackground(Theme.Object_Default_Background);
         add(Box.createHorizontalGlue());
-        // if (axoObj.getType().GetOutlets().size() > 1) {
+        // if (axoObj.getType().getOutlets().size() > 1) {
             if ((outlet.getNoLabel() == null) || (outlet.getNoLabel() == false)) {
                 LabelComponent olbl = new LabelComponent(outlet.name);
                 olbl.setHorizontalAlignment(SwingConstants.RIGHT);
