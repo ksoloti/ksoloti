@@ -65,9 +65,9 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
         nextButton.addActionListener(this);
         searchField.addActionListener(this);
 
-        searchTimer = new Timer(250, new java.awt.event.ActionListener() {
+        searchTimer = new Timer(250, new ActionListener() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 FindTextDialog.this.runLiveSearch(); 
             }
         });
@@ -86,7 +86,7 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
         AbstractAction closeAction = new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 FindTextDialog.this.setVisible(false); 
             }
         };
@@ -129,7 +129,7 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
     private void runLiveSearch() {
         String text = searchField.getText();
-        patchGUI.findAndHighlight(text, 0, this); 
+        patchGUI.findAndHighlight(text, 0, FindTextDialog.this); 
     }
 
     private void triggerSearch() {
