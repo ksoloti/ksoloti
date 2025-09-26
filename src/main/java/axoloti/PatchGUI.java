@@ -18,6 +18,7 @@
  */
 package axoloti;
 
+import axoloti.attribute.AttributeInstance;
 import axoloti.datatypes.DataType;
 import axoloti.dialogs.FindTextDialog;
 import axoloti.inlets.InletInstance;
@@ -30,6 +31,7 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectZombie;
 import axoloti.outlets.OutletInstance;
+import axoloti.parameters.ParameterInstance;
 import axoloti.ui.MaterialColors;
 import axoloti.ui.SelectionRectangle;
 import axoloti.ui.Theme;
@@ -1289,14 +1291,52 @@ public class PatchGUI extends Patch {
             currentFindTextString = searchText;
             findTextResults.clear();
             isNewSearch = true;
+            final String lowerSearchText = searchText.toLowerCase();
 
             for (AxoObjectInstanceAbstract obj : objectInstances) {
-                if (obj.getInstanceName() != null) {
-                    if (obj.getInstanceName().toLowerCase().contains(searchText.toLowerCase())) {
-                        if (!findTextResults.contains(obj)) {
-                            findTextResults.add(obj);
+                boolean isMatch = false;
+
+                if (obj.typeName != null && obj.typeName.toLowerCase().contains(lowerSearchText)) {
+                    isMatch = true;
+                }
+                if (!isMatch && obj.getInstanceName() != null && obj.getInstanceName().toLowerCase().contains(lowerSearchText)) {
+                    isMatch = true;
+                }
+                if (!isMatch && obj.getAttributeInstances() != null) {
+                    for (AttributeInstance ai : obj.getAttributeInstances()) {
+                        if (ai.getName().toLowerCase().contains(lowerSearchText)) {
+                            isMatch = true;
+                            break;
                         }
                     }
+                }
+                if (!isMatch && obj.getParameterInstances() != null) {
+                    for (ParameterInstance pi : obj.getParameterInstances()) {
+                        if (pi.getName().toLowerCase().contains(lowerSearchText)) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isMatch && obj.getInletInstances() != null) {
+                    for (InletInstance ii : obj.getInletInstances()) {
+                        if (ii.getInletname().toLowerCase().contains(lowerSearchText)) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isMatch && obj.getOutletInstances() != null) {
+                    for (OutletInstance ii : obj.getOutletInstances()) {
+                        if (ii.getOutletname().toLowerCase().contains(lowerSearchText)) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isMatch) {
+                    findTextResults.add(obj);
                 }
             }
 
