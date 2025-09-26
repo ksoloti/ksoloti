@@ -1284,6 +1284,9 @@ public class PatchGUI extends Patch {
             findTextResults.clear();
             currentFindTextMatchIndex = -1;
             isNewSearch = true; 
+            if (netLayerPanel != null) {
+                netLayerPanel.repaint();
+            }
         } else if (!searchText.equals(currentFindTextString)) {
             currentFindTextString = searchText;
             findTextResults.clear();
@@ -1336,6 +1339,9 @@ public class PatchGUI extends Patch {
                     findTextResults.add(obj);
                 }
             }
+            if (netLayerPanel != null) {
+                netLayerPanel.repaint(); 
+            }
 
             currentFindTextMatchIndex = findTextResults.isEmpty() ? -1 : 0; 
         }
@@ -1366,6 +1372,9 @@ public class PatchGUI extends Patch {
             currentFindTextMatchIndex = -1; 
             if (dialog != null) {
                 dialog.updateResults(currentFindTextMatchIndex, findTextResults.size());
+            }
+            if (netLayerPanel != null) {
+                netLayerPanel.repaint();
             }
         }
     }
