@@ -45,7 +45,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -67,7 +66,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-// import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -121,9 +119,9 @@ public class PatchGUI extends Patch {
     JLayer<JComponent> draggedObjectLayer = new JLayer<JComponent>(draggedObjectLayerPanel);
     JLayer<JComponent> netLayer;
 
-    private ArrayList<AxoObjectInstanceAbstract> searchResults = new ArrayList<>();
-    private int currentMatchIndex = -1;
-    private String currentSearchText = "";
+    private ArrayList<AxoObjectInstanceAbstract> findTextResults = new ArrayList<>();
+    private int currentFindTextMatchIndex = -1;
+    private String currentFindTextString = "";
 
     public AxoObjectFromPatch ObjEditor;
     public ObjectSearchFrame osf;
@@ -153,7 +151,7 @@ public class PatchGUI extends Patch {
 
 
                 /* Set up find text highlight handler */
-                if (searchResults.isEmpty()) {
+                if (findTextResults.isEmpty()) {
                     return;
                 }
                 Graphics2D g2d = (Graphics2D) g;
@@ -161,8 +159,8 @@ public class PatchGUI extends Patch {
                 // g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 // g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-                for (axoloti.object.AxoObjectInstanceAbstract obj : searchResults) {
-                    boolean isCurrentMatch = (searchResults.indexOf(obj) == currentMatchIndex);
+                for (axoloti.object.AxoObjectInstanceAbstract obj : findTextResults) {
+                    boolean isCurrentMatch = (findTextResults.indexOf(obj) == currentFindTextMatchIndex);
 
                     Color highlightColor = MaterialColors.PURPLE_A700;
                     int strokeWidth = isCurrentMatch ? 6 : 2;
@@ -1258,42 +1256,42 @@ public class PatchGUI extends Patch {
         boolean isNewSearch = false; 
 
         if (searchText.isEmpty()) {
-            currentSearchText = searchText;
-            searchResults.clear();
-            currentMatchIndex = -1;
+            currentFindTextString = searchText;
+            findTextResults.clear();
+            currentFindTextMatchIndex = -1;
             isNewSearch = true; 
-        } else if (!searchText.equals(currentSearchText)) {
-            currentSearchText = searchText;
-            searchResults.clear();
+        } else if (!searchText.equals(currentFindTextString)) {
+            currentFindTextString = searchText;
+            findTextResults.clear();
             isNewSearch = true;
 
             for (AxoObjectInstanceAbstract obj : objectInstances) {
                 if (obj.getInstanceName() != null) {
                     if (obj.getInstanceName().toLowerCase().contains(searchText.toLowerCase())) {
-                        if (!searchResults.contains(obj)) {
-                            searchResults.add(obj);
+                        if (!findTextResults.contains(obj)) {
+                            findTextResults.add(obj);
                         }
                     }
                 }
             }
 
-            currentMatchIndex = searchResults.isEmpty() ? -1 : 0; 
+            currentFindTextMatchIndex = findTextResults.isEmpty() ? -1 : 0; 
         }
 
-        if (!searchResults.isEmpty() && !isNewSearch && direction != 0) { 
-            currentMatchIndex += direction;
-            if (currentMatchIndex >= searchResults.size()) {
-                currentMatchIndex = 0;
-            } else if (currentMatchIndex < 0) {
-                currentMatchIndex = searchResults.size() - 1;
+        if (!findTextResults.isEmpty() && !isNewSearch && direction != 0) { 
+            currentFindTextMatchIndex += direction;
+            if (currentFindTextMatchIndex >= findTextResults.size()) {
+                currentFindTextMatchIndex = 0;
+            } else if (currentFindTextMatchIndex < 0) {
+                currentFindTextMatchIndex = findTextResults.size() - 1;
             }
         }
 
-        if (!searchResults.isEmpty() && currentMatchIndex != -1) {
+        if (!findTextResults.isEmpty() && currentFindTextMatchIndex != -1) {
             if (dialog != null) {
-                dialog.updateResults(currentMatchIndex, searchResults.size());
+                dialog.updateResults(currentFindTextMatchIndex, findTextResults.size());
             }
-            AxoObjectInstanceAbstract obj = searchResults.get(currentMatchIndex);
+            AxoObjectInstanceAbstract obj = findTextResults.get(currentFindTextMatchIndex);
             getPatchframe().scrollPatchViewTo(new Rectangle(obj.getX(),
                                             obj.getY(),
                                             obj.getWidth(),
@@ -1303,9 +1301,9 @@ public class PatchGUI extends Patch {
                 netLayerPanel.repaint(); 
             }
         } else {
-            currentMatchIndex = -1; 
+            currentFindTextMatchIndex = -1; 
             if (dialog != null) {
-                dialog.updateResults(currentMatchIndex, searchResults.size());
+                dialog.updateResults(currentFindTextMatchIndex, findTextResults.size());
             }
         }
     }
