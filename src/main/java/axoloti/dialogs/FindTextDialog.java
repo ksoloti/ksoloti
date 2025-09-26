@@ -37,6 +37,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import axoloti.PatchGUI;
+import axoloti.utils.KeyUtils;
 
 /**
  * 
@@ -84,14 +85,24 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
         resultLabel.setText("0/0");
 
+        AbstractAction selectAllAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchField.requestFocusInWindow(); 
+                searchField.selectAll();
+            }
+        };
+        this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyUtils.CONTROL_OR_CMD_MASK), "SELECT_ALL_SEARCH_TEXT");
+        this.getRootPane().getActionMap().put("SELECT_ALL_SEARCH_TEXT", selectAllAction);
+
         AbstractAction closeAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FindTextDialog.this.setVisible(false); 
             }
         };
-        this.getRootPane().getActionMap().put("CLOSE_DIALOG", closeAction);
         this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "CLOSE_DIALOG");
+        this.getRootPane().getActionMap().put("CLOSE_DIALOG", closeAction);
 
         AbstractAction nextAction = new AbstractAction() {
             @Override
@@ -129,11 +140,16 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
     private void runLiveSearch() {
         String text = searchField.getText();
-        patchGUI.findAndHighlight(text, 0, FindTextDialog.this); 
+        patchGUI.findAndHighlight(text, 0, this);
     }
 
     private void triggerSearch() {
-        searchTimer.restart(); 
+        if (searchField.getText().isEmpty()) {
+            searchTimer.stop();
+            FindTextDialog.this.runLiveSearch(); /* trigger search immediately, clearing the highlights */
+        } else {
+            searchTimer.restart(); 
+        }
     }
 
     @Override
