@@ -19,18 +19,24 @@
 
 package axoloti.dialogs;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.RenderingHints;
+import java.awt.Window;
+import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JWindow;
-import javax.swing.Timer;
 
 import axoloti.ui.SvgIconLoader;
 
@@ -40,25 +46,53 @@ import axoloti.ui.SvgIconLoader;
  */
 public class AxoSplashScreen extends JWindow {
 
-    private final Timer fadeTimer;
-    private float opacity = 0.0f;
-    private boolean fadeIn = false;
+    class RoundedPanel extends JPanel {
+        private final int cornerRadius;
+        private final JLabel contentLabel;
 
-    public AxoSplashScreen(boolean fadeIn) {
-        this.fadeIn = fadeIn;
-        if (this.fadeIn) {
-            setOpacity(opacity);
-            }
-            else {
-            setOpacity(1.0f);
+        public RoundedPanel(JLabel label, int radius) {
+            this.cornerRadius = radius;
+            this.contentLabel = label;
+            
+            // CRITICAL: Must be non-opaque so it can draw its own background,
+            // allowing the window beneath to show (if it could).
+            setOpaque(false); 
+            
+            // Set layout and add the label
+            setLayout(new BorderLayout());
+            add(contentLabel, BorderLayout.CENTER);
+            
+            // Ensure the preferred size is correct for packing
+            setPreferredSize(label.getPreferredSize());
         }
 
-        setBackground(new Color(0, 0, 0, 0)); /* Make window transparent */
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            RoundRectangle2D shape = new RoundRectangle2D.Float(
+                0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius
+            );
+            g2.setClip(shape);
+            super.paintComponent(g2); 
+            g2.dispose();
+            
+            Container topLevel = getTopLevelAncestor();
+            if (topLevel instanceof Window) {
+                ((Window) topLevel).setShape(shape);
+            }
+        }
+    }
+
+    public AxoSplashScreen() {
+        setBackground(new Color(255, 255, 255, 0)); /* Make window transparent */
         setAlwaysOnTop(true);
+        setOpacity(1.0f);
 
         try {
             JLabel label = null;
             Icon splashSvg = SvgIconLoader.load("/resources/appicons/ksoloti_splash.svg", 512);
+            GraphicsDevice defaultScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
             if (splashSvg != null) {
                 label = new JLabel(splashSvg);
@@ -68,13 +102,27 @@ public class AxoSplashScreen extends JWindow {
             }
 
             if (label != null) {
+                Dimension d = new Dimension(512,384);
+                this.getContentPane().setMinimumSize(d);
+                this.getContentPane().setMaximumSize(d);
+                this.getContentPane().setPreferredSize(d);
+                label.setMinimumSize(d);
+                label.setMaximumSize(d);
+                label.setPreferredSize(d);
                 label.setOpaque(false);
                 this.getContentPane().add(label);
                 this.pack();
+                if (defaultScreen.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT)) {
+                    int width = this.getWidth();
+                    int height = this.getHeight();
+                    int desiredFixedRadius = 76; 
+    
+                    RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width, height, desiredFixedRadius, desiredFixedRadius);
+                    this.setShape(roundedRect);
+                }
             }
 
             /* Center the window on the primary screen to prevent splitting on dual screens */
-            GraphicsDevice defaultScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             Rectangle screenBounds = defaultScreen.getDefaultConfiguration().getBounds();
             int x = screenBounds.x + (screenBounds.width - this.getWidth()) / 2;
             int y = screenBounds.y + (screenBounds.height - this.getHeight()) / 2;
@@ -85,25 +133,9 @@ public class AxoSplashScreen extends JWindow {
             e.printStackTrace(System.out);
             this.dispose();
         }
-
-        fadeTimer = new Timer(20, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                opacity += 0.1f; /* Increase opacity in small steps */
-                if (opacity >= 1.0f) {
-                    setOpacity(1.0f); /* Ensure it reaches full opacity */
-                    fadeTimer.stop();
-                } else {
-                    setOpacity(opacity);
-                }
-            }
-        });
     }
 
     public void showSplashScreen() {
         this.setVisible(true);
-        if (this.fadeIn) {
-            fadeTimer.start();
-        }
     }
 }
