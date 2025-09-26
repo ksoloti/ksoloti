@@ -74,7 +74,7 @@ public class SvgIconLoader {
             return null;
         }
     }
-    
+
     public static Icon load(String path, int size) {
         try (InputStream inputStream = SvgIconLoader.class.getResourceAsStream(path)) {
             if (inputStream == null) {
@@ -85,7 +85,7 @@ public class SvgIconLoader {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
             SVGDocument svgDocument = factory.createSVGDocument(path, inputStream);
-            
+
             return new SvgImageIcon(svgDocument, size);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error loading SVG: " + e.getMessage());
@@ -106,7 +106,7 @@ public class SvgIconLoader {
             if (element.hasAttribute("stroke") && !element.getAttribute("stroke").equalsIgnoreCase("none")) {
                 element.setAttribute("stroke", colorHex);
             }
-            
+
             if (element.hasAttribute("style")) {
                 String style = element.getAttribute("style");
                 if (!style.contains("fill:none")) {
@@ -172,7 +172,6 @@ public class SvgIconLoader {
             float svgHeight = 0;
 
             try {
-                // Correctly parse the width and height attributes, handling units
                 if (widthAttr != null && !widthAttr.isEmpty()) {
                     svgWidth = Float.parseFloat(widthAttr.replaceAll("[^\\d.]", ""));
                 }
@@ -196,8 +195,14 @@ public class SvgIconLoader {
             double scaleX = (double) size / svgWidth;
             double scaleY = (double) size / svgHeight;
             double scale = Math.min(scaleX, scaleY);
-            
-            g2d.translate(x, y);
+
+            double scaledWidth = svgWidth * scale;
+            double scaledHeight = svgHeight * scale;
+
+            int offsetX = (int) Math.round(x + (size - scaledWidth) / 2.0);
+            int offsetY = (int) Math.round(y + (size - scaledHeight) / 2.0);
+
+            g2d.translate(offsetX, offsetY);
             g2d.scale(scale, scale);
 
             graphicsNode.paint(g2d);
