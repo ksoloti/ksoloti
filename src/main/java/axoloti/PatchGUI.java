@@ -1333,6 +1333,14 @@ public class PatchGUI extends Patch {
         }
     }
 
+    public int getCurrentFindTextMatchIndex() {
+        return currentFindTextMatchIndex;
+    }
+
+    public ArrayList<AxoObjectInstanceAbstract> getFindTextResults() {
+        return findTextResults;
+    }
+
     @Override
     public void Lock() {
         super.Lock();

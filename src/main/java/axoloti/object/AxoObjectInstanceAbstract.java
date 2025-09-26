@@ -42,6 +42,7 @@ import components.TextFieldComponent;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -296,21 +297,46 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
             Point locOnScreen = me.getLocationOnScreen();
             int dx = locOnScreen.x - dragAnchor.x;
             int dy = locOnScreen.y - dragAnchor.y;
+            final int PADDING = (Constants.X_GRID + Constants.Y_GRID);
 
             for (AxoObjectInstanceAbstract o : draggingObjects) {
-                
+                Rectangle netLayerRepaintBounds = null; // Area to repaint on netLayerPanel
+                boolean isFindResult = false;
+
+                if (o.getPatchGUI().getFindTextResults().contains(o)) {
+                    isFindResult = true;
+                    Rectangle oldBounds = o.getBounds();
+
+                    Rectangle paddedOldBounds = new Rectangle(
+                        oldBounds.x - PADDING, oldBounds.y - PADDING, 
+                        oldBounds.width + 2 * PADDING, oldBounds.height + 2 * PADDING
+                    );
+                    netLayerRepaintBounds = paddedOldBounds;
+                    o.getPatchGUI().netLayerPanel.repaint(paddedOldBounds);
+                }
+
                 int nx = o.dragLocation.x + dx;
                 int ny = o.dragLocation.y + dy;
-                
+
                 if (!me.isShiftDown()) {
                     nx = ((nx + (Constants.X_GRID / 2)) / Constants.X_GRID) * Constants.X_GRID;
                     ny = ((ny + (Constants.Y_GRID / 2)) / Constants.Y_GRID) * Constants.Y_GRID;
                 }
-                
+
                 if (o.isSelected()) {
                     if (o.x != nx || o.y != ny) {
                         o.setLocation(nx, ny);
                     }
+                }
+
+                if (isFindResult) {
+                    Rectangle newBounds = o.getBounds();
+                    Rectangle paddedNewBounds = new Rectangle(
+                        newBounds.x - PADDING, newBounds.y - PADDING, 
+                        newBounds.width + 2 * PADDING, newBounds.height + 2 * PADDING
+                    );
+                    netLayerRepaintBounds.add(paddedNewBounds);
+                    o.getPatchGUI().netLayerPanel.repaint(netLayerRepaintBounds);
                 }
             }
         }
