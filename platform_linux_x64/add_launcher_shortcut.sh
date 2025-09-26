@@ -23,7 +23,7 @@ cat > "$TEMPLATE_FILE" << EOF
 Name=Ksoloti-1.1.0
 Comment=Open Axoloti Patch Files
 Exec=<<CHANGE_ME>>/Ksoloti %F
-Icon=<<CHANGE_ME>>platform_linux_x64/ksoloti_icon.svg
+Icon=<<CHANGE_ME>>/platform_linux_x64/ksoloti_icon.svg
 Terminal=false
 Type=Application
 MimeType=application/x-axoloti-patch;
