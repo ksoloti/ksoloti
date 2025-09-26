@@ -129,13 +129,7 @@ public class FindTextDialog extends JDialog implements ActionListener, DocumentL
 
     private void runLiveSearch() {
         String text = searchField.getText();
-        
-        /* Only trigger the search if the text length is 2 or more */
-        if (text.length() > 1) { 
-            patchGUI.findAndHighlight(text, 0, this); 
-        } else if (text.isEmpty()) {
-            patchGUI.findAndHighlight("", 0, this);
-        }
+        patchGUI.findAndHighlight(text, 0, this); 
     }
 
     private void triggerSearch() {
