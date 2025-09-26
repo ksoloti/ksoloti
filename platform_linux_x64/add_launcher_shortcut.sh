@@ -23,7 +23,7 @@ cat > "$TEMPLATE_FILE" << EOF
 Name=Ksoloti-1.1.0
 Comment=Open Axoloti Patch Files
 Exec=<<CHANGE_ME>>/Ksoloti %F
-Icon=<<CHANGE_ME>>/ksoloti_icon_512.png
+Icon=<<CHANGE_ME>>platform_linux_x64/ksoloti_icon.svg
 Terminal=false
 Type=Application
 MimeType=application/x-axoloti-patch;
@@ -32,7 +32,7 @@ EOF
 
 # Use sed to replace the placeholders with the actual paths and copy to the destination
 sed -e "s|<<CHANGE_ME>>/Ksoloti %F|$EXECUTABLE_PATH %F|" \
-    -e "s|<<CHANGE_ME>>/ksoloti_icon_512.png|$ICON_PATH|" \
+    -e "s|<<CHANGE_ME>>/platform_linux_x64/ksoloti_icon.svg|$ICON_PATH|" \
     "$TEMPLATE_FILE" > "$DEST_DIR/$DEST_FILE"
 
 # Make the desktop file executable

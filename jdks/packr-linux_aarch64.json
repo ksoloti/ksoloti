@@ -22,8 +22,7 @@
         "chibios",
         "CMSIS",
         "firmware",
-        "platform_linux_aarch64",
-        "src/main/java/resources/appicons/ksoloti_icon_512.png"
+        "platform_linux_aarch64"
     ],
     "minimizejre": "soft",
     "verbose": true
