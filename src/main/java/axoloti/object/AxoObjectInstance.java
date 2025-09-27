@@ -1322,16 +1322,22 @@ public class AxoObjectInstance extends AxoObjectInstanceAbstract {
         AxoObjectAbstract o = ol.get(0);
         String iname = getInstanceName();
         AxoObjectInstancePatcherObject oi = (AxoObjectInstancePatcherObject) getPatch().ChangeObjectInstanceType1(this, o);
-        AxoObject ao = getType();
-        oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
-        oi.ao.copy(ao);
-        oi.ao.sObjFilePath = "";
-        oi.ao.upgradeSha = null;
-        oi.ao.editor.AskClose();
-        oi.setInstanceName(iname);
-        oi.updateObj();
-        getPatch().delete(this);
-        getPatch().SetDirty();
+        if (oi != null) {
+            AxoObject ao = getType();
+            if (ao != null) {
+                oi.ao = new AxoObjectPatcherObject(ao.id, ao.sDescription);
+                oi.ao.copy(ao);
+                oi.ao.sObjFilePath = "";
+                oi.ao.upgradeSha = null;
+                if (oi.ao.editor != null) {
+                    oi.ao.editor.AskClose();
+                }
+                oi.setInstanceName(iname);
+                oi.updateObj();
+                getPatch().delete(this);
+                getPatch().SetDirty();
+            }
+        }
     }
 
     @Persist
