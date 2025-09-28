@@ -26,13 +26,6 @@ public class ParameterTypes {
     
     final static Parameter types[] = {
       new ParameterFrac32SMap(),
-      new Parameter4LevelX16(),
-      new ParameterBin1(),
-      new ParameterBin8(),
-      new ParameterBin12(),
-      new ParameterBin16(),
-      new ParameterBin1Momentary(),
-      new ParameterBin32(),
       new ParameterFrac32SMapKDTimeExp(),
       new ParameterFrac32SMapKLineTimeExp(),
       new ParameterFrac32SMapKLineTimeExp2(),
@@ -52,10 +45,17 @@ public class ParameterTypes {
       new ParameterFrac32UMapKLineTimeReverse(),
       new ParameterFrac32UMapRatio(),
       new ParameterFrac32UMapVSlider(),
+      new ParameterBin1(),
+      new ParameterBin1Momentary(),
+      new ParameterBin8(),
+      new ParameterBin12(),
+      new ParameterBin16(),
+      new ParameterBin32(),
       new ParameterInt32Box(),
       new ParameterInt32BoxSmall(),
       new ParameterInt32HRadio(),
-      new ParameterInt32VRadio()
+      new ParameterInt32VRadio(),
+      new Parameter4LevelX16()
     };
     
     public static Parameter[] getTypes(){
