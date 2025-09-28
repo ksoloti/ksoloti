@@ -202,9 +202,9 @@ public class MutatorFrame extends JFrame {
                 ParameterInstance param = (ParameterInstance) value;
                 setText(param.GetObjectInstance().getInstanceName() + ":" + param.getName());
                 if (param.isFrozen()) {
-                    c.setForeground(Color.GRAY);
+                    c.setForeground(Theme.Component_Mid); /* grey out */
                 } else {
-                    c.setForeground(Color.BLACK);
+                    c.setForeground(list.getForeground());
                 }
                 return c;
             }
