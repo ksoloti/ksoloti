@@ -60,6 +60,7 @@ import javax.swing.JComponent;
 import axoloti.Patch;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import axoloti.ui.Theme;
 import axoloti.utils.KeyUtils;
 
 /**
@@ -351,7 +352,7 @@ public class MutatorFrame extends JFrame {
             PatchVariation v1 = selectedVariations.get(0);
             PatchVariation v2 = selectedVariations.get(1);
 
-            Map<ParameterInstance, int[]> constraints = new HashMap<>();
+            Map<ParameterInstance, double[]> constraints = new HashMap<>();
 
             // Find the min/max values for each parameter based on the two variations
             for (ParameterInstance param : selectedParameters) {
@@ -375,7 +376,7 @@ public class MutatorFrame extends JFrame {
                 if (val1 != -1 && val2 != -1) {
                     int min = Math.min(val1, val2);
                     int max = Math.max(val1, val2);
-                    constraints.put(param, new int[]{min, max});
+                    constraints.put(param, new double[]{min, max});
                 }
             }
             
