@@ -237,7 +237,7 @@ public class MutatorFrame extends JFrame {
         
         gbc.gridx = 3;
         JButton button100 = new JButton("100%");
-        button50.addActionListener(e -> randomizeSelected(1.00f));
+        button100.addActionListener(e -> randomizeSelected(1.00f));
         mainPanel.add(button100, gbc);
 
         gbc.gridx = 0;
