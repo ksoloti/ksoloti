@@ -34,13 +34,8 @@ public abstract class ParameterInstanceFrac32U<T extends ParameterFrac32> extend
     }
 
     @Override
-    double getMin() {
+    public double getMin() {
         return 0.0;
-    }
-
-    @Override
-    double getMax() {
-        return 64;
     }
 
     @Override
