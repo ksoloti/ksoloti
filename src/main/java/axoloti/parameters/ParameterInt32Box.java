@@ -36,7 +36,7 @@ public class ParameterInt32Box extends Parameter<ParameterInstanceInt32Box> {
 
     public ParameterInt32Box() {
         this.MinValue = new ValueInt32(0);
-        this.MaxValue = new ValueInt32(0);
+        this.MaxValue = new ValueInt32(65535);
     }
 
     public ParameterInt32Box(String name, int MinValue, int MaxValue) {

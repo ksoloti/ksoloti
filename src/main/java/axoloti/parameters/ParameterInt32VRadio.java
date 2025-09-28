@@ -33,7 +33,7 @@ public class ParameterInt32VRadio extends Parameter<ParameterInstanceInt32VRadio
     public ValueInt32 MaxValue;
 
     public ParameterInt32VRadio() {
-        this.MaxValue = new ValueInt32(1);
+        this.MaxValue = new ValueInt32(2);
     }
 
     public ParameterInt32VRadio(String name, int MinValue, int MaxValue) {
