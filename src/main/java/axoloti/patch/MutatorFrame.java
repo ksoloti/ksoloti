@@ -335,9 +335,9 @@ public class MutatorFrame extends JFrame {
     /**
      * Helper method to get selected parameters and call the randomizer.
      * Updated to support constrained randomization.
-     * @param percent The randomization percentage.
+     * @param factor The randomization percentage.
      */
-    private void randomizeSelected(float percent) {
+    private void randomizeSelected(float factor) {
         List<ParameterInstance> selectedParameters = parameterList.getSelectedValuesList();
         List<PatchVariation> selectedVariations = variationList.getSelectedValuesList();
 
@@ -379,14 +379,14 @@ public class MutatorFrame extends JFrame {
                 }
             }
             
-            PatchRandomizer.randomizeParametersWithConstraint(selectedParameters, constraints, percent);
+            PatchRandomizer.randomizeParametersWithConstraint(selectedParameters, constraints, factor);
             
         } else if (selectedVariations.size() > 2) {
              LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
         } else {
             // Default behavior if not two variations are selected
-            LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(percent * 100) + "%");
-            PatchRandomizer.randomizeParameters(selectedParameters, percent);
+            LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(factor * 100) + "%");
+            PatchRandomizer.randomizeParameters(selectedParameters, factor);
         }
         
         if (this.patch != null) {

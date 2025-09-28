@@ -45,9 +45,9 @@ public class PatchRandomizer {
     /**
      * Randomizes all non-frozen parameters in a patch.
      * @param patch The patch to randomize.
-     * @param percent The percentage to apply randomization by.
+     * @param factor The percentage to apply randomization by.
      */
-    public static void randomizeAllParameters(Patch patch, float percent) { /* percent: 0.25f equals 25% */
+    public static void randomizeAllParameters(Patch patch, float factor) { /* factor: 0.25f equals 25% */
         if (patch.objectInstances.size() > 0) {
             for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
                 for (ParameterInstance param : obj.getParameterInstances()) {
@@ -76,9 +76,9 @@ public class PatchRandomizer {
     /**
      * Randomizes a list of selected parameters.
      * @param selectedParameters The list of parameters to randomize.
-     * @param percent The percentage to apply randomization by.
+     * @param factor The percentage to apply randomization by.
      */
-    public static void randomizeParameters(List<ParameterInstance> selectedParameters, float percent) {
+    public static void randomizeParameters(List<ParameterInstance> selectedParameters, float factor) {
         if (selectedParameters != null && !selectedParameters.isEmpty()) {
             for (ParameterInstance param : selectedParameters) {
                 if (!param.isFrozen()) {
@@ -106,9 +106,9 @@ public class PatchRandomizer {
      * Randomizes a list of selected parameters with a mutation constrained by a min/max value.
      * @param selectedParameters The list of parameters to randomize.
      * @param constraints A map from ParameterInstance to an int[] with [min, max] values.
-     * @param percent The percentage of the constrained range to use for mutation.
+     * @param factor The percentage of the constrained range to use for mutation.
      */
-    public static void randomizeParametersWithConstraint(List<ParameterInstance> selectedParameters, Map<ParameterInstance, int[]> constraints, float percent) {
+    public static void randomizeParametersWithConstraint(List<ParameterInstance> selectedParameters, Map<ParameterInstance, double[]> constraints, float factor) {
         if (selectedParameters == null || selectedParameters.isEmpty()) {
             return;
         }
