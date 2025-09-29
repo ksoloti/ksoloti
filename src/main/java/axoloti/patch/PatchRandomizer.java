@@ -201,11 +201,28 @@ public class PatchRandomizer {
         }
         
         double fullRange = maxConstraint - minConstraint;
-        double maxDeviation = fullRange * factor / 2.0; 
+        double totalRandomRange = fullRange * factor;
+        
+        double centerValue = (maxConstraint + minConstraint) / 2.0;
+        
+        double halfRandomRange = totalRandomRange / 2.0;
 
-        double lowerBound = Math.max(minConstraint, currentValue - maxDeviation);
-        double upperBound = Math.min(maxConstraint, currentValue + maxDeviation);
+        double lowerBound = centerValue - halfRandomRange;
+        double upperBound = centerValue + halfRandomRange;
+        
+        lowerBound = Math.max(minConstraint, lowerBound);
+        upperBound = Math.min(maxConstraint, upperBound);
 
+        if (factor >= 1.0f) {
+            lowerBound = minConstraint;
+            upperBound = maxConstraint;
+        } else {
+            double maxDeviation = fullRange * factor / 2.0; 
+
+            lowerBound = Math.max(minConstraint, currentValue - maxDeviation);
+            upperBound = Math.min(maxConstraint, currentValue + maxDeviation);
+        }
+        
         double range = upperBound - lowerBound;
         double mutatedValue = lowerBound;
         
