@@ -39,6 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
@@ -73,9 +74,14 @@ public class MutatorFrame extends JFrame {
     private static final Logger LOGGER = Logger.getLogger(MutatorFrame.class.getName());
 
     private Patch patch;
+
+    private JList<AxoObjectInstanceAbstract> objectList;
+    private DefaultListModel<AxoObjectInstanceAbstract> objectListModel; 
     private JList<ParameterInstance> parameterList;
-    private DefaultListModel<PatchVariation> variationListModel;
+    private DefaultListModel<ParameterInstance> parameterListModel; 
     private JList<PatchVariation> variationList;
+    private DefaultListModel<PatchVariation> variationListModel;
+
     private int variationCounter = 0;
     private final List<PatchVariation> selectedVariationsHistory = new ArrayList<>();
 
@@ -152,63 +158,51 @@ public class MutatorFrame extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        DefaultListModel<ParameterInstance> parameterListModel = new DefaultListModel<>();
-        if (patch.objectInstances.size() > 0) {
-            for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
-                for (ParameterInstance param : obj.getParameterInstances()) {
-                    parameterListModel.addElement(param);
-                }
+
+        objectListModel = new DefaultListModel<>();
+        for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
+            if (!obj.getParameterInstances().isEmpty()) {
+                objectListModel.addElement(obj);
             }
         }
-
-        parameterList = new JList<>(parameterListModel);
-        parameterList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        parameterList.addMouseListener(new MouseAdapter() {
+        objectList = new JList<>(objectListModel);
+        objectList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        objectList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                if (!e.isShiftDown() && !e.isControlDown()) {
-                    parameterList.clearSelection();
-                }
-                int index = parameterList.locationToIndex(e.getPoint());
-                if (index != -1) {
-                    parameterList.addSelectionInterval(index, index);
-                }
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                AxoObjectInstanceAbstract obj = (AxoObjectInstanceAbstract) value;
+                setText(obj.getInstanceName());
+                return c;
             }
         });
 
-        parameterList.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                int index = parameterList.locationToIndex(e.getPoint());
-                if (index != -1) {
-                    int anchorIndex = parameterList.getAnchorSelectionIndex();
-                    if (anchorIndex != -1) {
-                        parameterList.setSelectionInterval(anchorIndex, index);
+        JScrollPane objectScrollPane = new JScrollPane(objectList);
+        objectScrollPane.setPreferredSize(new Dimension(200, 200));
+
+        parameterListModel = new DefaultListModel<>();
+        parameterList = new JList<>(parameterListModel);
+        parameterList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        setupParameterListHandlers(parameterList); 
+        
+        JScrollPane parameterScrollPane = new JScrollPane(parameterList);
+        parameterScrollPane.setPreferredSize(new Dimension(200, 200));
+
+        objectList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                parameterListModel.clear();
+                for (AxoObjectInstanceAbstract obj : objectList.getSelectedValuesList()) {
+                    for (ParameterInstance param : obj.getParameterInstances()) {
+                        parameterListModel.addElement(param);
                     }
                 }
             }
         });
 
-        parameterList.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                          boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                ParameterInstance param = (ParameterInstance) value;
-                setText(param.GetObjectInstance().getInstanceName() + ":" + param.getName());
-                if (param.isFrozen()) {
-                    c.setForeground(Theme.Component_Mid); /* grey out */
-                } else {
-                    c.setForeground(list.getForeground());
-                }
-                return c;
-            }
-        });
-
-        JScrollPane scrollPane = new JScrollPane(parameterList);
-        scrollPane.setPreferredSize(new Dimension(300, 200));
-        mainPanel.add(scrollPane, gbc);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, objectScrollPane, parameterScrollPane);
+        splitPane.setResizeWeight(0.5);
+        splitPane.setDividerLocation(0.5);
+        mainPanel.add(splitPane, gbc);
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -452,6 +446,50 @@ public class MutatorFrame extends JFrame {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 setVisible(false);
+            }
+        });
+    }
+
+    private void setupParameterListHandlers(JList<ParameterInstance> list) {
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (!e.isShiftDown() && !e.isControlDown()) {
+                    list.clearSelection();
+                }
+                int index = list.locationToIndex(e.getPoint());
+                if (index != -1) {
+                    list.addSelectionInterval(index, index);
+                }
+            }
+        });
+
+        list.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int index = list.locationToIndex(e.getPoint());
+                if (index != -1) {
+                    int anchorIndex = list.getAnchorSelectionIndex();
+                    if (anchorIndex != -1) {
+                        list.setSelectionInterval(anchorIndex, index);
+                    }
+                }
+            }
+        });
+
+        list.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                ParameterInstance param = (ParameterInstance) value;
+                setText(param.GetObjectInstance().getInstanceName() + ":" + param.getName()); 
+                
+                if (param.isFrozen()) {
+                    c.setForeground(Theme.Component_Mid); 
+                } else {
+                    c.setForeground(list.getForeground());
+                }
+                return c;
             }
         });
     }
