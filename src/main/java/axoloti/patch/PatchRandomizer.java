@@ -50,6 +50,7 @@ public class PatchRandomizer {
 
                         double mutatedNominalValue = getMutatedNominalValue(param, factor);
 
+                        double oldValue = param.getValue().getDouble();
                         Value newValue;
                         if (param.getValue() instanceof ValueInt32) {
                             newValue = new ValueInt32((int) mutatedNominalValue);
@@ -69,7 +70,7 @@ public class PatchRandomizer {
                         else if (vllog instanceof ValueInt32) {
                             paramVal += vllog.getInt();
                         }
-                        LOGGER.log(Level.INFO, "Randomize " + obj.getCInstanceName() + ":" + param.GetCName() + " " + paramVal);
+                        LOGGER.log(Level.INFO, "Randomize " + obj.getCInstanceName() + ":" + param.GetCName() + " (" + String.format("%+.2f", vllog.getDouble() - oldValue) + ") to " + paramVal);
                     }
                 }
             }
@@ -84,6 +85,7 @@ public class PatchRandomizer {
                 if (!param.isFrozen()) {
 
                     double mutatedNominalValue = getMutatedNominalValue(param, factor);
+                    double oldValue = param.getValue().getDouble();
                     Value newValue;
                     if (param.getValue() instanceof ValueInt32) {
                         newValue = new ValueInt32((int) mutatedNominalValue); 
@@ -104,7 +106,7 @@ public class PatchRandomizer {
                     else if (vllog instanceof ValueInt32) {
                         paramVal += vllog.getInt();
                     }
-                    LOGGER.log(Level.INFO, "Randomize " + param.GetObjectInstance().getInstanceName() + ":" + param.getName() + " " + paramVal);
+                    LOGGER.log(Level.INFO, "Randomize " + param.GetObjectInstance().getInstanceName() + ":" + param.GetCName() + " (" + String.format("%+.2f", vllog.getDouble() - oldValue) + ") to " + paramVal);
                 } else {
                     LOGGER.log(Level.INFO, "Skipping frozen parameter: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
                 }
@@ -176,43 +178,46 @@ public class PatchRandomizer {
         }
     }
 
-    private static double getMutatedNominalValue(ParameterInstance param, float percent) {
+    private static double getMutatedNominalValue(ParameterInstance param, float factor) {
         double minConstraint = param.getControlComponent().getMin();
         double maxConstraint = param.getControlComponent().getMax();
-        double currentValue = param.getValue().getDouble(); 
+        double currentValue = param.getValue().getDouble();
+        
+        String paramInstanceClassName = param.getClass().getSimpleName();
 
-        boolean isBinaryParameter = minConstraint == 0.0 && maxConstraint == 1.0;
-        Value v = param.getValue();
+        if (paramInstanceClassName.equals("ParameterInstanceBin1Momentary")) {
+            return currentValue;
+        }
+        
+        boolean isParameterInstanceBin1 = paramInstanceClassName.equals("ParameterInstanceBin1");
 
-        if (isBinaryParameter && 
-            (v instanceof ValueInt32 || 
-            v.getClass().getSimpleName().equals("ValueBool32") ||
-            v.getClass().getSimpleName().equals("ValueBin32"))) {
-
-            if (random.nextDouble() <= percent) {
+        if (isParameterInstanceBin1 && minConstraint == 0.0 && maxConstraint == 1.0) {
+            
+            if (random.nextDouble() <= factor) {
                 return 1.0 - currentValue;
             } else {
                 return currentValue;
             }
         }
-
+        
         double fullRange = maxConstraint - minConstraint;
-        double maxDeviation = fullRange * percent / 2.0; 
+        double maxDeviation = fullRange * factor / 2.0; 
+
         double lowerBound = Math.max(minConstraint, currentValue - maxDeviation);
         double upperBound = Math.min(maxConstraint, currentValue + maxDeviation);
+
         double range = upperBound - lowerBound;
         double mutatedValue = lowerBound;
-
+        
         if (range > 0) {
             mutatedValue = random.nextDouble() * range + lowerBound;
         }
-
+        
         if (param.getValue() instanceof ValueInt32) {
             mutatedValue = Math.round(mutatedValue);
-
             mutatedValue = Math.min(Math.max(mutatedValue, minConstraint), maxConstraint);
         }
-
+        
         return mutatedValue;
     }
 }
