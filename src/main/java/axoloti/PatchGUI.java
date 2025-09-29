@@ -87,6 +87,8 @@ import javax.swing.JFrame;
 import javax.swing.JLayer;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -313,8 +315,33 @@ public class PatchGUI extends Patch {
                 }
 
                 if (ke.isAltDown()) {
-                    //TODO: Alt+arrows should scroll the patch canvas
-                    /* do not ke.consume() so the menu will be triggered */
+                    JScrollPane scrollPane = getPatchframe().getScrollPane();
+
+                    if (scrollPane != null) {
+                        JScrollBar hBar = scrollPane.getHorizontalScrollBar();
+                        JScrollBar vBar = scrollPane.getVerticalScrollBar();
+                        int keyCode = ke.getKeyCode();
+                        boolean scrolled = false;
+
+                        if (keyCode == KeyEvent.VK_UP) {
+                            vBar.setValue(vBar.getValue() - Constants.Y_GRID);
+                            scrolled = true;
+                        } else if (keyCode == KeyEvent.VK_DOWN) {
+                            vBar.setValue(vBar.getValue() + Constants.Y_GRID);
+                            scrolled = true;
+                        } else if (keyCode == KeyEvent.VK_LEFT) {
+                            hBar.setValue(hBar.getValue() - Constants.X_GRID);
+                            scrolled = true;
+                        } else if (keyCode == KeyEvent.VK_RIGHT) {
+                            hBar.setValue(hBar.getValue() + Constants.X_GRID);
+                            scrolled = true;
+                        }
+
+                        if (scrolled) {
+                            ke.consume();
+                            return;
+                        }
+                    }
                 }
                 else {
 
