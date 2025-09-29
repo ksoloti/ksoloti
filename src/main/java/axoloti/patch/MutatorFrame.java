@@ -184,7 +184,7 @@ public class MutatorFrame extends JFrame {
         parameterList = new JList<>(parameterListModel);
         parameterList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setupParameterListHandlers(parameterList); 
-        
+
         JScrollPane parameterScrollPane = new JScrollPane(parameterList);
         parameterScrollPane.setPreferredSize(new Dimension(200, 200));
 
@@ -483,7 +483,7 @@ public class MutatorFrame extends JFrame {
                 Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 ParameterInstance param = (ParameterInstance) value;
                 setText(param.GetObjectInstance().getInstanceName() + ":" + param.getName()); 
-                
+
                 if (param.isFrozen()) {
                     c.setForeground(Theme.Component_Mid); 
                 } else {
@@ -497,7 +497,7 @@ public class MutatorFrame extends JFrame {
     private void updateLists() {
         objectListModel.clear();
         parameterListModel.clear();
-        
+
         for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
             if (!obj.getParameterInstances().isEmpty()) {
                 objectListModel.addElement(obj);

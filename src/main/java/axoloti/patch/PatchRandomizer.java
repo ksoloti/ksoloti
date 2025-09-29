@@ -182,34 +182,39 @@ public class PatchRandomizer {
         double minConstraint = param.getControlComponent().getMin();
         double maxConstraint = param.getControlComponent().getMax();
         double currentValue = param.getValue().getDouble();
-        
+
         String paramInstanceClassName = param.getClass().getSimpleName();
 
         if (paramInstanceClassName.equals("ParameterInstanceBin1Momentary")) {
             return currentValue;
         }
-        
+
         boolean isParameterInstanceBin1 = paramInstanceClassName.equals("ParameterInstanceBin1");
 
-        if (isParameterInstanceBin1 && minConstraint == 0.0 && maxConstraint == 1.0) {
-            
+        if (isParameterInstanceBin1 && (param.getValue() instanceof ValueInt32)) {
+
             if (random.nextDouble() <= factor) {
-                return 1.0 - currentValue;
-            } else {
+                if (random.nextDouble() < 0.5) {
+                    return 1.0; 
+                } else {
+                    return 0.0;
+                }
+            } 
+            else {
                 return currentValue;
             }
         }
-        
+
         double fullRange = maxConstraint - minConstraint;
         double totalRandomRange = fullRange * factor;
-        
+
         double centerValue = (maxConstraint + minConstraint) / 2.0;
-        
+
         double halfRandomRange = totalRandomRange / 2.0;
 
         double lowerBound = centerValue - halfRandomRange;
         double upperBound = centerValue + halfRandomRange;
-        
+
         lowerBound = Math.max(minConstraint, lowerBound);
         upperBound = Math.min(maxConstraint, upperBound);
 
@@ -222,19 +227,19 @@ public class PatchRandomizer {
             lowerBound = Math.max(minConstraint, currentValue - maxDeviation);
             upperBound = Math.min(maxConstraint, currentValue + maxDeviation);
         }
-        
+
         double range = upperBound - lowerBound;
         double mutatedValue = lowerBound;
-        
+
         if (range > 0) {
             mutatedValue = random.nextDouble() * range + lowerBound;
         }
-        
+
         if (param.getValue() instanceof ValueInt32) {
             mutatedValue = Math.round(mutatedValue);
             mutatedValue = Math.min(Math.max(mutatedValue, minConstraint), maxConstraint);
         }
-        
+
         return mutatedValue;
     }
 }
