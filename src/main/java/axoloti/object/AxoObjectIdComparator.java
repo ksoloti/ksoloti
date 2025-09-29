@@ -161,7 +161,7 @@ public class AxoObjectIdComparator implements Comparator<AxoObjectAbstract> {
             } catch (NumberFormatException ignored) {
                 /* Silent */
             }
-            suffix1 = m2.group(3);
+            suffix2 = m2.group(3);
         }
 
         int prefixComparison = prefix1WithoutNumber.compareTo(prefix2WithoutNumber);
