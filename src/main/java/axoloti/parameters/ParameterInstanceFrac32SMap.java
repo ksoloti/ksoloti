@@ -35,6 +35,16 @@ public class ParameterInstanceFrac32SMap extends ParameterInstanceFrac32UMap<Par
     }
 
     @Override
+    double getMin() {
+        return -64.0;
+    }
+
+    @Override
+    double getMax() {
+        return 64.0;
+    }
+
+    @Override
     double getTick() {
         return 1.0;
     }

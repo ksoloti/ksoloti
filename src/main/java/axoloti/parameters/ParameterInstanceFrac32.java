@@ -53,13 +53,9 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
         //value = new ValueFrac32();
     }
 
-    public double getMin() {
-        return -64.0; /* default to bipolar, will be overriden for other formats */
-    }
+    abstract double getMin();
 
-    public double getMax(){
-        return 64.0;
-    }
+    abstract double getMax();
 
     abstract double getTick();
 
