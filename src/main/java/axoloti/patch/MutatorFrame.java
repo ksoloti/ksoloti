@@ -493,4 +493,23 @@ public class MutatorFrame extends JFrame {
             }
         });
     }
+
+    private void updateLists() {
+        objectListModel.clear();
+        parameterListModel.clear();
+        
+        for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
+            if (!obj.getParameterInstances().isEmpty()) {
+                objectListModel.addElement(obj);
+            }
+        }
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        if (b) {
+            updateLists();
+        }
+        super.setVisible(b);
+    }
 }
