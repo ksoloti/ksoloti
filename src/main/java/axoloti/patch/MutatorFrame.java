@@ -19,7 +19,6 @@
 
 package axoloti.patch;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -125,14 +124,10 @@ public class MutatorFrame extends JFrame {
         }
     }
 
-    /**
-     * Constructs a new MutatorFrame.
-     * @param patch The patch to be randomized.
-     */
     public MutatorFrame(Patch patch) {
         super("Patch Mutator - " + patch.getPatchframe().getTitle());
         this.patch = patch;
-        
+
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -141,7 +136,7 @@ public class MutatorFrame extends JFrame {
             }
         });
         setMinimumSize(new Dimension(500, 500));
-        
+
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -165,10 +160,10 @@ public class MutatorFrame extends JFrame {
                 }
             }
         }
-        
+
         parameterList = new JList<>(parameterListModel);
         parameterList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        
+
         parameterList.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -210,7 +205,7 @@ public class MutatorFrame extends JFrame {
                 return c;
             }
         });
-        
+
         JScrollPane scrollPane = new JScrollPane(parameterList);
         scrollPane.setPreferredSize(new Dimension(300, 200));
         mainPanel.add(scrollPane, gbc);
@@ -220,7 +215,7 @@ public class MutatorFrame extends JFrame {
         gbc.weightx = 0.25;
         gbc.weighty = 0;
         gbc.gridwidth = 1;
-        
+
         gbc.gridx = 0;
         JButton button10 = new JButton("10%");
         button10.addActionListener(e -> randomizeSelected(0.10f));
@@ -235,7 +230,7 @@ public class MutatorFrame extends JFrame {
         JButton button50 = new JButton("50%");
         button50.addActionListener(e -> randomizeSelected(0.50f));
         mainPanel.add(button50, gbc);
-        
+
         gbc.gridx = 3;
         JButton button100 = new JButton("100%");
         button100.addActionListener(e -> randomizeSelected(1.00f));
@@ -260,7 +255,7 @@ public class MutatorFrame extends JFrame {
                 if (e.getValueIsAdjusting()) {
                     return;
                 }
-                
+
                 List<PatchVariation> currentSelection = variationList.getSelectedValuesList();
 
                 selectedVariationsHistory.retainAll(currentSelection);
@@ -270,7 +265,7 @@ public class MutatorFrame extends JFrame {
                         selectedVariationsHistory.add(v);
                     }
                 }
-                
+
                 /* If more than 2 items are selected, unselect the oldest one */
                 if (selectedVariationsHistory.size() > 2) {
                     PatchVariation oldest = selectedVariationsHistory.remove(0);
@@ -281,7 +276,7 @@ public class MutatorFrame extends JFrame {
                 }
             }
         });
-        
+
         variationList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -319,25 +314,18 @@ public class MutatorFrame extends JFrame {
         JButton renameButton = new JButton("Rename");
         renameButton.addActionListener(e -> renameVariation());
         mainPanel.add(renameButton, gbc);
-        
+
         gbc.gridx = 3;
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(e -> deleteVariation());
         mainPanel.add(deleteButton, gbc);
-        
-        add(mainPanel);
-        
-        setupKeyBindings();
 
+        add(mainPanel);
+        setupKeyBindings();
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(patch.getPatchframe());
     }
-    
-    /**
-     * Helper method to get selected parameters and call the randomizer.
-     * Updated to support constrained randomization.
-     * @param factor The randomization percentage.
-     */
+
     private void randomizeSelected(float factor) {
         List<ParameterInstance> selectedParameters = parameterList.getSelectedValuesList();
         List<PatchVariation> selectedVariations = variationList.getSelectedValuesList();
@@ -354,12 +342,10 @@ public class MutatorFrame extends JFrame {
 
             Map<ParameterInstance, double[]> constraints = new HashMap<>();
 
-            // Find the min/max values for each parameter based on the two variations
             for (ParameterInstance param : selectedParameters) {
                 int val1 = -1;
                 int val2 = -1;
-                
-                // Find the values for the current parameter in both variations
+
                 for (ParameterState state : v1.getStates()) {
                     if (state.getParameter().equals(param)) {
                         val1 = state.getValue();
@@ -372,32 +358,28 @@ public class MutatorFrame extends JFrame {
                         break;
                     }
                 }
-                
+
                 if (val1 != -1 && val2 != -1) {
                     int min = Math.min(val1, val2);
                     int max = Math.max(val1, val2);
                     constraints.put(param, new double[]{min, max});
                 }
             }
-            
+
             PatchRandomizer.randomizeParametersWithConstraint(selectedParameters, constraints, factor);
-            
+
         } else if (selectedVariations.size() > 2) {
              LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
         } else {
-            // Default behavior if not two variations are selected
             LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(factor * 100) + "%");
             PatchRandomizer.randomizeParameters(selectedParameters, factor);
         }
-        
+
         if (this.patch != null) {
             this.patch.SetDirty(true);
         }
     }
 
-    /**
-     * Stores the current patch's parameter states as a new variation.
-     */
     private void storeVariation() {
         if (this.patch != null) {
             PatchVariation newVariation = new PatchVariation("Variation " + (++variationCounter));
@@ -413,9 +395,6 @@ public class MutatorFrame extends JFrame {
         }
     }
 
-    /**
-     * Loads the selected variation, replacing the current patch's parameter states.
-     */
     private void loadVariation() {
         List<PatchVariation> selectedVariations = variationList.getSelectedValuesList();
 
@@ -425,7 +404,7 @@ public class MutatorFrame extends JFrame {
         }
 
         PatchVariation selectedVariation = selectedVariations.get(0);
-        
+
         if (selectedVariation != null && this.patch != null) {
             for (ParameterState state : selectedVariation.getStates()) {
                 state.getParameter().SetValueRaw(state.getValue());
@@ -438,9 +417,6 @@ public class MutatorFrame extends JFrame {
         }
     }
 
-    /**
-     * Deletes the selected variation.
-     */
     private void deleteVariation() {
         int selectedIndex = variationList.getSelectedIndex();
         if (selectedIndex != -1) {
@@ -451,9 +427,6 @@ public class MutatorFrame extends JFrame {
         }
     }
 
-    /**
-     * Renames the selected variation.
-     */
     private void renameVariation() {
         int selectedIndex = variationList.getSelectedIndex();
         if (selectedIndex != -1) {
@@ -469,9 +442,6 @@ public class MutatorFrame extends JFrame {
         }
     }
 
-    /**
-     * Sets up keyboard shortcuts for the frame.
-     */
     private void setupKeyBindings() {
         InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = getRootPane().getActionMap();

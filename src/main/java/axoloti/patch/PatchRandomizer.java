@@ -42,32 +42,23 @@ public class PatchRandomizer {
     private static final Logger LOGGER = Logger.getLogger(PatchRandomizer.class.getName());
     private static Random random = new Random(Instant.EPOCH.getEpochSecond());
 
-    /**
-     * Randomizes all non-frozen parameters in a patch.
-     * @param patch The patch to randomize.
-     * @param factor The percentage to apply randomization by.
-     */
     public static void randomizeAllParameters(Patch patch, float factor) { /* factor: 0.25f equals 25% */
         if (patch.objectInstances.size() > 0) {
             for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
                 for (ParameterInstance param : obj.getParameterInstances()) {
                     if (!param.isFrozen()) {
-                        
-                        // 1. Calculate the new nominal value
+
                         double mutatedNominalValue = getMutatedNominalValue(param, factor);
 
-                        // 2. Create the appropriate Value object (assuming a helper exists)
                         Value newValue;
                         if (param.getValue() instanceof ValueInt32) {
                             newValue = new ValueInt32((int) mutatedNominalValue);
                         } else if (param.getValue() instanceof ValueFrac32) {
                              newValue = new ValueFrac32(mutatedNominalValue);
                         } else {
-                             // Skip or handle other types
                              continue;
                         }
-                        
-                        // 3. Set the new value, allowing the parameter to handle the raw conversion!
+
                         param.setValue(newValue); 
                         param.SetNeedsTransmit(true);
                         String paramVal = "";
@@ -87,40 +78,24 @@ public class PatchRandomizer {
         }
     }
 
-    /**
-     * Randomizes a list of selected parameters.
-     * @param selectedParameters The list of parameters to randomize.
-     * @param factor The percentage to apply randomization by.
-     */
     public static void randomizeParameters(List<ParameterInstance> selectedParameters, float factor) {
         if (selectedParameters != null && !selectedParameters.isEmpty()) {
             for (ParameterInstance param : selectedParameters) {
                 if (!param.isFrozen()) {
-                    
-                    // --- FIX BEGINS HERE ---
-                    
-                    // 1. Calculate the new nominal value using constraints (0.0 to 1.0, -64.0 to 64.0, etc.)
-                    double mutatedNominalValue = getMutatedNominalValue(param, factor);
 
-                    // 2. Create the appropriate Value object (must be done outside of ParameterInstance)
+                    double mutatedNominalValue = getMutatedNominalValue(param, factor);
                     Value newValue;
                     if (param.getValue() instanceof ValueInt32) {
-                        // Cast to int for ValueInt32 constructor
                         newValue = new ValueInt32((int) mutatedNominalValue); 
                     } else if (param.getValue() instanceof ValueFrac32) {
-                        // Use the double directly for ValueFrac32 constructor
                          newValue = new ValueFrac32(mutatedNominalValue);
                     } else {
-                         // Skip other types (Bool32, etc.) or just use the current value
                          newValue = param.getValue();
                     }
-                    
-                    // 3. Set the new value, allowing the parameter to handle the raw conversion
+
                     param.setValue(newValue); 
                     param.SetNeedsTransmit(true);
-                    
-                    // --- FIX ENDS HERE ---
-    
+
                     String paramVal = "";
                     Value vllog = param.getValue();
                     if (vllog instanceof ValueFrac32) {
@@ -136,13 +111,7 @@ public class PatchRandomizer {
             }
         }
     }
-    
-    /**
-     * Randomizes a list of selected parameters with a mutation constrained by a min/max value.
-     * @param selectedParameters The list of parameters to randomize.
-     * @param constraints A map from ParameterInstance to an int[] with [min, max] values.
-     * @param factor The percentage of the constrained range to use for mutation.
-     */
+
     public static void randomizeParametersWithConstraint(List<ParameterInstance> selectedParameters, Map<ParameterInstance, double[]> constraints, float factor) {
         if (selectedParameters == null || selectedParameters.isEmpty()) {
             return;
@@ -152,29 +121,18 @@ public class PatchRandomizer {
 
         for (ParameterInstance param : selectedParameters) {
             if (!param.isFrozen() && constraints.containsKey(param)) {
-                // Get the nominal double constraints directly from the map
                 double[] nominalMinMax = constraints.get(param);
-                
-                // 1. Get Limits and Current Value in Nominal (double) domain
+
                 double minNominalConstraint = nominalMinMax[0];
                 double maxNominalConstraint = nominalMinMax[1];
-                double currentNominalValue = param.getValue().getDouble(); // NO GetValueRaw()
-
-                // Ensure minConstraint is truly the minimum (in case the Variations were selected in reverse)
+                double currentNominalValue = param.getValue().getDouble();
                 double actualMin = Math.min(minNominalConstraint, maxNominalConstraint);
                 double actualMax = Math.max(minNominalConstraint, maxNominalConstraint);
-
-                // 2. Perform all calculation in the NOMINAL DOUBLE domain
                 double fullRange = actualMax - actualMin;
-                
-                // Calculate the nominal mutation bounds
                 double mutationAmount = fullRange * factor;
                 double mutationHalf = mutationAmount / 2.0;
-                
                 double tempMin = currentNominalValue - mutationHalf;
                 double tempMax = currentNominalValue + mutationHalf;
-
-                // Constrain the mutation to the interpolation range
                 double constrainedMin = Math.max(actualMin, tempMin);
                 double constrainedMax = Math.min(actualMax, tempMax);
 
@@ -182,16 +140,13 @@ public class PatchRandomizer {
                 if (range <= 0.0) {
                     continue;
                 }
-                
-                // 3. Calculate the final NOMINAL DOUBLE value
+
                 double mutatedNominalValue = random.nextDouble() * range + constrainedMin;
 
-                // 4. Handle Int32 Discreteness and create/set the Value object
                 Value vl = param.getValue();
                 Value newValue;
-                
+
                 if (vl instanceof ValueInt32) {
-                    // Round and clamp for integer types
                     mutatedNominalValue = Math.round(mutatedNominalValue);
                     mutatedNominalValue = Math.min(Math.max(mutatedNominalValue, actualMin), actualMax);
                     newValue = new ValueInt32((int) mutatedNominalValue); 
@@ -200,11 +155,10 @@ public class PatchRandomizer {
                 } else {
                     continue;
                 }
-                
-                // Apply the change using the proper setter
+
                 param.setValue(newValue);
                 param.SetNeedsTransmit(true);
-    
+
                 String paramVal = "";
                 Value vllog = param.getValue();
                 if (vllog instanceof ValueFrac32) {
@@ -222,53 +176,43 @@ public class PatchRandomizer {
         }
     }
 
-    private static double getMutatedNominalValue(ParameterInstance param, float factor) {
-        // 1. Get Limits and Current Value in Nominal (double) domain
+    private static double getMutatedNominalValue(ParameterInstance param, float percent) {
         double minConstraint = param.getControlComponent().getMin();
         double maxConstraint = param.getControlComponent().getMax();
-        double currentValue = param.getValue().getDouble(); // Use the nominal double value
+        double currentValue = param.getValue().getDouble(); 
 
-        if (param.getValue() instanceof ValueInt32 && minConstraint == 0.0 && maxConstraint == 1.0) {
-            
-            // If the random roll is less than or equal to the percentage (e.g., 0.10 for 10%)
-            if (random.nextDouble() <= factor) {
-                // FLIP THE STATE: 0.0 becomes 1.0, 1.0 becomes 0.0
-                return (currentValue == 0.0) ? 1.0 : 0.0;
+        boolean isBinaryParameter = minConstraint == 0.0 && maxConstraint == 1.0;
+        Value v = param.getValue();
+
+        if (isBinaryParameter && 
+            (v instanceof ValueInt32 || 
+            v.getClass().getSimpleName().equals("ValueBool32") ||
+            v.getClass().getSimpleName().equals("ValueBin32"))) {
+
+            if (random.nextDouble() <= percent) {
+                return 1.0 - currentValue;
             } else {
-                // KEEP THE CURRENT STATE
                 return currentValue;
             }
         }
 
-        // 2. Define the Mutation Range based on percentage (Standard Logic for all others)
         double fullRange = maxConstraint - minConstraint;
-        
-        // Calculate the maximum deviation allowed (e.g., +/- 12.5% of the full range)
-        double maxDeviation = fullRange * factor / 2.0; 
-
+        double maxDeviation = fullRange * percent / 2.0; 
         double lowerBound = Math.max(minConstraint, currentValue - maxDeviation);
         double upperBound = Math.min(maxConstraint, currentValue + maxDeviation);
-
-        // 3. Generate the Mutated Value (simple linear random choice within bounds)
         double range = upperBound - lowerBound;
         double mutatedValue = lowerBound;
-        
+
         if (range > 0) {
-            // Generates a random double between 0.0 (inclusive) and range (exclusive)
             mutatedValue = random.nextDouble() * range + lowerBound;
         }
-        
-        // 4. Handle Int32 Discreteness (Rounding for multi-step selectors, e.g., 0 to 4)
+
         if (param.getValue() instanceof ValueInt32) {
-            // NOTE: This logic block now ONLY runs for ValueInt32 where maxConstraint > 1.0
-            
-            // For integer parameters, the final nominal value must be rounded to the nearest integer.
             mutatedValue = Math.round(mutatedValue);
-            
-            // Final clamp just in case rounding pushed it out
+
             mutatedValue = Math.min(Math.max(mutatedValue, minConstraint), maxConstraint);
         }
-        
+
         return mutatedValue;
     }
 }
