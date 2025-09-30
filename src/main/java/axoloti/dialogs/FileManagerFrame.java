@@ -19,6 +19,7 @@
 package axoloti.dialogs;
 
 import static axoloti.MainFrame.fc;
+import static axoloti.MainFrame.mainframe;
 
 import axoloti.USBBulkConnection;
 import axoloti.listener.ConnectionStatusListener;
@@ -752,6 +753,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             }
         }
         if (USBBulkConnection.getInstance().isConnected()) {
+            mainframe.setCurrentLivePatch(null);
             fc.resetChoosableFileFilters();
             fc.setCurrentDirectory(new File(Preferences.getInstance().getCurrentFileDirectory()));
             fc.restoreCurrentSize();
@@ -875,96 +877,99 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             // System.out.println(Instant.now() + " [DEBUG] No items selected for deletion.");
             return;
         }
+        if (USBBulkConnection.getInstance().isConnected()) {
+            mainframe.setCurrentLivePatch(null);
 
-        String confirmationText;
-        if (selectedRows.length > 1) {
-            confirmationText = "Delete " + selectedRows.length + " items?";
-        } else {
-            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
-            DisplayTreeNode displayNode = model.getDisplayTreeNode(selectedRows[0]);
-            SDFileInfo selectedFile = displayNode.fileInfo;
-            if (selectedFile.isDirectory()) {
-                confirmationText = "Delete \"" + selectedFile.getFilename() + "\" and all its contents?";
+            String confirmationText;
+            if (selectedRows.length > 1) {
+                confirmationText = "Delete " + selectedRows.length + " items?";
             } else {
-                confirmationText = "Delete \"" + selectedFile.getFilename() + "\"?";
-            }
-        }
-
-        Object[] options = {"Delete", "Cancel"};
-        int confirmResult = KeyboardNavigableOptionPane.showOptionDialog(
-            this,
-            confirmationText,
-            "Confirm Delete",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE,
-            null,
-            options,
-            options[1]
-        );
-
-        if (confirmResult == JOptionPane.YES_OPTION) {
-            AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
-
-            final List<String> filesToDeletePaths = Arrays.stream(selectedRows)
-                                                    .boxed()
-                                                    .sorted(Comparator.reverseOrder())
-                                                    .map(rowIndex -> model.getDisplayTreeNode(rowIndex).fileInfo.getFilename())
-                                                    .collect(Collectors.toList());
-
-            if (filesToDeletePaths.isEmpty()) {
-                // System.out.println(Instant.now() + " [DEBUG] No valid file paths collected for deletion.");
-                return;
+                AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+                DisplayTreeNode displayNode = model.getDisplayTreeNode(selectedRows[0]);
+                SDFileInfo selectedFile = displayNode.fileInfo;
+                if (selectedFile.isDirectory()) {
+                    confirmationText = "Delete \"" + selectedFile.getFilename() + "\" and all its contents?";
+                } else {
+                    confirmationText = "Delete \"" + selectedFile.getFilename() + "\"?";
+                }
             }
 
-            new SwingWorker<String, String>() {
-                private int deletedCount = 0;
-                private int failedCount = 0;
+            Object[] options = {"Delete", "Cancel"};
+            int confirmResult = KeyboardNavigableOptionPane.showOptionDialog(
+                this,
+                confirmationText,
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]
+            );
 
-                @Override
-                protected String doInBackground() throws Exception {
-                    LOGGER.log(Level.INFO, "Deleting " + selectedRows.length + " item(s)...\n");
-                    for (String fullPath : filesToDeletePaths) {
-                        if (deleteSdCardEntryRecursive(fullPath)) {
-                            deletedCount++;
+            if (confirmResult == JOptionPane.YES_OPTION) {
+                AxoSDFileTableModel model = (AxoSDFileTableModel) jFileTable.getModel();
+
+                final List<String> filesToDeletePaths = Arrays.stream(selectedRows)
+                                                        .boxed()
+                                                        .sorted(Comparator.reverseOrder())
+                                                        .map(rowIndex -> model.getDisplayTreeNode(rowIndex).fileInfo.getFilename())
+                                                        .collect(Collectors.toList());
+
+                if (filesToDeletePaths.isEmpty()) {
+                    // System.out.println(Instant.now() + " [DEBUG] No valid file paths collected for deletion.");
+                    return;
+                }
+
+                new SwingWorker<String, String>() {
+                    private int deletedCount = 0;
+                    private int failedCount = 0;
+
+                    @Override
+                    protected String doInBackground() throws Exception {
+                        LOGGER.log(Level.INFO, "Deleting " + selectedRows.length + " item(s)...\n");
+                        for (String fullPath : filesToDeletePaths) {
+                            if (deleteSdCardEntryRecursive(fullPath)) {
+                                deletedCount++;
+                            } else {
+                                failedCount++;
+                            }
+                            try {
+                                Thread.sleep(50);
+                            }
+                            catch (InterruptedException ie) {
+                                LOGGER.log(Level.SEVERE, "Batch deletion interrupted: " + ie.getMessage());
+                                ie.printStackTrace(System.out);
+                                Thread.currentThread().interrupt();
+                                break; /* Abort all */
+                            }
+                        }
+
+                        if (deletedCount == filesToDeletePaths.size() && failedCount == 0) {
+                            return "All " + deletedCount + " item(s) deleted successfully.\n";
+                        } else if (deletedCount > 0 && failedCount > 0) {
+                            return deletedCount + " item(s) deleted, but " + failedCount + " failed.\n";
+                        } else if (failedCount == filesToDeletePaths.size()) {
+                            return "No items were deleted.\n";
                         } else {
-                            failedCount++;
+                            return "Deletion process completed with issues.\n";
                         }
+                    }
+
+                    @Override
+                    protected void done() {
+                        String message = "Deletion process completed.\n";
                         try {
-                            Thread.sleep(50);
+                            message = get();
+                            LOGGER.log(Level.INFO, message);
+                        } catch (InterruptedException | ExecutionException e) {
+                            message = "Batch delete failed unexpectedly: " + e.getMessage() + "\n";
+                            e.printStackTrace(System.out);
+                        } finally {
+                            triggerRefresh();
                         }
-                        catch (InterruptedException ie) {
-                            LOGGER.log(Level.SEVERE, "Batch deletion interrupted: " + ie.getMessage());
-                            ie.printStackTrace(System.out);
-                            Thread.currentThread().interrupt();
-                            break; /* Abort all */
-                        }
                     }
-
-                    if (deletedCount == filesToDeletePaths.size() && failedCount == 0) {
-                        return "All " + deletedCount + " item(s) deleted successfully.\n";
-                    } else if (deletedCount > 0 && failedCount > 0) {
-                        return deletedCount + " item(s) deleted, but " + failedCount + " failed.\n";
-                    } else if (failedCount == filesToDeletePaths.size()) {
-                        return "No items were deleted.\n";
-                    } else {
-                        return "Deletion process completed with issues.\n";
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    String message = "Deletion process completed.\n";
-                    try {
-                        message = get();
-                        LOGGER.log(Level.INFO, message);
-                    } catch (InterruptedException | ExecutionException e) {
-                        message = "Batch delete failed unexpectedly: " + e.getMessage() + "\n";
-                        e.printStackTrace(System.out);
-                    } finally {
-                        triggerRefresh();
-                    }
-                }
-            }.execute();
+                }.execute();
+            }
         }
     }
 
@@ -979,24 +984,27 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                 dir = f.getFilename();
             }
         }
+        if (USBBulkConnection.getInstance().isConnected()) {
+            mainframe.setCurrentLivePatch(null);
         
-        String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
-        if (fn != null && !fn.isEmpty()) {
-            Calendar cal = Calendar.getInstance();
-            try {
-                SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
-                createDirCmd.Do();
-                if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
-                    return;
+            String fn = JOptionPane.showInputDialog(this, "Enter folder name:");
+            if (fn != null && !fn.isEmpty()) {
+                Calendar cal = Calendar.getInstance();
+                try {
+                    SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
+                    createDirCmd.Do();
+                    if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
+                        return;
+                    }
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory: " + e.getMessage());
+                    e.printStackTrace(System.out);
+                    Thread.currentThread().interrupt();
                 }
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory: " + e.getMessage());
-                e.printStackTrace(System.out);
-                Thread.currentThread().interrupt();
             }
+            UpdateButtons();
+            triggerRefresh();
         }
-        UpdateButtons();
-        triggerRefresh();
     }
 
     public void refreshUI() {
