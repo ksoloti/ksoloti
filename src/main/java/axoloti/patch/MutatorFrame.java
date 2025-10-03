@@ -131,7 +131,7 @@ public class MutatorFrame extends JFrame {
     }
 
     public MutatorFrame(Patch patch) {
-        super("Patch Mutator - " + patch.getPatchframe().getTitle());
+        super("Patch Mutator (WIP) - " + patch.getPatchframe().getTitle());
         this.patch = patch;
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
