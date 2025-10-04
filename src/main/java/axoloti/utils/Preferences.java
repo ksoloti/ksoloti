@@ -19,6 +19,7 @@
 package axoloti.utils;
 
 import axoloti.Axoloti;
+import static axoloti.MainFrame.mainframe;
 import axoloti.Version;
 
 import java.io.File;
@@ -629,13 +630,13 @@ public class Preferences {
             return;
         }
 
-        this.FirmwareMode = FirmwareMode;
-
         boolean boardChanged = (FirmwareMode.contains("Axoloti") && !this.FirmwareMode.contains("Axoloti")) ||
                                (FirmwareMode.contains("Ksoloti") && !this.FirmwareMode.contains("Ksoloti"));
 
+        this.FirmwareMode = FirmwareMode;
         if (boardChanged) {
             restartRequired = true;
+            mainframe.disableConnectUntilRestart();
         }
     }
 
