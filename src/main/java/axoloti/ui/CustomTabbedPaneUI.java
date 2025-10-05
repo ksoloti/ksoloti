@@ -37,8 +37,6 @@ import com.formdev.flatlaf.ui.FlatTabbedPaneUI;
  */
 public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
 
-    /* Adds a colored stripe to a tab */
-
     protected Map<Integer, Color> tabColors = new HashMap<>();
     private int stripeWidth = 3; /* Width of the colored stripe. Currently 3 to match FlatLaf's selected tab stripe on the right */ 
 
@@ -59,7 +57,6 @@ public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
         tabColors.put(12, new Color(158, 158, 158)); // XML Preview  - Material Grey 500
     }
 
-    /* Optional: Set colors dynamically */
     public void setTabColor(int tabIndex, Color color) {
         tabColors.put(tabIndex, color);
         if (tabPane != null) {
@@ -69,19 +66,15 @@ public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
 
     @Override
     protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
-        /* Call super method to draw the default background */
         super.paintTabBackground(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
 
         Color stripeColor = tabColors.getOrDefault(tabIndex, Color.LIGHT_GRAY); // Default if no color set
-        Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setColor(stripeColor);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setColor(stripeColor);
 
-        /* The stripe will be drawn at x, extending 'stripeWidth' to the right */
-        /* The height will be the full height of the tab (h) */
-        /* Padding (left, top, bottom) is 2 * stripeWidth */
         int padding = 2 * stripeWidth;
-        g2d.fillRect(x + padding, y + padding, stripeWidth, h - (2 * padding));
-        g2d.dispose();
+        g2.fillRect(x + padding, y + padding, stripeWidth, h - (2 * padding));
+        g2.dispose();
     }
 
     @Override
@@ -98,20 +91,17 @@ public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
         super.paintText(g, tabPlacement, font, metrics, tabIndex, title, leftAlignedTextRect, isSelected);
     }
 
-    /* Optional: Override getTabInsets to create space for the stripe */
     @Override
     protected Insets getTabInsets(int tabPlacement, int tabIndex) {
         Insets defaultInsets = super.getTabInsets(tabPlacement, tabIndex);
         return new Insets(defaultInsets.top, defaultInsets.left + stripeWidth, defaultInsets.bottom, defaultInsets.right);
     }
 
-    /* Optional: Override getTabLabelShiftX to fine-tune horizontal alignment */
     @Override
     protected int getTabLabelShiftX(int tabPlacement, int tabIndex, boolean isSelected) {
         return super.getTabLabelShiftX(tabPlacement, tabIndex, isSelected);
     }
 
-    /* Optional: Override getTabLabelShiftY to fine-tune vertical alignment */
     @Override
     protected int getTabLabelShiftY(int tabPlacement, int tabIndex, boolean isSelected) {
         return super.getTabLabelShiftY(tabPlacement, tabIndex, isSelected);

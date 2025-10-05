@@ -161,9 +161,7 @@ public class SvgIconLoader {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             if (graphicsNode == null) return;
 
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            Graphics2D g2 = (Graphics2D) g.create();
 
             String widthAttr = document.getDocumentElement().getAttribute("width");
             String heightAttr = document.getDocumentElement().getAttribute("height");
@@ -202,11 +200,11 @@ public class SvgIconLoader {
             int offsetX = (int) Math.round(x + (size - scaledWidth) / 2.0);
             int offsetY = (int) Math.round(y + (size - scaledHeight) / 2.0);
 
-            g2d.translate(offsetX, offsetY);
-            g2d.scale(scale, scale);
+            g2.translate(offsetX, offsetY);
+            g2.scale(scale, scale);
 
-            graphicsNode.paint(g2d);
-            g2d.dispose();
+            graphicsNode.paint(g2);
+            g2.dispose();
         }
 
         @Override

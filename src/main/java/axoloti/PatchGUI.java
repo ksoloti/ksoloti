@@ -158,7 +158,7 @@ public class PatchGUI extends Patch {
                 if (findTextResults.isEmpty()) {
                     return;
                 }
-                Graphics2D g2d = (Graphics2D) g;
+                Graphics2D g2 = (Graphics2D) g;
 
                 for (int i = 0; i < findTextResults.size(); i++) {
                     AxoObjectInstanceAbstract obj = findTextResults.get(i);
@@ -169,10 +169,10 @@ public class PatchGUI extends Patch {
                     BasicStroke highlightStroke = new BasicStroke(strokeWidth);
                     int halfStroke = strokeWidth / 2;
 
-                    g2d.setColor(highlightColor);
-                    g2d.setStroke(highlightStroke);
+                    g2.setColor(highlightColor);
+                    g2.setStroke(highlightStroke);
 
-                    g2d.drawRect(obj.getX() - halfStroke,
+                    g2.drawRect(obj.getX() - halfStroke,
                                  obj.getY() - halfStroke,
                                  obj.getWidth() + strokeWidth,
                                  obj.getHeight() + strokeWidth);
