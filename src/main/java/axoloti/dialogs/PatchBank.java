@@ -20,6 +20,7 @@ package axoloti.dialogs;
 
 import axoloti.DocumentWindow;
 import axoloti.DocumentWindowList;
+import axoloti.MainFrame;
 
 import static axoloti.MainFrame.fc;
 import static axoloti.utils.FileUtils.axpFileFilter;
@@ -853,6 +854,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         LOGGER.log(Level.INFO, "Uploading Patchbank index...");
         if (USBBulkConnection.getInstance().isConnected()) {
             try {
+                MainFrame.mainframe.setCurrentLivePatch(null);
                 SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 uploadFileCmd.Do();
                 if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
@@ -1019,6 +1021,7 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         class Thd extends Thread {
             public void run() {
                 if (USBBulkConnection.getInstance().isConnected()) {
+                    MainFrame.mainframe.setCurrentLivePatch(null);
                     LOGGER.log(Level.INFO, "Uploading Patchbank index...");
                     try {
                         SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
