@@ -58,6 +58,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -108,6 +110,7 @@ public class USBBulkConnection extends Connection {
     private static volatile Context context; /* One context for all libusb operations */
     private static volatile DeviceHandle handle;
     static private volatile USBBulkConnection conn = null;
+    private final ExecutorService cmdExecutor = Executors.newCachedThreadPool();
 
     ByteBuffer dispData;
 
@@ -282,10 +285,23 @@ public class USBBulkConnection extends Connection {
                     }
 
                     if (cmd != null) {
-                        SCmd response = cmd.Do();
-                        if (response != null) {
-                            QCmdProcessor.getInstance().getQueueResponse().put(response);
-                        }
+                        final SCmd finalCmd = cmd;
+                        
+                        cmdExecutor.submit(() -> {
+                            try {
+                                SCmd response = finalCmd.Do(); 
+                                if (response != null) {
+                                    QCmdProcessor.getInstance().getQueueResponse().put(response);
+                                    synchronized (QCmdProcessor.getInstance().getQueueLock()) {
+                                        QCmdProcessor.getInstance().getQueueLock().notifyAll();
+                                    }
+                                }
+                            }
+                            catch (Exception e) {
+                                LOGGER.log(Level.SEVERE, "Error during Transmitter thread: " + e.getMessage());
+                                e.printStackTrace(System.out);
+                            }
+                        });
                     }
                 }
                 catch (InterruptedException ex) {
@@ -750,6 +766,9 @@ public class USBBulkConnection extends Connection {
                 if (byteProcessorThread != null) {
                     byteProcessorThread.join(threadJoinTimeoutMs);
                 }
+
+                cmdExecutor.shutdownNow();
+                cmdExecutor.awaitTermination(10, TimeUnit.SECONDS);
 
                 if (handle != null) {
                     LibUsb.releaseInterface(handle, useBulkInterfaceNumber);
@@ -1895,26 +1914,9 @@ public class USBBulkConnection extends Connection {
                                 /* Any commands with no explicitly set command byte ('\0') will fall through */
                                 if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
                                     /* for example, ('l' == 'l') -> TRUE */
-
-                                    try {
-                                        boolean offeredSuccessfully = QCmdProcessor.getInstance().getQueueResponse().offer(currentExecutingCommand, 100, TimeUnit.MILLISECONDS);
-                                        if (!offeredSuccessfully) {
-                                            LOGGER.log(Level.WARNING, "Failed to offer completed QCmd (" + currentExecutingCommand.getClass().getSimpleName() + ") to QCmdProcessor queue within timeout. Queue might be full.");
-                                        }
-                                        synchronized (QCmdProcessor.getInstance().getQueueLock()) {
-                                            QCmdProcessor.getInstance().getQueueLock().notifyAll();
-                                        }
-                                    }
-                                    catch (InterruptedException e) {
-                                        LOGGER.log(Level.SEVERE, "Interrupted while offering response to QCmdProcessor queue: " + e.getMessage());
-                                        e.printStackTrace(System.out);
-                                        Thread.currentThread().interrupt();
-                                    }
-                                    finally {
-                                        boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                        if (isComplete) {
-                                            setCurrentExecutingCommand(null);
-                                        }
+                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
+                                    if (isComplete) {
+                                        setCurrentExecutingCommand(null);
                                     }
                                 }
                             }
