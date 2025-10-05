@@ -30,7 +30,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.QuadCurve2D;
 import java.util.ArrayList;

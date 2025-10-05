@@ -21,7 +21,6 @@ package components.displays;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 import axoloti.ui.Theme;
 import axoloti.utils.GraphicsUtils;

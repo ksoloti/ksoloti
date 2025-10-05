@@ -28,7 +28,6 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

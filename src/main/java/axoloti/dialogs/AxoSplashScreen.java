@@ -28,7 +28,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.geom.RoundRectangle2D;
 
