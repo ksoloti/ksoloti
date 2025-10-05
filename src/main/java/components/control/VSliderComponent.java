@@ -192,6 +192,8 @@ public class VSliderComponent extends ACtrlComponent {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
             this.doubleClickSlowDrag = false;
+            MousePressedBtn = MouseEvent.NOBUTTON;
+            fireEventAdjustmentFinished();
             if (popup != null) {
                 popup.hide();
                 popup = null;
@@ -216,9 +218,6 @@ public class VSliderComponent extends ACtrlComponent {
                     glassPane.setVisible(false);
                 }
             }.execute();
-            
-            MousePressedBtn = MouseEvent.NOBUTTON;
-            fireEventAdjustmentFinished();
             e.consume();
         }
     }

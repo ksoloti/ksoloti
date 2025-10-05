@@ -199,6 +199,8 @@ public class DialComponent extends ACtrlComponent {
         if (isEnabled() && !e.isPopupTrigger()) {
             dragAccumulator = 0;
             this.doubleClickSlowDrag = false;
+            MousePressedBtn = MouseEvent.NOBUTTON;
+            fireEventAdjustmentFinished();
 
             new SwingWorker<Void, Void>() {
                 @Override
@@ -219,9 +221,6 @@ public class DialComponent extends ACtrlComponent {
                     glassPane.setVisible(false);
                 }
             }.execute();
-
-            MousePressedBtn = MouseEvent.NOBUTTON;
-            fireEventAdjustmentFinished();
             e.consume();
         }
     }
