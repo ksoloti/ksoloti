@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingWorker;
+
 import java.util.Map;
 import java.lang.Math;
 
@@ -33,6 +36,11 @@ import axoloti.datatypes.ValueFrac32;
 import axoloti.datatypes.ValueInt32;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
+import components.control.ACtrlComponent;
+import components.control.Checkbox4StatesComponent;
+import components.control.CheckboxComponent;
+import components.control.HRadioComponent;
+import components.control.VRadioComponent;
 
 /**
  * 
@@ -42,7 +50,78 @@ public class PatchRandomizer {
     private static final Logger LOGGER = Logger.getLogger(PatchRandomizer.class.getName());
     private static Random random = new Random(Instant.EPOCH.getEpochSecond());
 
-    public static void randomizeAllParameters(Patch patch, float factor) { /* factor: 0.25f equals 25% */
+    private static class RandomizationWorker extends SwingWorker<Void, String> {
+        private final List<ParameterInstance> selectedParameters;
+        private final float factor;
+
+        public RandomizationWorker(List<ParameterInstance> selectedParameters, float factor) {
+            this.selectedParameters = selectedParameters;
+            this.factor = factor;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+
+            publish("INFO: Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(factor * 100) + "%");
+
+            for (ParameterInstance param : selectedParameters) {
+                if (isCancelled()) {
+                    break;
+                }
+
+                if (!param.isFrozen()) {
+
+                    double mutatedNominalValue = getMutatedNominalValue(param, factor);
+                    double oldValue = param.getValue().getDouble();
+                    Value newValue;
+
+                    if (param.getValue() instanceof ValueInt32) {
+                        newValue = new ValueInt32((int) mutatedNominalValue); 
+                    } else if (param.getValue() instanceof ValueFrac32) {
+                         newValue = new ValueFrac32(mutatedNominalValue);
+                    } else {
+                         newValue = param.getValue();
+                    }
+
+                    param.setValue(newValue); 
+                    param.SetNeedsTransmit(true);
+
+                    String paramVal = "";
+                    Value vllog = param.getValue();
+                    if (vllog instanceof ValueFrac32) {
+                        paramVal += String.format("%.2f", vllog.getDouble());
+                    }
+                    else if (vllog instanceof ValueInt32) {
+                        paramVal += vllog.getInt();
+                    }
+
+                    String logMessage = "INFO: Randomize " + param.GetObjectInstance().getInstanceName() + ":" + param.GetCName() + " (" + String.format("%+.2f", vllog.getDouble() - oldValue) + ") to " + paramVal;
+
+                    publish(logMessage); 
+                } else {
+                    publish("INFO: Skipping frozen parameter: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void process(List<String> chunks) {
+            for (String logMessage : chunks) {
+                if (logMessage.startsWith("INFO: ")) {
+                    LOGGER.log(Level.INFO, logMessage.substring(6)); 
+                }
+            }
+        }
+
+        @Override
+        protected void done() {
+            LOGGER.log(Level.INFO, "Randomization finished.");
+        }
+    }
+
+    public static void randomizeAllParameters(Patch patch, float factor) { /* factor: for example 0.25f equals 25% */
         if (patch.objectInstances.size() > 0) {
             for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
                 for (ParameterInstance param : obj.getParameterInstances()) {
@@ -80,38 +159,11 @@ public class PatchRandomizer {
     }
 
     public static void randomizeParameters(List<ParameterInstance> selectedParameters, float factor) {
-        if (selectedParameters != null && !selectedParameters.isEmpty()) {
-            for (ParameterInstance param : selectedParameters) {
-                if (!param.isFrozen()) {
-
-                    double mutatedNominalValue = getMutatedNominalValue(param, factor);
-                    double oldValue = param.getValue().getDouble();
-                    Value newValue;
-                    if (param.getValue() instanceof ValueInt32) {
-                        newValue = new ValueInt32((int) mutatedNominalValue); 
-                    } else if (param.getValue() instanceof ValueFrac32) {
-                         newValue = new ValueFrac32(mutatedNominalValue);
-                    } else {
-                         newValue = param.getValue();
-                    }
-
-                    param.setValue(newValue); 
-                    param.SetNeedsTransmit(true);
-
-                    String paramVal = "";
-                    Value vllog = param.getValue();
-                    if (vllog instanceof ValueFrac32) {
-                        paramVal += String.format("%.2f", vllog.getDouble());
-                    }
-                    else if (vllog instanceof ValueInt32) {
-                        paramVal += vllog.getInt();
-                    }
-                    LOGGER.log(Level.INFO, "Randomize " + param.GetObjectInstance().getInstanceName() + ":" + param.GetCName() + " (" + String.format("%+.2f", vllog.getDouble() - oldValue) + ") to " + paramVal);
-                } else {
-                    LOGGER.log(Level.INFO, "Skipping frozen parameter: " + param.GetObjectInstance().getInstanceName() + ":" + param.getName());
-                }
-            }
+        if (selectedParameters == null || selectedParameters.isEmpty()) {
+            return;
         }
+
+        new RandomizationWorker(selectedParameters, factor).execute();
     }
 
     public static void randomizeParametersWithConstraint(List<ParameterInstance> selectedParameters, Map<ParameterInstance, double[]> constraints, float factor) {
@@ -178,6 +230,62 @@ public class PatchRandomizer {
         }
     }
 
+    private static int getPackedBitCount(ParameterInstance param) {
+        String paramInstanceClassName = param.getClass().getSimpleName();
+        ACtrlComponent component = param.getControlComponent();
+
+        if (paramInstanceClassName.startsWith("ParameterInstanceBin")) {
+            if (component instanceof CheckboxComponent) {
+                return ((CheckboxComponent) component).getN();
+            }
+        }
+
+        if (paramInstanceClassName.equals("ParameterInstance4LevelX16")) {
+            if (component instanceof Checkbox4StatesComponent) {
+                return ((Checkbox4StatesComponent) component).getN() * 2;
+            }
+        }
+
+        return 0;
+    }
+
+    private static double mutatePackedBinaryValue(ParameterInstance param, float factor) {
+        String paramInstanceClassName = param.getClass().getSimpleName();
+        int packedValue = param.getValue().getInt();
+        int newPackedValue = packedValue;
+
+        if (paramInstanceClassName.startsWith("ParameterInstanceBin")) {
+            int totalBits = getPackedBitCount(param);
+            for (int i = 0; i < totalBits; i++) {
+                if (random.nextDouble() <= factor) { 
+                    int newState = random.nextInt(2); 
+                    int mask = (1 << i);
+                    newPackedValue &= ~mask; 
+                    if (newState == 1) {
+                        newPackedValue |= mask;
+                    }
+                }
+            }
+        }
+        else if (paramInstanceClassName.equals("ParameterInstance4LevelX16")) {
+            Checkbox4StatesComponent control = (Checkbox4StatesComponent) param.getControlComponent();
+
+            int numSwitches = control.getN(); 
+
+            for (int i = 0; i < numSwitches; i++) {
+                if (random.nextDouble() <= factor) {
+                    int randomLevel = random.nextInt(4);
+                    int shift = i * 2;
+                    int clearMask = ~(0b11 << shift);
+                    newPackedValue &= clearMask;
+                    newPackedValue |= (randomLevel << shift);
+                }
+            }
+        }
+
+        return (double) newPackedValue;
+    }
+
     private static double getMutatedNominalValue(ParameterInstance param, float factor) {
         double minConstraint = param.getControlComponent().getMin();
         double maxConstraint = param.getControlComponent().getMax();
@@ -192,17 +300,59 @@ public class PatchRandomizer {
         boolean isParameterInstanceBin1 = paramInstanceClassName.equals("ParameterInstanceBin1");
 
         if (isParameterInstanceBin1 && (param.getValue() instanceof ValueInt32)) {
-
             if (random.nextDouble() <= factor) {
-                if (random.nextDouble() < 0.5) {
-                    return 1.0; 
-                } else {
-                    return 0.0;
-                }
+                return (random.nextDouble() < 0.5) ? 1.0 : 0.0;
             } 
             else {
                 return currentValue;
             }
+        }
+
+        if (paramInstanceClassName.startsWith("ParameterInstanceBin") ||
+            paramInstanceClassName.equals("ParameterInstance4LevelX16")) {
+
+            return mutatePackedBinaryValue(param, factor);
+        }
+
+        if (paramInstanceClassName.equals("ParameterInstanceInt32Selection") ||
+            param.getControlComponent() instanceof HRadioComponent ||
+            param.getControlComponent() instanceof VRadioComponent) {
+
+            int numOptions;
+
+            if (param.getControlComponent() instanceof HRadioComponent) {
+                numOptions = ((HRadioComponent) param.getControlComponent()).getN();
+            } else if (param.getControlComponent() instanceof VRadioComponent) {
+                numOptions = ((VRadioComponent) param.getControlComponent()).getN();
+            } else {
+                return currentValue;
+            }
+
+            if (random.nextDouble() <= factor) {
+                int range = (int) Math.round(numOptions * factor);
+                if (range < 2) range = 2;
+
+                int newRawValue;
+
+                if (factor >= 1.0f) {
+                    newRawValue = random.nextInt(numOptions);
+                } else {
+                    int currentRawValue = (int) Math.round(currentValue);
+                    int minBound = Math.max(0, currentRawValue - range / 2);
+                    int maxBound = Math.min(numOptions - 1, currentRawValue + range / 2);
+                    int actualRange = maxBound - minBound + 1;
+
+                    newRawValue = random.nextInt(actualRange) + minBound;
+                }
+
+                if (numOptions > 1 && newRawValue == (int) Math.round(currentValue)) {
+                    newRawValue = (newRawValue + 1) % numOptions;
+                }
+
+                return (double) newRawValue;
+            }
+
+            return currentValue; 
         }
 
         double fullRange = maxConstraint - minConstraint;
