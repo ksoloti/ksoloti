@@ -97,10 +97,22 @@ void MidiSend3(midi_device_t dev, uint8_t port, uint8_t b0, uint8_t b1, uint8_t 
     }
 }
 
+void MidiSendUSB4(uint8_t bh, uint8_t b0, uint8_t b1, uint8_t b2) {
+    midi_usb_MidiSend4(bh, b0, b1, b2);
+}
+
 void MidiSendSysEx(midi_device_t dev, uint8_t port, uint8_t bytes[], uint8_t len) {
     switch (dev) {
         case MIDI_DEVICE_USB_HOST: {
             usbh_MidiSendSysEx(port,bytes,len);
+            break;
+        }
+        case MIDI_DEVICE_DIN: {
+            while( len-- ){ serial_MidiSend1( *bytes++ ); }
+            break;
+        }
+        case MIDI_DEVICE_USB_DEVICE: {
+            while( len-- ){ midi_usb_MidiSendSyx1( *bytes++ ); } // 4-byte payload (incl header)
             break;
         }
         default: {

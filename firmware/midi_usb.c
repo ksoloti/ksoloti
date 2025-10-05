@@ -425,6 +425,45 @@ void midi_usb_MidiSend3(uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2) {
   write(&MDU1, &tx[0], 4);
 }
 
+void midi_usb_MidiSend4(uint8_t bh, uint8_t b0, uint8_t b1, uint8_t b2) {
+  uint8_t tx[4];
+  tx[0] = bh;
+  tx[1] = b0;
+  tx[2] = b1;
+  tx[3] = b2;
+  write(&MDU1, &tx[0], 4);
+}
+
+void midi_usb_MidiSendSyx1(uint8_t v) {
+  static uint8_t payload[3]={0,0,0}; // built from 'v' bytes arriving successively
+  static int index = -1;             // -1 means idle, 0..2 means building, 2 also means transmit
+
+  if( 0xF0==v ){ index=0; }          // build payload from index 0, we check 0xF7 elsewhere
+  
+  if( -1==index ) return;            // no further processing
+
+  payload[index] = v;                // store 'v' now, we increment index elsewhere
+  
+  if( 2==index ){                    // payload build is complete
+    if( 0xF0==payload[0] ){ 
+      midi_usb_MidiSend4( 4, payload[0], payload[1], payload[2] ); index = 0; }// start
+    else { 
+      midi_usb_MidiSend4( 4, payload[0], payload[1], payload[2] ); index = 0; }// continue
+  }
+  else if( 0xF7==payload[0] ){ 
+    midi_usb_MidiSend4( 5, payload[0], 0, 0 );                   index = -1; }// end with 1 byte
+  else if( 0xF7==payload[1] ){ 
+    midi_usb_MidiSend4( 6, payload[0], payload[1], 0 );          index = -1; }// end with 2 bytes
+  else if( 0xF7==payload[2] ){ 
+    midi_usb_MidiSend4( 7, payload[0], payload[1], payload[2] ); index = -1; }// end with 3 bytes
+  else {
+    index++;
+  }
+  
+  if( 0xF7==payload[0] || 0xF7==payload[1] || 0xF7==payload[2] ){ 
+      payload[0]=payload[1]=payload[2]=0; }                                   // initialise fresh
+}
+
 #endif /* HAL_USE_BULK_USB */
 
 /** @} */

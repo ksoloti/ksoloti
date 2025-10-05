@@ -99,8 +99,8 @@ typedef enum
 {
     MIDI_DEVICE_OMNI = 0,          // for filtering
     MIDI_DEVICE_DIN,             // MIDI_DIN
-    MIDI_DEVICE_USB_DEVICE,      // Board acting as Midi device over MicroUSB 
-    MIDI_DEVICE_USB_HOST,        // Board hosting devices vid USB host port
+    MIDI_DEVICE_USB_DEVICE,      // Board acting as Midi device over PROG port
+    MIDI_DEVICE_USB_HOST,        // Board hosting devices via HOST port
     MIDI_DEVICE_DIGITAL_X1,      // x1 pins - not implemented
     MIDI_DEVICE_DIGITAL_X2,       // x2 pins - not implemented
     MIDI_DEVICE_INTERNAL = 0x0F     // internal (to the board) midi
@@ -116,6 +116,7 @@ void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t b0, uint8_t b1, u
 void MidiSend1(midi_device_t dev, uint8_t port, uint8_t b0);
 void MidiSend2(midi_device_t dev, uint8_t port, uint8_t b0, uint8_t b1);
 void MidiSend3(midi_device_t dev, uint8_t port, uint8_t b0, uint8_t b1, uint8_t b2);
+void MidiSendUSB4(uint8_t bh, uint8_t b0, uint8_t b1, uint8_t b2);
 void MidiSendSysEx(midi_device_t dev, uint8_t port, uint8_t bytes[], uint8_t len);
 
 int  MidiGetOutputBufferPending(midi_device_t dev);
