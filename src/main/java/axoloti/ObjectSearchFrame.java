@@ -222,6 +222,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     class SlashColorRenderer extends JPanel implements ListCellRenderer<Object> {
         private Color slashColor;
         private String text;
+        private boolean isSelected;
 
         public SlashColorRenderer(Color slashColor) {
             this.slashColor = slashColor;
@@ -230,6 +231,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             this.text = value.toString();
+            this.isSelected = isSelected;
 
             if (isSelected) {
                 setBackground(list.getSelectionBackground());
@@ -253,7 +255,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
             Graphics2D g2 = GraphicsUtils.configureGraphics(g);
 
-            g2.setPaint(getForeground());
+            Color slashPaintColor = isSelected ? getForeground() : slashColor; 
+            Color defaultPaintColor = getForeground();
+            g2.setPaint(defaultPaintColor);
             g2.setFont(Constants.FONT_MENU);
             FontMetrics fm = g2.getFontMetrics();
 
@@ -266,9 +270,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
                 if (c == '/') {
                     x += 1; /* add some extra spacing before '/' */
-                    g2.setPaint(slashColor); /* Draw the slash in accent color */
+                    g2.setPaint(slashPaintColor); /* Draw the slash in the resolved color */
                     g2.drawString(charStr, x, y);
-                    g2.setPaint(getForeground());
+                    g2.setPaint(defaultPaintColor); 
                     x += 2; /* add some extra spacing after '/' */
                 } else {
                     g2.drawString(charStr, x, y);
@@ -304,9 +308,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                     super.paintComponent(g);
 
                     Graphics2D g2 = GraphicsUtils.configureGraphics(g);
-
-                    Color textColor = selected ? selectionFg : normalFg;
-                    g2.setPaint(textColor);
+                    Color defaultPaintColor = selected ? selectionFg : normalFg;
+                    Color slashPaintColor = selected ? selectionFg : slashColor;
+                    g2.setPaint(defaultPaintColor);
                     g2.setFont(Constants.FONT_MENU);
                     FontMetrics fm = tree.getFontMetrics(tree.getFont());
 
@@ -319,9 +323,9 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
                         if (c == '/') {
                             x += 1; /* add some extra spacing before '/' */
-                            g2.setPaint(slashColor); /* Draw the slash in accent color */
+                            g2.setPaint(slashPaintColor); /* Draw the slash in the resolved color */
                             g2.drawString(charStr, x, y);
-                            g2.setPaint(textColor);
+                            g2.setPaint(defaultPaintColor);
                             x += 2; /* add some extra spacing after '/' */
                         } else {
                             g2.drawString(charStr, x, y);
@@ -911,11 +915,11 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         });
 
         parent.removeAllChildren();
-        
+
         for (DefaultMutableTreeNode child : children) {
             parent.add(child);
         }
-        
+
         model.nodeStructureChanged(parent);
 
         for (DefaultMutableTreeNode child : children) {
@@ -936,7 +940,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
     public void Search(String s) {
         LinkedHashSet<AxoObjectAbstract> resultSet = new LinkedHashSet<AxoObjectAbstract>();
         ArrayList<AxoObjectAbstract> listData = new ArrayList<AxoObjectAbstract>();
-        
+
         /* --- if search field is empty, show complete list --- */
         if ((s == null) || s.isEmpty()) {
             for (AxoObjectAbstract o : MainFrame.axoObjects.ObjectList) {
