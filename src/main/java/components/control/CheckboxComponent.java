@@ -264,4 +264,8 @@ public class CheckboxComponent extends ACtrlComponent {
     @Override
     void keyReleased(KeyEvent ke) {
     }
+
+    public int getN() {
+        return n;
+    }
 }

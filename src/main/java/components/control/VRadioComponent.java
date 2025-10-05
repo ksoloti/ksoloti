@@ -92,4 +92,8 @@ public class VRadioComponent extends HRadioComponent {
     public Dimension getMaximumSize() {
         return new Dimension(bsize + 2, bsize * n + 2);
     }
+
+    public int getN() {
+        return n;
+    }
 }

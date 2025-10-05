@@ -289,4 +289,8 @@ public class Checkbox4StatesComponent extends ACtrlComponent {
     @Override
     void keyReleased(KeyEvent ke) {
     }
+
+    public int getN() {
+        return n;
+    }
 }

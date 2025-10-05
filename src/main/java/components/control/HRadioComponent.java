@@ -230,4 +230,8 @@ public class HRadioComponent extends ACtrlComponent {
             }
         }
     }
+
+    public int getN() {
+        return n;
+    }
 }
