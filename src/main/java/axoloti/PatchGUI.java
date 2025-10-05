@@ -322,18 +322,24 @@ public class PatchGUI extends Patch {
                         JScrollBar vBar = scrollPane.getVerticalScrollBar();
                         int keyCode = ke.getKeyCode();
                         boolean scrolled = false;
+                        int step;
+                        if (!ke.isShiftDown()) {
+                            step = Constants.X_GRID * 5;
+                        } else {
+                            step = Constants.X_GRID;
+                        }
 
                         if (keyCode == KeyEvent.VK_UP) {
-                            vBar.setValue(vBar.getValue() - Constants.Y_GRID);
+                            vBar.setValue(vBar.getValue() - step);
                             scrolled = true;
                         } else if (keyCode == KeyEvent.VK_DOWN) {
-                            vBar.setValue(vBar.getValue() + Constants.Y_GRID);
+                            vBar.setValue(vBar.getValue() + step);
                             scrolled = true;
                         } else if (keyCode == KeyEvent.VK_LEFT) {
-                            hBar.setValue(hBar.getValue() - Constants.X_GRID);
+                            hBar.setValue(hBar.getValue() - step);
                             scrolled = true;
                         } else if (keyCode == KeyEvent.VK_RIGHT) {
-                            hBar.setValue(hBar.getValue() + Constants.X_GRID);
+                            hBar.setValue(hBar.getValue() + step);
                             scrolled = true;
                         }
 
