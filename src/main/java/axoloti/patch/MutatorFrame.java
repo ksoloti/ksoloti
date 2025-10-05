@@ -365,7 +365,6 @@ public class MutatorFrame extends JFrame {
         } else if (selectedVariations.size() > 2) {
              LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
         } else {
-            LOGGER.log(Level.INFO, "Randomizing " + selectedParameters.size() + " selected parameter(s) by " + (int)(factor * 100) + "%");
             PatchRandomizer.randomizeParameters(selectedParameters, factor);
         }
 
