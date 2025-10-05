@@ -21,6 +21,8 @@ package components;
 import axoloti.attribute.AttributeInstanceComboBox;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -75,9 +77,7 @@ public class DropDownComponent extends JComponent implements MouseListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         if (isEnabled()) {
             g2.setPaint(Theme.Component_Background);
         } else {

@@ -19,6 +19,7 @@
 package components.control;
 
 import axoloti.ui.Theme;
+import axoloti.utils.GraphicsUtils;
 import axoloti.utils.KeyUtils;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
@@ -195,9 +196,7 @@ public class CheckboxComponent extends ACtrlComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         if (isEnabled()) {
             g2.setColor(getBackground());
         } else {

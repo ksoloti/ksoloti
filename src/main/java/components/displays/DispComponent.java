@@ -20,11 +20,12 @@ package components.displays;
 
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
+
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Stroke;
 
 /**
@@ -53,9 +54,7 @@ public class DispComponent extends ADispComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         int tick = 1;
         int radius = Math.min(getSize().width - 2, getSize().height) / 2 - tick;
         g2.setStroke(strokeThin);

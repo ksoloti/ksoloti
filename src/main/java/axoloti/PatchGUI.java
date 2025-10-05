@@ -36,6 +36,7 @@ import axoloti.ui.MaterialColors;
 import axoloti.ui.SelectionRectangle;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import axoloti.utils.StringRef;
@@ -158,7 +159,7 @@ public class PatchGUI extends Patch {
                 if (findTextResults.isEmpty()) {
                     return;
                 }
-                Graphics2D g2 = (Graphics2D) g;
+                Graphics2D g2 = GraphicsUtils.configureGraphics(g);
 
                 for (int i = 0; i < findTextResults.size(); i++) {
                     AxoObjectInstanceAbstract obj = findTextResults.get(i);

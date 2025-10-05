@@ -21,6 +21,7 @@ package components.control;
 import axoloti.MainFrame;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 
@@ -337,9 +338,7 @@ public class HSliderComponent extends ACtrlComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         if (isEnabled()) {
             int margin = 50;
             int bwidth = getWidth() - margin;

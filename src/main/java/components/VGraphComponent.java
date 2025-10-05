@@ -27,6 +27,7 @@ import java.awt.Stroke;
 import javax.swing.JComponent;
 
 import axoloti.ui.Theme;
+import axoloti.utils.GraphicsUtils;
 
 /**
  *
@@ -70,9 +71,7 @@ public class VGraphComponent extends JComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         g2.setStroke(strokeThick);
         g2.setColor(Theme.Component_Background);
         g2.fillRect(0, 0, length + 0, vsize + 1);

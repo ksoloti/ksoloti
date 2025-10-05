@@ -44,6 +44,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
+import axoloti.utils.GraphicsUtils;
+
 
 /**
  * A utility class to load SVG files from the classpath and convert them into 
@@ -161,7 +163,7 @@ public class SvgIconLoader {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             if (graphicsNode == null) return;
 
-            Graphics2D g2 = (Graphics2D) g.create();
+            Graphics2D g2 = GraphicsUtils.configureGraphics((Graphics2D) g.create());
 
             String widthAttr = document.getDocumentElement().getAttribute("width");
             String heightAttr = document.getDocumentElement().getAttribute("height");

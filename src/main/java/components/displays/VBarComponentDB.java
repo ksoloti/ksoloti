@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import axoloti.ui.Theme;
+import axoloti.utils.GraphicsUtils;
 
 /**
  *
@@ -68,9 +69,7 @@ public class VBarComponentDB extends ADispComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         g2.setPaint(Theme.Component_Background);
         g2.fillRect(0, 0, getWidth(), height);
         g2.setPaint(Theme.Component_Foreground);

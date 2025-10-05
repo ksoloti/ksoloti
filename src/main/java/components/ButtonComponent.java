@@ -20,6 +20,8 @@ package components;
 
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
+
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -133,10 +135,8 @@ public class ButtonComponent extends JComponent implements MouseInputListener, K
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         final int radius = 8;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         if (isFocusOwner()) {
             g2.setStroke(strokeThick);
         } else {

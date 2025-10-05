@@ -21,6 +21,7 @@ package axoloti;
 import axoloti.inlets.InletInstance;
 import axoloti.outlets.OutletInstance;
 import axoloti.ui.Theme;
+import axoloti.utils.GraphicsUtils;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -57,9 +58,7 @@ public class NetDragging extends Net {
         super.paintComponent(g);
         float shadowOffset = 1.0f;
 
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g); 
         Color c;
         g2.setStroke(strokeDragging);
         if (GetDataType() != null) {

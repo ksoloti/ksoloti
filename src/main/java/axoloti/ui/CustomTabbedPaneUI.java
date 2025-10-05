@@ -31,6 +31,8 @@ import java.util.Map;
 
 import com.formdev.flatlaf.ui.FlatTabbedPaneUI;
 
+import axoloti.utils.GraphicsUtils;
+
 /**
  * 
  * @author Ksoloti
@@ -69,7 +71,7 @@ public class CustomTabbedPaneUI extends FlatTabbedPaneUI {
         super.paintTabBackground(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
 
         Color stripeColor = tabColors.getOrDefault(tabIndex, Color.LIGHT_GRAY); // Default if no color set
-        Graphics2D g2 = (Graphics2D) g.create();
+        Graphics2D g2 = GraphicsUtils.configureGraphics((Graphics2D) g.create());
         g2.setColor(stripeColor);
 
         int padding = 2 * stripeWidth;

@@ -22,6 +22,7 @@ import axoloti.MainFrame;
 import axoloti.realunits.NativeToReal;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import java.awt.BasicStroke;
@@ -384,9 +385,7 @@ public class DialComponent extends ACtrlComponent {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         int radius = Math.min(getSize().width, getSize().height) / 2 - layoutTick;
         g2.setPaint(getForeground());
         g2.drawLine(radius, radius, 0, 2 * radius);

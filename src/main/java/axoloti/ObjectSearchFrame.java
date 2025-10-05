@@ -24,6 +24,7 @@ import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.object.AxoObjectTreeNode;
 import axoloti.ui.Theme;
 import axoloti.utils.Constants;
+import axoloti.utils.GraphicsUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect;
 import axoloti.utils.ResizableUndecoratedFrame;
@@ -200,9 +201,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
 
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            Graphics2D g2 = GraphicsUtils.configureGraphics(g);
             FontMetrics metrics = g2.getFontMetrics(g2.getFont());
             Rectangle2D bounds = metrics.getStringBounds(str, g2);
             int xc = (w / 2) + x;
@@ -253,9 +252,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            Graphics2D g2 = GraphicsUtils.configureGraphics(g);
 
             g2.setPaint(getForeground());
             g2.setFont(Constants.FONT_MENU);
@@ -307,9 +304,7 @@ public class ObjectSearchFrame extends ResizableUndecoratedFrame {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
 
-                    Graphics2D g2 = (Graphics2D) g;
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    Graphics2D g2 = GraphicsUtils.configureGraphics(g);
 
                     Color textColor = selected ? selectionFg : normalFg;
                     g2.setPaint(textColor);

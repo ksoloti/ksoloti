@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import axoloti.ui.Theme;
+import axoloti.utils.GraphicsUtils;
 
 /**
  *
@@ -50,9 +51,7 @@ public class VRadioComponent extends HRadioComponent {
 
     @Override
     public void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        Graphics2D g2 = GraphicsUtils.configureGraphics(g);
         if (isEnabled()) {
             g2.setColor(getBackground());
         } else {

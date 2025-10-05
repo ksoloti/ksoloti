@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 
 import axoloti.ui.SvgIconLoader;
+import axoloti.utils.GraphicsUtils;
 
 /**
  *
@@ -68,8 +69,7 @@ public class AxoSplashScreen extends JWindow {
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Graphics2D g2 = GraphicsUtils.configureGraphics((Graphics2D) g.create());
             RoundRectangle2D shape = new RoundRectangle2D.Float(
                 0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius
             );

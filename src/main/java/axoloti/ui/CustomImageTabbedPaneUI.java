@@ -32,6 +32,8 @@ import javax.swing.Icon;
 
 import com.formdev.flatlaf.ui.FlatTabbedPaneUI;
 
+import axoloti.utils.GraphicsUtils;
+
 /**
  * A custom tabbed pane UI that displays a custom image icon instead of a colored stripe.
  * It uses the same color mapping and layout as the parent CustomTabbedPaneUI.
@@ -59,7 +61,7 @@ public class CustomImageTabbedPaneUI extends FlatTabbedPaneUI {
     protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect) {
         super.paintTab(g, tabPlacement, rects, tabIndex, iconRect, textRect);
 
-        Graphics2D g2 = (Graphics2D) g.create();
+        Graphics2D g2 = GraphicsUtils.configureGraphics((Graphics2D) g.create());
         Rectangle tabRect = rects[tabIndex];
 
         Icon icon = tabIcons.get(tabIndex);
@@ -81,7 +83,7 @@ public class CustomImageTabbedPaneUI extends FlatTabbedPaneUI {
         if (tabIcons.get(tabIndex) == null) {
             super.paintText(g, tabPlacement, font, metrics, tabIndex, title, textRect, isSelected);
         } else {
-            Graphics2D g2 = (Graphics2D) g.create();
+            Graphics2D g2 = GraphicsUtils.configureGraphics((Graphics2D) g.create());
             Rectangle tabRect = getTabBounds(tabIndex, new Rectangle());
             
             int textX = tabRect.x + TEXT_X_OFFSET;
