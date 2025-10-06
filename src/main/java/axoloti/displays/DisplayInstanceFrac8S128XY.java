@@ -47,8 +47,8 @@ public class DisplayInstanceFrac8S128XY extends DisplayInstance<DisplayFrac8S128
         bb.get(dst);
 
         for (int i = 0; i < n; i++) {
-            xData[i] = dst[i];
-            yData[i] = dst[i + n]; 
+            xData[i] = dst[2 * i];
+            yData[i] = dst[2 * i + 1];
         }
         xygraph.setValue(xData, yData);
     }
