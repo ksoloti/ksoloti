@@ -1657,7 +1657,10 @@ public class USBBulkConnection extends Connection {
 
         if (i2 > 0) {
             dataLength = i2 * 4;
-            dispData = ByteBuffer.allocateDirect(dataLength).order(ByteOrder.LITTLE_ENDIAN);
+            if (dispData == null || dispData.capacity() < dataLength) {
+                dispData = ByteBuffer.allocateDirect(dataLength).order(ByteOrder.LITTLE_ENDIAN);
+            }
+            dispData.clear();
             setNextState(ReceiverState.DISPLAY_PCKT);
         }
         else {
@@ -1835,13 +1838,15 @@ public class USBBulkConnection extends Connection {
                 break;
 
             case DISPLAY_PCKT:
-                if (dataIndex < dataLength) {
+                if (dispData.hasRemaining()) { 
                     dispData.put(cc);
                     dataIndex++;
                 }
                 if (dataIndex == dataLength) {
                     DistributeToDisplays(dispData);
                     setIdleState();
+                } else if (dataIndex > dataLength) { 
+                    setIdleState(); /* Should never happen */
                 }
                 break;
 
