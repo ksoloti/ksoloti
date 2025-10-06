@@ -182,7 +182,7 @@ chmod -R 755 ./platform_mac_x64/bin/*
 chmod -R 755 ./platform_mac_x64/*/bin/*
 cd ../../..
 
-tar -czf ../ksoloti_patcher-mac_x64-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
+tar -czf ../ksoloti_patcher-mac-${CUSTOMLABEL}${VERSION_LONG}.tar.gz *
 
 cd ../..
 rm -rf ./packagetemp/mac_x64
