@@ -45,6 +45,7 @@ import axoloti.displays.DisplayFrac4ByteVBar;
 import axoloti.displays.DisplayFrac4UByteVBar;
 import axoloti.displays.DisplayFrac4UByteVBarDB;
 import axoloti.displays.DisplayFrac8S128VBar;
+import axoloti.displays.DisplayFrac8S128XY;
 import axoloti.displays.DisplayFrac8U128VBar;
 import axoloti.displays.DisplayInt8HexLabel;
 import axoloti.displays.DisplayInt32Bar16;
@@ -211,6 +212,7 @@ public class AxoObject extends AxoObjectAbstract {
         @ElementList(entry = DisplayVScale.TypeName, type = DisplayVScale.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac8S128VBar.TypeName, type = DisplayFrac8S128VBar.class, inline = true, required = false),
         @ElementList(entry = DisplayFrac8U128VBar.TypeName, type = DisplayFrac8U128VBar.class, inline = true, required = false),
+        @ElementList(entry = DisplayFrac8S128XY.TypeName, type = DisplayFrac8S128XY.class, inline = true, required = false),
         @ElementList(entry = DisplayNoteLabel.TypeName, type = DisplayNoteLabel.class, inline = true, required = false)
     })
     public ArrayList<Display> displays; // readouts
