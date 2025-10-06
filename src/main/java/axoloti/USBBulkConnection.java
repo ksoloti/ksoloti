@@ -1666,7 +1666,6 @@ public class USBBulkConnection extends Connection {
     }
 
     void DistributeToDisplays(final ByteBuffer dispData) {
-        // LOGGER.log(Level.INFO, "Distr1");
         try {
             if (patch == null || patch.DisplayInstances == null) {
                 return;
@@ -1674,25 +1673,24 @@ public class USBBulkConnection extends Connection {
             if (!patch.IsLocked()) {
                 return;
             }
-            // LOGGER.log(Level.INFO, "Distr2");
+
+            dispData.rewind();
+            final ByteBuffer safeCopy = ByteBuffer.allocateDirect(dispData.remaining()).order(dispData.order());
+            safeCopy.put(dispData);
+            safeCopy.rewind();
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    dispData.rewind();
                     for (DisplayInstance d : patch.DisplayInstances) {
-                        d.ProcessByteBuffer(dispData);
+                        d.ProcessByteBuffer(safeCopy);
                     }
                 }
             });
         }
         catch (Exception ex) {
-            // System.out.println(Instant.now() + " [DEBUG] ReadSync wait interrupted due to disconnect request.," + ex.getMessage());
-            // ex.printStackTrace(System.out);
-            // Thread.currentThread().interrupt();
+            ex.printStackTrace(System.out);
         }
-        // catch (InvocationTargetException ex) {
-        //     LOGGER.log(Level.SEVERE, null, ex);
-        // }
     }
 
     private void setIdleState() {
