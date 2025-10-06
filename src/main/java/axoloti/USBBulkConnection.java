@@ -285,6 +285,10 @@ public class USBBulkConnection extends Connection {
                     }
 
                     if (cmd != null) {
+                        if (cmdExecutor.isShutdown() || disconnectRequested) {
+                            break; 
+                        }
+
                         final SCmd finalCmd = cmd;
                         
                         cmdExecutor.submit(() -> {
