@@ -36,6 +36,7 @@ import components.control.ACtrlEvent;
 import components.control.ACtrlListener;
 import components.control.NumberBoxComponent;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,6 +79,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     protected boolean needsTransmit = false;
     AxoObjectInstance axoObj;
     LabelComponent valuelbl = new LabelComponent("123456789");
+    LabelComponent paramlbl = new LabelComponent("123456789");
     NativeToReal convs[];
     int selectedConv = 0;
     public int presetEditActive = 0;
@@ -104,8 +106,23 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
     }
 
     void UpdateUnit() {
+        Color foregroundColor;
+        Color backgroundColor;
+        
+        if (isOnParent()) {
+            foregroundColor = Theme.Parameter_On_Parent_Foreground;
+            backgroundColor = Theme.Parameter_On_Parent_Background;
+        } else {
+            foregroundColor = Theme.Parameter_Default_Foreground;
+            backgroundColor = Theme.Parameter_Default_Background;
+        }
+        setForeground(foregroundColor);
+        setBackground(backgroundColor);
+
         if (convs != null) {
             valuelbl.setText(convs[selectedConv].ToReal(getValue()));
+            valuelbl.setForeground(foregroundColor); 
+            paramlbl.setForeground(foregroundColor);
         }
         setCtrlToolTip();
     }
@@ -143,12 +160,14 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         JPanel lbls = null;
         if ((((parameter.getNoLabel() == null) || (parameter.getNoLabel() == false))) && (convs != null)) {
             lbls = new JPanel();
+            lbls.setOpaque(false);
             lbls.setLayout(new BoxLayout(lbls, BoxLayout.Y_AXIS));
             this.add(lbls);
         }
 
         if ((parameter.getNoLabel() == null) || (parameter.getNoLabel() == false)) {
-            LabelComponent paramlbl = new LabelComponent(GetDefinition().getName());
+            paramlbl.setOpaque(false);
+            paramlbl.setText(GetDefinition().getName());
             paramlbl.setBorder(new EmptyBorder(0,1,0,0));
             if (lbls != null) {
                 lbls.add(paramlbl);
@@ -163,6 +182,7 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
                 add(valuelbl);
             }
             Dimension d = new Dimension(50, 10);
+            valuelbl.setOpaque(false);
             valuelbl.setMinimumSize(d);
             valuelbl.setPreferredSize(d);
             valuelbl.setSize(d);
@@ -461,8 +481,16 @@ public abstract class ParameterInstance<T extends Parameter> extends JPanel impl
         }
         if (b) {
             onParent = true;
+            setForeground(Theme.Parameter_On_Parent_Foreground);
+            setBackground(Theme.Parameter_On_Parent_Background);
+            valuelbl.setForeground(Theme.Parameter_On_Parent_Foreground);
+            paramlbl.setForeground(Theme.Parameter_On_Parent_Foreground);
         } else {
             onParent = null;
+            setForeground(Theme.Parameter_Default_Foreground);
+            setBackground(Theme.Parameter_Default_Background);
+            valuelbl.setForeground(Theme.Parameter_Default_Foreground);
+            paramlbl.setForeground(Theme.Parameter_Default_Foreground);
         }
         setCtrlToolTip();
     }

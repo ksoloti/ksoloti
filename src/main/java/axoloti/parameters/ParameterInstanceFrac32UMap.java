@@ -94,18 +94,6 @@ public class ParameterInstanceFrac32UMap<T extends ParameterFrac32> extends Para
     }
 
     @Override
-    public void setOnParent(Boolean b) {
-        super.setOnParent(b);
-        if ((b != null) && b) {
-            setForeground(Theme.Parameter_On_Parent_Foreground);
-            setBackground(Theme.Parameter_On_Parent_Background);
-        } else {
-            setForeground(Theme.Parameter_Default_Foreground);
-            setBackground(Theme.Parameter_Default_Background);
-        }
-    }
-
-    @Override
     public void updateV() {
         super.updateV();
         if (ctrl != null) {

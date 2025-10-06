@@ -220,10 +220,9 @@ public abstract class ParameterInstanceFrac32<Tx extends ParameterFrac32> extend
         }
         return true;
     }
-    
+
     @Override
     public String GenerateCodeInitModulator(String vprefix, String StructAccces) {
         return "";
     }    
-    
 }
