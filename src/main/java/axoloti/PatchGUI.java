@@ -28,6 +28,7 @@ import axoloti.object.AxoObjectAbstract;
 import axoloti.object.AxoObjectFromPatch;
 import axoloti.object.AxoObjectInstance;
 import axoloti.object.AxoObjectInstanceAbstract;
+import axoloti.object.AxoObjectInstancePatcherObject;
 import axoloti.object.AxoObjectInstanceZombie;
 import axoloti.object.AxoObjectZombie;
 import axoloti.outlets.OutletInstance;
@@ -1525,6 +1526,14 @@ public class PatchGUI extends Patch {
         boolean b = super.save(f);
         if (ObjEditor != null) {
             ObjEditor.UpdateObject(this);
+        }
+        for (AxoObjectInstanceAbstract aoa : objectInstances) {
+            if (aoa instanceof AxoObjectInstancePatcherObject) {
+                AxoObjectInstancePatcherObject aoipo = (AxoObjectInstancePatcherObject)aoa;
+                if (aoipo.getAxoObjectEditor() != null) {
+                    aoipo.getAxoObjectEditor().setDirty(false);
+                }
+            }
         }
         return b;
     }
