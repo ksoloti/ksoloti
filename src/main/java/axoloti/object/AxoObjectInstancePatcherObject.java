@@ -47,6 +47,10 @@ public class AxoObjectInstancePatcherObject extends AxoObjectInstance {
         super(type, patch1, InstanceName1, location);
     }
 
+    public AxoObjectEditor getAxoObjectEditor() {
+        return aoe;
+    }
+
     @Override
     public void updateObj1() {
         if (ao == null) {
