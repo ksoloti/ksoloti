@@ -118,8 +118,8 @@ public abstract class ACtrlComponent extends JComponent {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!isLocked) {
-                    if ((e.getClickCount() == 1) && (e.getButton() == MouseEvent.BUTTON1)) {
-                        /* getClickCount() == 1 translates to double-click+drag */
+                    if ((e.getClickCount() == 2) && (e.getButton() == MouseEvent.BUTTON1)) {
+                        /* getClickCount() == 2 translates to triple-click+drag */
                         ACtrlComponent.this.doubleClickSlowDrag = true;
                     }
                 }
