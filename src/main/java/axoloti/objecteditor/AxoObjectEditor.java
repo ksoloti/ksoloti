@@ -1345,6 +1345,7 @@ private void initComponents() {
                     + "Your changes are NOT saved!");
         } else {
             MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
+            setDirty(false);
             updateReferenceXML();
             MainFrame.axoObjects.LoadAxoObjects();
         }
