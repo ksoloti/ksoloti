@@ -600,7 +600,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     static Border borderSelected = BorderFactory.createLineBorder(Theme.Object_Border_Selected);
     static Border borderUnselected = BorderFactory.createLineBorder(Theme.Object_Border_Unselected);
-    // static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.Object_Border_Unselected_Locked);
+    static Border borderUnselectedLocked = BorderFactory.createLineBorder(Theme.Object_Border_Unselected_Locked);
 
     public void SetSelected(boolean Selected) {
         boolean changed = (this.Selected != Selected);
@@ -632,6 +632,7 @@ public abstract class AxoObjectInstanceAbstract extends JPanel implements Compar
 
     public void Lock() {
         SetSelected(false);
+        setBorder(borderUnselectedLocked);
         Locked = true;
     }
 
