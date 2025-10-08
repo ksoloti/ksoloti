@@ -550,6 +550,7 @@ public class USBBulkConnection extends Connection {
                         throw new LibUsbException("Failed to read device descriptor", result);
                     }
                     if (descriptor.idVendor() == vendorId && descriptor.idProduct() == productId) {
+                        LibUsb.refDevice(device);
                         return device;
                     }
                 }
@@ -923,6 +924,7 @@ public class USBBulkConnection extends Connection {
                 return null;
             }
             else {
+                LibUsb.refDevice(d);
                 if (checkSerialNumber) {
                     String serial = LibUsb.getStringDescriptor(h, descriptor.iSerialNumber());
                     if (targetCpuId != null && serial != null && serial.equals(targetCpuId)) {
@@ -930,6 +932,7 @@ public class USBBulkConnection extends Connection {
                     }
                     if (h != null) {
                         LibUsb.close(h);
+                        LibUsb.unrefDevice(d);
                         h = null; /* Null immediately to prevent race conditions */
                     }
                     return null;
