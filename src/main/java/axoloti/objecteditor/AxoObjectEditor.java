@@ -40,6 +40,7 @@ import axoloti.ui.SvgIconLoader;
 import axoloti.utils.AxolotiLibrary;
 import axoloti.utils.Constants;
 import axoloti.utils.FileUtils;
+import axoloti.utils.KeyUtils;
 import axoloti.utils.OSDetect;
 import axoloti.utils.OSDetect.OS;
 import axoloti.utils.Preferences;
@@ -572,7 +573,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             } else {
                 t += "  (embedded)";
             }
-            jMenuItemSave.setEnabled(false);
             jLabelLibrary.setText("none (embedded in patch)");
 
             /* Embedded objects have no use for help patches */
@@ -1290,7 +1290,9 @@ private void initComponents() {
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
+        jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemSave.setText("Save");
+        jMenuItemSave.setMnemonic('S');
         jMenuItemSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSaveActionPerformed(evt);
@@ -1298,7 +1300,10 @@ private void initComponents() {
         });
         fileMenu1.add(jMenuItemSave);
 
+        jMenuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemSaveAs.setText("Save As...");
+        jMenuItemSaveAs.setMnemonic('A');
+        jMenuItemSaveAs.setDisplayedMnemonicIndex(5);
         jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSaveAsActionPerformed(evt);
@@ -1307,6 +1312,7 @@ private void initComponents() {
         fileMenu1.add(jMenuItemSaveAs);
 
         jMenuItemRevert.setText("Revert");
+        jMenuItemRevert.setMnemonic('R');
         jMenuItemRevert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRevertActionPerformed(evt);
@@ -1315,6 +1321,7 @@ private void initComponents() {
         fileMenu1.add(jMenuItemRevert);
 
         jMenuItemCopyToLibrary.setText("Copy to Library...");
+        jMenuItemCopyToLibrary.setMnemonic('L');
         jMenuItemCopyToLibrary.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemCopyToLibraryActionPerformed(evt);
@@ -1344,6 +1351,9 @@ private void initComponents() {
             JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
         } else {
+            if (IsEmbeddedObj()) {
+                patch.getPatchframe().saveAction();
+            }
             MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
             setDirty(false);
             updateReferenceXML();

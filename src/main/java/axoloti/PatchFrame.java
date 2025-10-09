@@ -823,6 +823,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuSave.setText("Save");
+        jMenuSave.setMnemonic('S');
         jMenuSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveActionPerformed(evt);
@@ -832,6 +833,8 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuSaveAs.setText("Save As...");
+        jMenuSaveAs.setMnemonic('A');
+        jMenuSaveAs.setDisplayedMnemonicIndex(5);
         jMenuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveAsActionPerformed(evt);
@@ -840,6 +843,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fileMenuP.add(jMenuSaveAs);
 
         jMenuSaveCopy.setText("Save a Copy...");
+        jMenuSaveCopy.setMnemonic('C');
         jMenuSaveCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveCopyActionPerformed(evt);
@@ -848,6 +852,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         fileMenuP.add(jMenuSaveCopy);
 
         jMenuSaveClip.setText("Copy to Clipboard");
+        jMenuSaveClip.setMnemonic('L');
         jMenuSaveClip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuSaveClipActionPerformed(evt);
@@ -857,6 +862,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuClose.setText("Close");
+        jMenuClose.setMnemonic('W');
         jMenuClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuCloseActionPerformed(evt);
@@ -1007,7 +1013,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuTools.add(jSeparator2);
 
-        jMenuItemOpenFileLocation.setMnemonic('L');
+        jMenuItemOpenFileLocation.setMnemonic('O');
         jMenuItemOpenFileLocation.setText("Open File Location");
         jMenuItemOpenFileLocation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1074,7 +1080,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
         });
         jMenuPatch.add(jMenuItemUploadSDStart);
 
-        jMenuItemUploadInternalFlash.setMnemonic('I');
+        jMenuItemUploadInternalFlash.setMnemonic('F');
         jMenuItemUploadInternalFlash.setText("Upload to Internal Flash as Startup");
         jMenuItemUploadInternalFlash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1218,6 +1224,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     // }
 
     private void jMenuSaveActionPerformed(java.awt.event.ActionEvent evt) { 
+        saveAction();
+    }
+
+    public void saveAction() {
         String fn = patch.getFileNamePath();
         if ((fn != null) && (!fn.equals("untitled"))) {
             File f = new File(fn);
@@ -1225,7 +1235,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             patch.save(f);
         }
         else {
-            jMenuSaveAsActionPerformed(evt);
+            saveAsAction();
         }
     }
 
@@ -1344,6 +1354,10 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
+        saveAsAction();
+    }
+
+    public void saveAsAction() {
         File fileToBeSaved = FileChooserSave("Save As...");
         if (fileToBeSaved != null) {
             patch.setFileNamePath(fileToBeSaved.getPath());
