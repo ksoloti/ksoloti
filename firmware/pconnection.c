@@ -165,7 +165,7 @@ void TransmitDisplayPckt(void) {
     }
 
     unsigned int length = 12 + (patchMeta.pDisplayVector[2] * 4);
-    if (length > 2048) {
+    if (length > 2560) {
         return; // FIXME
     }
     chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &patchMeta.pDisplayVector[0], length);
