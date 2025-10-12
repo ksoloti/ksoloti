@@ -1597,9 +1597,9 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
+                    mainframe.setCurrentLivePatch(null);
                     patch.WriteCode();
                     patch.Compile();
-                    mainframe.setCurrentLivePatch(null);
 
                     if (patch.getBinFile().exists()) {
                         if (USBBulkConnection.getInstance().isConnected()) {

@@ -614,6 +614,7 @@ static uint8_t CopyPatchToFlash(void) {
         src_addr += 4;
         flash_addr += 4;
     }
+    flash_lock();
 
     if (err) {
         return FR_DISK_ERR; /* Flash verify failed */
@@ -709,10 +710,7 @@ void PExReceiveByte(unsigned char c) {
                         break;
                     }
                     case 'F': { /* copy to flash */
-                        uint8_t res = StopPatch();
-                        if (res == FR_OK) {
-                            res = CopyPatchToFlash();
-                        }
+                        uint8_t res = CopyPatchToFlash();
                         send_AxoResult('F', res);
                         state = 0; header = 0;
                         break;

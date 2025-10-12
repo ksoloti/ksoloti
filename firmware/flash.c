@@ -80,3 +80,8 @@ void flash_unlock(void) {
     FLASH->KEYR = 0x45670123;
     FLASH->KEYR = 0xCDEF89AB;
 }
+
+void flash_lock(void) {
+    /* Set the LOCK Bit in the FLASH control register (FLASH_CR) */
+    FLASH->CR |= FLASH_CR_LOCK;
+}
