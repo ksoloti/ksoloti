@@ -1566,11 +1566,37 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemUploadSDActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.UploadToSDCard();
+        CommandManager.getInstance().startLongOperation();
+        new SwingWorker<Void, Void>() {
+            
+            @Override
+            protected Void doInBackground() throws Exception {
+                patch.UploadToSDCard(); 
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                CommandManager.getInstance().endLongOperation(); 
+            }
+        }.execute();
     }
 
     private void jMenuItemUploadSDStartActionPerformed(java.awt.event.ActionEvent evt) {
-        patch.UploadToSDCard("/start.bin");
+        CommandManager.getInstance().startLongOperation();
+        new SwingWorker<Void, Void>() {
+            
+            @Override
+            protected Void doInBackground() throws Exception {
+                patch.UploadToSDCard("/start.bin"); 
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                CommandManager.getInstance().endLongOperation(); 
+            }
+        }.execute();
     }
 
     private void jMenuSaveClipActionPerformed(java.awt.event.ActionEvent evt) {
