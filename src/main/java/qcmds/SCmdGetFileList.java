@@ -64,12 +64,11 @@ public class SCmdGetFileList extends AbstractSCmd {
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to get file list.");
+                LOGGER.log(Level.WARNING, "Failed to get file list.");
                 return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Get file list command interrupted: " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
