@@ -578,6 +578,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
             /* Embedded objects have no use for help patches */
             jTextFieldHelp.setVisible(false);
             jLabelHelp.setVisible(false);
+            jMenuItemSave.setToolTipText("You are editing an embedded object. This action will save the patch this object is embedded in.");
 
             /* Embedded objects cannot be reverted to library state as they are part of the patch file */
             jMenuItemRevert.setEnabled(false);
@@ -586,10 +587,12 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
                 jMenuItemSave.setEnabled(!sellib.isReadOnly());
                 if (sellib.isReadOnly()) {
                     SetReadOnly(true);
+                    jMenuItemSave.setToolTipText("Cannot save: this object belongs to a read-only library.");
                     jLabelLibrary.setText(sellib.getId() + " (readonly)");
                     t += sellib.getId() + ": " + origObj.id + " (readonly)";
                 }
                 else {
+                    jMenuItemSave.setToolTipText("You are editing a library object. This action will save the object file, not the patch.");
                     jLabelLibrary.setText(sellib.getId());
                     t += sellib.getId() + ": " + origObj.id;
                 }
