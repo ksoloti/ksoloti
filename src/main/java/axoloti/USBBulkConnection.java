@@ -276,14 +276,12 @@ public class USBBulkConnection extends Connection {
         public void run() {
             // System.out.println(Instant.now() + " [DEBUG] Transmitter thread started.");
             while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
-                SCmd cmd = null;
                 try {
-                    cmd = queueSerialTask.poll(5, TimeUnit.SECONDS);
-
-                    if (Thread.currentThread().isInterrupted()|| disconnectRequested) {
+                    if (Thread.currentThread().isInterrupted() || disconnectRequested) {
                         break;
                     }
 
+                    SCmd cmd = queueSerialTask.poll(5, TimeUnit.SECONDS);
                     if (cmd != null) {
                         if (cmdExecutor.isShutdown() || disconnectRequested) {
                             break; 
@@ -301,9 +299,15 @@ public class USBBulkConnection extends Connection {
                                     }
                                 }
                             }
+                            catch (InterruptedException e) {
+                                // LOGGER.log(Level.INFO, "Command execution interrupted, shutting down gracefully.");
+                                Thread.currentThread().interrupt();
+                                return; 
+                            }
                             catch (Exception e) {
                                 LOGGER.log(Level.SEVERE, "Error during Transmitter thread: " + e.getMessage());
                                 e.printStackTrace(System.out);
+                                return; 
                             }
                         });
                     }
