@@ -42,7 +42,7 @@ public class SCmdDeleteFile extends AbstractSCmd {
 
     @Override
     public String GetStartMessage() {
-        return "Deleting file from SD card... " + filename;
+        return "Deleting file from SD card... '" + filename + "'";
     }
 
     @Override
@@ -56,34 +56,34 @@ public class SCmdDeleteFile extends AbstractSCmd {
         connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
-            LOGGER.log(Level.SEVERE, "Failed to send delete file command for " + filename + ": USB connection lost.");
+            LOGGER.log(Level.SEVERE, "Failed to send delete file command for '" + filename + "': USB connection lost.");
             return this;
         }
 
         int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
-            LOGGER.log(Level.SEVERE, "Failed to send delete file command for " + filename + ": USB write error.");
+            LOGGER.log(Level.SEVERE, "Failed to send delete file command for '" + filename + "': USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                LOGGER.log(Level.SEVERE, "Delete file command for " + filename + " timed out.");
+                LOGGER.log(Level.SEVERE, "Delete file command for '" + filename + "' timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "Failed to delete file " + filename + ".");
+                LOGGER.log(Level.SEVERE, "Failed to delete file: '" + filename + "'");
                 return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Delete file command interrupted for " + filename + ": " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Delete file command interrupted for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during delete file command for " + filename + ": " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during delete file command for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
@@ -97,35 +97,35 @@ public class SCmdDeleteFile extends AbstractSCmd {
         connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
-            System.out.println(Instant.now() + " Failed to send delete file command for " + filename + ": USB connection lost.");
+            System.out.println(Instant.now() + " Failed to send delete file command for '" + filename + "': USB connection lost.");
             setCompletedWithStatus(1);
             return this;
         }
 
         int writeResult = connection.TransmitDeleteFile(filename);
         if (writeResult != LibUsb.SUCCESS) {
-            System.out.println(Instant.now() + " Failed to send delete file command for " + filename + ": USB write error.");
+            System.out.println(Instant.now() + " Failed to send delete file command for '" + filename + "': USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
 
         try {
             if (!waitForCompletion()) {
-                System.out.println(Instant.now() + " Delete file command for " + filename + " timed out.");
+                System.out.println(Instant.now() + " Delete file command for '" + filename + "' timed out.");
                 setCompletedWithStatus(1);
                 return this;
             }
             else if (!isSuccessful()) {
-                System.out.println(Instant.now() + " Failed to delete file " + filename + ".");
+                System.out.println(Instant.now() + " Failed to delete file '" + filename + "'");
                 return this;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.out.println(Instant.now() + " Delete file command interrupted for " + filename + ": " + e.getMessage());
+            System.out.println(Instant.now() + " Delete file command interrupted for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         } catch (Exception e) {
-            System.out.println(Instant.now() + " Error during delete file command for " + filename + ": " + e.getMessage());
+            System.out.println(Instant.now() + " Error during delete file command for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }

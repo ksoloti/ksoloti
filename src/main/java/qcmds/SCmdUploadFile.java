@@ -121,19 +121,19 @@ public class SCmdUploadFile extends AbstractSCmd {
         try {
             if (inputStream == null) {
                 if (!file.exists()) {
-                    LOGGER.log(Level.WARNING, "File does not exist: " + filename + "\n");
+                    LOGGER.log(Level.WARNING, "File does not exist: '" + filename + "'\n");
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (file.isDirectory()) {
-                    LOGGER.log(Level.WARNING, "Cannot upload directories: " + filename + "\n");
+                    LOGGER.log(Level.WARNING, "Cannot upload directories: '" + filename + "'\n");
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (!file.canRead()) {
-                    LOGGER.log(Level.WARNING, "Cannot read file: " + filename + "\n");
+                    LOGGER.log(Level.WARNING, "Cannot read file: '" + filename + "'\n");
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
@@ -154,7 +154,7 @@ public class SCmdUploadFile extends AbstractSCmd {
             }
 
             int tlength = inputStream.available(); 
-            LOGGER.log(Level.INFO, "Uploading file to SD card... " + filename + ", size: " + SDFileInfo.getHumanReadableSize(tlength));
+            LOGGER.log(Level.INFO, "Uploading file to SD card... '" + filename + "', size: " + SDFileInfo.getHumanReadableSize(tlength));
             size = tlength;
 
             if (!connection.isConnected()) {
@@ -174,7 +174,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                 return this;
             }
             if (createFileStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
                 new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
@@ -197,20 +197,20 @@ public class SCmdUploadFile extends AbstractSCmd {
                 int nRead = inputStream.read(buffer, 0, bytesToRead);
 
                 if (nRead == -1) {
-                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for '" + filename + "'. Read " + nRead + " bytes. Chunk number " + chunkNum);
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (nRead != bytesToRead) {
-                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead);
+                    LOGGER.log(Level.WARNING, "Partial read for '" + filename + "': Expected " + bytesToRead + " bytes, read " + nRead);
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
                     buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                    LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': USB connection lost.");
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
@@ -220,13 +220,13 @@ public class SCmdUploadFile extends AbstractSCmd {
                 connection.TransmitAppendFile(buffer);
 
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (appendFileStatus != 0x00) {
-                    LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
                     return this;
@@ -297,7 +297,7 @@ public class SCmdUploadFile extends AbstractSCmd {
             inputStream.close();
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': USB connection lost.");
                 new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
@@ -307,13 +307,13 @@ public class SCmdUploadFile extends AbstractSCmd {
             connection.TransmitCloseFile(filename, ts); 
 
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file close within timeout.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge file close within timeout.");
                 new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
             if (closeFileStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
+                LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
                 new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
@@ -324,20 +324,20 @@ public class SCmdUploadFile extends AbstractSCmd {
             LOGGER.log(Level.INFO, "Done uploading file.\n");
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "File I/O error during upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Upload interrupted for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Upload interrupted for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during upload for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
@@ -349,7 +349,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                     inputStream.close();
                 }
                 catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "Error closing input stream for " + filename + ": " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error closing input stream for '" + filename + "': " + e.getMessage());
                     e.printStackTrace(System.out);
                 }
             }

@@ -109,7 +109,7 @@ public class AxoObjectFromPatch extends AxoObject {
         // String FileNamePath = f.getAbsolutePath();
         // int brk = FileNamePath.lastIndexOf(File.separator) + 1;
         // if (brk != 0) {
-        //     title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
+        //     title = FileNamePath.substring(brk) + " - " + FileNamePath.substring(0, brk-1);
         // } else {
         //     title = FileNamePath;
         // }

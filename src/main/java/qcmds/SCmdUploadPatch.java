@@ -69,7 +69,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
 
     @Override
     public String GetStartMessage() {
-        return "Uploading patch... " + filename;
+        return "Uploading patch... '" + filename + "'";
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
             }
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost.");
+                LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': USB connection lost.");
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -126,12 +126,12 @@ public class SCmdUploadPatch extends AbstractSCmd {
             connection.TransmitStartMemWrite(offset, tlength);
 
             if (!startMemWriteLatch.await(5, TimeUnit.SECONDS)) {
-                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge memory write within timeout.");
+                LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': Core did not acknowledge memory write within timeout.");
                 setCompletedWithStatus(1);
                 return this;
             }
             if (startMemWriteStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": Core reported error (" + startMemWriteStatus + ") during file creation.");
+                LOGGER.log(Level.SEVERE, "Upload failed for '" + filename + "': Core reported error (" + startMemWriteStatus + ") during file creation.");
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -153,19 +153,19 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 int nRead = inputStream.read(buffer, 0, bytesToRead);
 
                 if (nRead == -1) {
-                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for " + filename + ". Read " + nRead + " bytes. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for '" + filename + "'. Read " + nRead + " bytes. Chunk number " + chunkNum);
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (nRead != bytesToRead) {
-                    LOGGER.log(Level.WARNING, "Partial read for " + filename + ": Expected " + bytesToRead + " bytes, read " + nRead + ". Chunk Number " + chunkNum);
+                    LOGGER.log(Level.WARNING, "Partial read for '" + filename + "': Expected " + bytesToRead + " bytes, read " + nRead + ". Chunk Number " + chunkNum);
                     byte[] actualBuffer = new byte[nRead];
                     System.arraycopy(buffer, 0, actualBuffer, 0, nRead);
                     buffer = actualBuffer;
                 }
 
                 if (!connection.isConnected()) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": USB connection lost.");
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': USB connection lost.");
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -174,12 +174,12 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 connection.TransmitAppendMemWrite(buffer);
 
                 if (!appendMemWriteLatch.await(5, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setCompletedWithStatus(1);
                     return this;
                 }
                 if (appendMemWriteStatus != 0x00) {
-                    LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk Number " + chunkNum);
+                    LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk Number " + chunkNum);
                     setCompletedWithStatus(1);
                     return this;
                 }
@@ -249,7 +249,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
             } while (remLength > 0);
 
             if (!connection.isConnected()) {
-                LOGGER.log(Level.SEVERE, "Upload failed for " + filename + ": USB connection lost.");
+                LOGGER.log(Level.SEVERE, "Upload failed for '" + filename + "': USB connection lost.");
                 setCompletedWithStatus(1);
                 return this;
             }
@@ -258,30 +258,30 @@ public class SCmdUploadPatch extends AbstractSCmd {
             connection.TransmitCloseMemWrite(offset, tlength); 
 
             if (!closeMemWriteLatch.await(5, TimeUnit.SECONDS)) {
-                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core did not acknowledge write close within timeout.");
+                LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': Core did not acknowledge write close within timeout.");
                 setCompletedWithStatus(1);
                 return this;
             }
             if (closeMemWriteStatus != 0x00) {
-                LOGGER.log(Level.SEVERE, "Patch upload failed for " + filename + ": Core reported error (" + closeMemWriteStatus + ") during write close.");
+                LOGGER.log(Level.SEVERE, "Patch upload failed for '" + filename + "': Core reported error (" + closeMemWriteStatus + ") during write close.");
                 setCompletedWithStatus(1);
                 return this;
             }
         }
         catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "File I/O error during upload for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "File I/O error during upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Patch upload interrupted for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Patch upload interrupted for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during patch upload for " + filename + ": " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during patch upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;

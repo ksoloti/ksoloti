@@ -334,7 +334,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
         Preferences.getInstance().setCurrentFileDirectory(fileToBeSaved.getParentFile().getPath());
 
         if (isCompositeObject()) {
-            JOptionPane.showMessageDialog(null, "The original object file " + filenamePath + " contains multiple objects, the object editor does not support this.\n"
+            JOptionPane.showMessageDialog(null, "The original object file '" + filenamePath + "' contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
             fc.updateCurrentSize();
             return;

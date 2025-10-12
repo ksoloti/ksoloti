@@ -1196,7 +1196,7 @@ public class PatchGUI extends Patch {
         } else if (getSettings() != null && getSettings().subpatchmode != SubPatchMode.no) {
             int brk = FileNamePath.lastIndexOf(File.separator) + 1;
             if (brk != 0) {
-                title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
+                title = FileNamePath.substring(brk) + " - " + FileNamePath.substring(0, brk-1);
             } else {
                 title = FileNamePath;
             }
@@ -1205,7 +1205,7 @@ public class PatchGUI extends Patch {
         } else {
             int brk = FileNamePath.lastIndexOf(File.separator) + 1;
             if (brk != 0) {
-                title = FileNamePath.substring(brk) + "  [" + FileNamePath.substring(0, brk-1) + "]";
+                title = FileNamePath.substring(brk) + " - " + FileNamePath.substring(0, brk-1);
             } else {
                 title = FileNamePath;
             }
