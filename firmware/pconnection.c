@@ -301,7 +301,7 @@ static FRESULT scan_files(char* path) {
 
     uint32_t current_path_len;
     char* fname;
-    char* msg = &((char*) fbuff)[64];
+    char* msg = (char*) &fbuff[128]; /* 128 ints = 512 bytes offset */
 
     fno.lfname = &FileName[0];
     fno.lfsize = sizeof(FileName);
