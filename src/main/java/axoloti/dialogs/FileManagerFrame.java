@@ -277,7 +277,7 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         }
 
         refreshTimer = new Timer(500, e -> {
-            if (!fileListRefreshInProgress) { /* Only proceed if no refresh is already active */
+            if (!fileListRefreshInProgress && !CommandManager.getInstance().isLongOperationActive()) { /* Only proceed if no refresh is already active and no long operation is being processed */
                 performActualRefreshAsync();
             }
             else {
