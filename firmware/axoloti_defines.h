@@ -48,6 +48,8 @@ typedef int32_t int32buffer[BUFSIZE];
 
 #define USING_ADAU1761 1 /* Works with ADAU1961/1761/1361 so we just leave this defined */
 
+// #define USE_KVP 1 /* Uncomment this to bring back "drj/patch/preset manager"-style "KeyValuePairs" where parameter names and values are accessible from within the patch */
+
 /* Firmware version 1.0.0.4 - Ksoloti v0.4+ */
 /* Firmware version 1.1.0.0 - Ksoloti Patcher 1.1.0 */
 #define FWVERSION1 1
