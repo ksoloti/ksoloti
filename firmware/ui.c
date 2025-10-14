@@ -178,7 +178,7 @@ void KVP_RegisterObject(KeyValuePair_s *kvp) {
 }
 #endif /* USE_KVP */
 
-static WORKING_AREA(waThreadUI, 2048);
+static WORKING_AREA(waThreadUI, 1500);
 
 __attribute__((noreturn)) static msg_t ThreadUI(void *arg) {
     (void)(arg);
