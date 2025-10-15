@@ -58,6 +58,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 
 import axoloti.Patch;
+import axoloti.datatypes.Value;
+import axoloti.datatypes.ValueFrac32;
+import axoloti.datatypes.ValueInt32;
 import axoloti.object.AxoObjectInstanceAbstract;
 import axoloti.parameters.ParameterInstance;
 import axoloti.ui.Theme;
@@ -114,9 +117,9 @@ public class MutatorFrame extends JFrame {
 
     private static class ParameterState {
         private ParameterInstance parameter;
-        private int value;
+        private double value;
 
-        public ParameterState(ParameterInstance parameter, int value) {
+        public ParameterState(ParameterInstance parameter, double value) {
             this.parameter = parameter;
             this.value = value;
         }
@@ -125,7 +128,7 @@ public class MutatorFrame extends JFrame {
             return parameter;
         }
 
-        public int getValue() {
+        public double getValue() {
             return value;
         }
     }
@@ -337,8 +340,8 @@ public class MutatorFrame extends JFrame {
             Map<ParameterInstance, double[]> constraints = new HashMap<>();
 
             for (ParameterInstance param : selectedParameters) {
-                int val1 = -1;
-                int val2 = -1;
+                double val1 = -1.0;
+                double val2 = -1.0;
 
                 for (ParameterState state : v1.getStates()) {
                     if (state.getParameter().equals(param)) {
@@ -353,9 +356,9 @@ public class MutatorFrame extends JFrame {
                     }
                 }
 
-                if (val1 != -1 && val2 != -1) {
-                    int min = Math.min(val1, val2);
-                    int max = Math.max(val1, val2);
+                if (val1 != -1.0 && val2 != -1.0) {
+                    double min = Math.min(val1, val2);
+                    double max = Math.max(val1, val2);
                     constraints.put(param, new double[]{min, max});
                 }
             }
@@ -363,7 +366,7 @@ public class MutatorFrame extends JFrame {
             PatchRandomizer.randomizeParametersWithConstraint(selectedParameters, constraints, factor);
 
         } else if (selectedVariations.size() > 2) {
-             LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
+            LOGGER.log(Level.WARNING, "Please select exactly two variations for constrained randomization.");
         } else {
             PatchRandomizer.randomizeParameters(selectedParameters, factor);
         }
@@ -378,7 +381,7 @@ public class MutatorFrame extends JFrame {
             PatchVariation newVariation = new PatchVariation("Variation " + (++variationCounter));
             for (AxoObjectInstanceAbstract obj : patch.objectInstances) {
                 for (ParameterInstance param : obj.getParameterInstances()) {
-                    newVariation.addState(new ParameterState(param, param.GetValueRaw()));
+                    newVariation.addState(new ParameterState(param, param.getValue().getDouble()));
                 }
             }
             variationListModel.add(0, newVariation);
@@ -400,8 +403,22 @@ public class MutatorFrame extends JFrame {
 
         if (selectedVariation != null && this.patch != null) {
             for (ParameterState state : selectedVariation.getStates()) {
-                state.getParameter().SetValueRaw(state.getValue());
-                state.getParameter().SetNeedsTransmit(true);
+                ParameterInstance param = state.getParameter();
+                double nominalValue = state.getValue();
+
+                Value newValue;
+                Value currentValue = param.getValue();
+
+                if (currentValue instanceof ValueInt32) {
+                    newValue = new ValueInt32((int) Math.round(nominalValue)); 
+                } else if (currentValue instanceof ValueFrac32) {
+                    newValue = new ValueFrac32(nominalValue);
+                } else {
+                    continue; 
+                }
+
+                param.setValue(newValue);
+                param.SetNeedsTransmit(true);
             }
             LOGGER.log(Level.INFO, "Variation '" + selectedVariation.name + "' loaded.");
             this.patch.SetDirty(true);
