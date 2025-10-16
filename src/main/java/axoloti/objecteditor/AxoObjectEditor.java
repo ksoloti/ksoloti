@@ -141,6 +141,7 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     private javax.swing.JList jListIncludes;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItemCopyToLibrary;
+    private javax.swing.JMenuItem jMenuItemClose;
     private javax.swing.JMenuItem jMenuItemRevert;
     private javax.swing.JMenuItem jMenuItemSave;
     private javax.swing.JMenuItem jMenuItemSaveAs;
@@ -673,8 +674,6 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
     }
 
     boolean hasChanged() {
-        updateAcProvider(editObj);
-
         Serializer serializer = new Persister(new Format(2));
         ByteArrayOutputStream editOS = new ByteArrayOutputStream(2048);
 
@@ -750,13 +749,34 @@ public final class AxoObjectEditor extends JFrame implements DocumentWindow, Obj
 
     @Override
     public void ObjectModified(Object src) {
-        if (src instanceof AxoObjectEditor) {
-            setDirty();
-        }
-        
+        syncEditorDataToModel();
+
         SwingUtilities.invokeLater(() -> {
+            updateAcProvider(editObj);
             updateEditorView();
+
+            boolean changed = hasChanged();
+            if (changed != isDirty()) {
+                setDirty(changed);
+            }
+            if (changed && IsEmbeddedObj() && patch != null) {
+                patch.SetDirty();
+            }
         });
+    }
+
+    private void syncEditorDataToModel() {
+        editObj.sLocalData = jTextAreaLocalData.getText();
+        editObj.sInitCode = jTextAreaInitCode.getText();
+        editObj.sKRateCode = jTextAreaKRateCode.getText();
+        editObj.sSRateCode = jTextAreaSRateCode.getText();
+        editObj.sDisposeCode = jTextAreaDisposeCode.getText();
+        editObj.sMidiCode = jTextAreaMidiCode.getText();
+        
+        editObj.sAuthor = jTextFieldAuthor.getText();
+        editObj.sLicense = jTextFieldLicense.getText();
+        editObj.sDescription = jTextDesc.getText();
+        editObj.helpPatch = jTextFieldHelp.getText();
     }
 
     public void initEditFromOrig() {
@@ -1360,19 +1380,34 @@ private void initComponents() {
     }
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {
+        syncEditorDataToModel();
         updateEditorView();
+
         if (isCompositeObject()) {
             JOptionPane.showMessageDialog(null, "The original object file " + editObj.sObjFilePath + " contains multiple objects, the object editor does not support this.\n"
                     + "Your changes are NOT saved!");
-        } else {
-            if (IsEmbeddedObj()) {
-                patch.getPatchframe().saveAction();
-            }
-            MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
-            setDirty(false);
-            updateReferenceXML();
-            MainFrame.axoObjects.LoadAxoObjects();
+            return;
         }
+
+        if (IsEmbeddedObj()) {
+            if (patch != null && patch.getPatchframe() != null) {
+                patch.getPatchframe().saveAction();
+            } else {
+                LOGGER.log(Level.SEVERE, "Cannot save embedded object: parent patch frame is null.");
+            }
+            setDirty(false); 
+            return;
+        }
+
+        if (editObj.sObjFilePath == null || editObj.sObjFilePath.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "Cannot save library object: sObjFilePath is missing.");
+            return;
+        }
+
+        MainFrame.axoObjects.WriteAxoObject(editObj.sObjFilePath, editObj);
+        setDirty(false);
+        updateReferenceXML();
+        MainFrame.axoObjects.LoadAxoObjects();
     }
 
     private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1384,6 +1419,10 @@ private void initComponents() {
         AddToLibraryDlg dlg = new AddToLibraryDlg(this, true, editObj);
         dlg.setVisible(true);
         Close();
+    }
+
+    private void jMenuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {
+        AskClose();
     }
 
     private void jMenuItemRevertActionPerformed(java.awt.event.ActionEvent evt) {
