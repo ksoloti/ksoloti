@@ -960,6 +960,7 @@ private void initComponents() {
         jMenuItemSaveAs = new javax.swing.JMenuItem();
         jMenuItemRevert = new javax.swing.JMenuItem();
         jMenuItemCopyToLibrary = new javax.swing.JMenuItem();
+        jMenuItemClose = new javax.swing.JMenuItem();
         windowMenu1 = new axoloti.menus.WindowMenu();
         helpMenu1 = new axoloti.menus.HelpMenu();
 
@@ -1331,6 +1332,16 @@ private void initComponents() {
             }
         });
         fileMenu1.add(jMenuItemCopyToLibrary);
+
+        jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK));
+        jMenuItemClose.setText("Close");
+        jMenuItemClose.setMnemonic('W');
+        jMenuItemClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCloseActionPerformed(evt);
+            }
+        });
+        fileMenu1.add(jMenuItemClose);
 
         jMenuBar1.add(fileMenu1);
         jMenuBar1.add(windowMenu1);
