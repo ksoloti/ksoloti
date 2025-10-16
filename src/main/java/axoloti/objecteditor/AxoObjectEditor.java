@@ -1411,6 +1411,7 @@ private void initComponents() {
     }
 
     private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {
+        syncEditorDataToModel();
         updateEditorView();
         SaveAsDialog();
     }
