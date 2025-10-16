@@ -1343,10 +1343,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     public boolean runTestDir(File f) {
         /* Default to only testing patches, not individual objects/subpatches */
-        return runTestDir(f, false); 
+        return runTestDir(f, true, false); 
     }
 
-    public boolean runTestDir(File f, final boolean testObjects) {
+    public boolean runTestDir(File f, final boolean testPatches, final boolean testObjects) {
         if (!f.exists()) {
             return true;
         }
@@ -1363,7 +1363,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         return false;
                     }
                     String extension = name.substring(name.length() - 4);
-                    boolean isPatch = extension.equals(".axp") || extension.equals(".axh");
+                    boolean isPatch = false;
+                    if (testPatches) {
+                        isPatch = extension.equals(".axp") || extension.equals(".axh");
+                    }
 
                     if (testObjects) {
                         boolean isObject = extension.equals(".axo") || extension.equals(".axs");
@@ -1377,7 +1380,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             Arrays.sort(files, (f1, f2) -> f1.getAbsolutePath().compareToIgnoreCase(f2.getAbsolutePath()));
 
             for (File s : files) {
-                if (!runTestDir(s, testObjects) && stopOnFirstFail) { 
+                if (!runTestDir(s, testPatches, testObjects) && stopOnFirstFail) { 
                     return false;
                 }
             }

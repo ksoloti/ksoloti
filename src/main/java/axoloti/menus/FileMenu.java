@@ -288,7 +288,11 @@ public class FileMenu extends JMenu {
         panel.add(pathField);
         panel.add(Box.createVerticalStrut(15));
 
-        JCheckBox testObjectsCheckbox = new JCheckBox("Test all objects and subpatches individually (.axo, .axs)", false);
+        JCheckBox testPatchesCheckbox = new JCheckBox("Test patches and help patches (.axp, .axh)", false);
+        testPatchesCheckbox.setSelected(true); /* On by default */
+        panel.add(testPatchesCheckbox);
+
+        JCheckBox testObjectsCheckbox = new JCheckBox("Test objects and subpatches (.axo, .axs)", false);
         testObjectsCheckbox.setToolTipText("<html>For each found object or subpatch, a temporary patch will be created<br>and the object or subpatch placed inside for testing.");
         panel.add(testObjectsCheckbox);
 
@@ -302,7 +306,8 @@ public class FileMenu extends JMenu {
 
         if (result == JOptionPane.OK_OPTION) {
             String inputPath = pathField.getText();
-            final boolean testIndividually = testObjectsCheckbox.isSelected();
+            final boolean testPatches = testPatchesCheckbox.isSelected();
+            final boolean testObjectsIndividually = testObjectsCheckbox.isSelected();
             if (inputPath != null && !inputPath.isEmpty()) {
                 
                 currentTestPath = inputPath;
@@ -413,7 +418,7 @@ public class FileMenu extends JMenu {
                             }
                             LOGGER.log(Level.INFO, "");
                             for (File dir : directoriesToTest) {
-                                mainframe.runTestDir(dir, testIndividually);
+                                mainframe.runTestDir(dir, testPatches, testObjectsIndividually);
                             }
 
                             LOGGER.log(Level.WARNING, "Done running tests.\n");
