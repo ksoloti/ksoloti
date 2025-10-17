@@ -110,7 +110,7 @@ public class USBBulkConnection extends Connection {
     private static volatile Context context; /* One context for all libusb operations */
     private static volatile DeviceHandle handle;
     static private volatile USBBulkConnection conn = null;
-    private final ExecutorService cmdExecutor = Executors.newCachedThreadPool();
+    private ExecutorService cmdExecutor = Executors.newCachedThreadPool();
 
     ByteBuffer dispData;
 
@@ -652,6 +652,10 @@ public class USBBulkConnection extends Connection {
                 }
 
                 QCmdProcessor.getInstance().setConnection(this);
+
+                if (cmdExecutor == null || cmdExecutor.isShutdown()) {
+                    cmdExecutor = Executors.newCachedThreadPool();
+                }
 
                 /* Start Trinity of Threads */
                 receiverBlockingQueue.clear();
