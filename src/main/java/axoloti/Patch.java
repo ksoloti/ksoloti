@@ -1554,7 +1554,7 @@ public class Patch {
         c += I+I + "for (j = 0; j < (attr_poly * NMODULATIONSOURCES); j++) {\n";
         c += I+I+I + "*pp = 0; pp++;\n";
         c += I+I + "}\n\n";
-        c += I+I + "displayVector[0] = 0x446F7841;\n"; // "AxoD"
+        c += I+I + "displayVector[0] = 0x446F7841; /* AxoD */\n";
         c += I+I + "displayVector[1] = 0;\n";
         c += I+I + "displayVector[2] = " + displayDataLength + ";\n";
         return c;
