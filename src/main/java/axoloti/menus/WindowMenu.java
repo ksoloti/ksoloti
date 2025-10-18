@@ -126,7 +126,7 @@ public class WindowMenu extends JMenu {
             jMenuWindow.add(a);
         }
         {
-            WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getKeyboard(), "Keyboard");
+            WindowMenuItem a = new WindowMenuItem(MainFrame.mainframe.getKeyboard(), "Virtual Keyboard");
             a.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
             KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
             a.setMnemonic('Y');
