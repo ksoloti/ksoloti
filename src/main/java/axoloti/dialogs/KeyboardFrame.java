@@ -183,7 +183,7 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
         setMaximumSize(null);
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         setName("Virtual Keyboard"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(928, 155));
+        setPreferredSize(new java.awt.Dimension(928, 165));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
@@ -193,9 +193,9 @@ public class KeyboardFrame extends javax.swing.JFrame implements ConnectionStatu
 
         jPanelPiano.setAlignmentX(LEFT_ALIGNMENT);
         jPanelPiano.setAlignmentY(TOP_ALIGNMENT);
-        jPanelPiano.setMaximumSize(new java.awt.Dimension(910, 72));
-        jPanelPiano.setMinimumSize(new java.awt.Dimension(910, 72));
-        jPanelPiano.setPreferredSize(new java.awt.Dimension(910, 72));
+        jPanelPiano.setMaximumSize(new java.awt.Dimension(910, 82));
+        jPanelPiano.setMinimumSize(new java.awt.Dimension(910, 82));
+        jPanelPiano.setPreferredSize(new java.awt.Dimension(910, 82));
         jPanelPiano.setLayout(new javax.swing.BoxLayout(jPanelPiano, javax.swing.BoxLayout.LINE_AXIS));
         jPanelPiano.requestFocus();
 
