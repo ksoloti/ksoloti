@@ -84,6 +84,8 @@ public class FileMenu extends JMenu {
     private static final Logger LOGGER = Logger.getLogger(FileMenu.class.getName());
 
     String currentTestPath; /* Retains the previously entered batch test path */
+    boolean testPatches;
+    boolean testObjects;
 
     public FileMenu(String s) {
         super(s);
@@ -99,6 +101,8 @@ public class FileMenu extends JMenu {
 
         int pos = 0;
         currentTestPath = System.getProperty(Axoloti.LIBRARIES_DIR); /* Init to "all stock libraries" path */
+        testPatches = true;
+        testObjects = false;
 
         jMenuNewBank = new JMenuItem();
         jMenuNewPatch = new JMenuItem();
@@ -288,11 +292,10 @@ public class FileMenu extends JMenu {
         panel.add(pathField);
         panel.add(Box.createVerticalStrut(15));
 
-        JCheckBox testPatchesCheckbox = new JCheckBox("Test patches and help patches (.axp, .axh)", false);
-        testPatchesCheckbox.setSelected(true); /* On by default */
+        JCheckBox testPatchesCheckbox = new JCheckBox("Test patches and help patches (.axp, .axh)", testPatches);
         panel.add(testPatchesCheckbox);
 
-        JCheckBox testObjectsCheckbox = new JCheckBox("Test objects and subpatches (.axo, .axs)", false);
+        JCheckBox testObjectsCheckbox = new JCheckBox("Test objects and subpatches (.axo, .axs)", testObjects);
         testObjectsCheckbox.setToolTipText("<html>For each found object or subpatch, a temporary patch will be created<br>and the object or subpatch placed inside for testing.");
         panel.add(testObjectsCheckbox);
 
@@ -306,8 +309,8 @@ public class FileMenu extends JMenu {
 
         if (result == JOptionPane.OK_OPTION) {
             String inputPath = pathField.getText();
-            final boolean testPatches = testPatchesCheckbox.isSelected();
-            final boolean testObjectsIndividually = testObjectsCheckbox.isSelected();
+            testPatches = testPatchesCheckbox.isSelected();
+            testObjects = testObjectsCheckbox.isSelected();
             if (inputPath != null && !inputPath.isEmpty()) {
                 
                 currentTestPath = inputPath;
@@ -418,7 +421,7 @@ public class FileMenu extends JMenu {
                             }
                             LOGGER.log(Level.INFO, "");
                             for (File dir : directoriesToTest) {
-                                mainframe.runTestDir(dir, testPatches, testObjectsIndividually);
+                                mainframe.runTestDir(dir, testPatches, testObjects);
                             }
 
                             LOGGER.log(Level.WARNING, "Done running tests.\n");
