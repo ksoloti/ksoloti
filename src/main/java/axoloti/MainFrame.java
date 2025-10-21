@@ -32,6 +32,7 @@ import axoloti.dialogs.PatchBank;
 import axoloti.listener.BoardIDNameListener;
 import axoloti.listener.ConnectionFlagsListener;
 import axoloti.listener.ConnectionStatusListener;
+import axoloti.listener.LineLimitListener;
 import axoloti.listener.SDCardMountStatusListener;
 import axoloti.object.AxoObject;
 import axoloti.object.AxoObjectAbstract;
@@ -80,6 +81,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -92,11 +94,14 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.Box.Filler;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -190,6 +195,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private javax.swing.JPanel jPanelInfoColumn;
     private ScrollPaneComponent jScrollPaneLog;
     public static javax.swing.JTextPane jTextPaneLog;
+    private final ConcurrentLinkedQueue<LineLimitListener.StyledLogRecord> logQueue = new ConcurrentLinkedQueue<>();
+    private final Timer logUpdateTimer;
+    private final int LOG_THROTTLE_MS = 100;
     private axoloti.menus.WindowMenu windowMenu1;
 
     private boolean doAutoScroll = true;
@@ -241,14 +249,12 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             @Override
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                // Invoked when user select and move the cursor of scroll by mouse explicitly.
                 if (!brm.getValueIsAdjusting()) {
                     if (doAutoScroll) {
                         brm.setValue(brm.getMaximum());
                     }
                 }
                 else {
-                    // doAutoScroll will be set to true when user reaches at the bottom of document.
                     doAutoScroll = ((brm.getValue() + brm.getExtent()) == brm.getMaximum());
                 }
             }
@@ -259,40 +265,50 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                // Invoked when user use mouse wheel to scroll
                 if (e.getWheelRotation() < 0) {
-                    // If user trying to scroll up, doAutoScroll should be false.
                     doAutoScroll = false;
                 }
                 else {
-                    // doAutoScroll will be set to true when user reaches at the bottom of document.
                     doAutoScroll = ((brm.getValue() + brm.getExtent()) == brm.getMaximum());
                 }
             }
         });
 
+        logUpdateTimer = new Timer(LOG_THROTTLE_MS, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!logQueue.isEmpty()) {
+                    try {
+                        StyledDocument doc = jTextPaneLog.getStyledDocument();
+                        int currentLength;
+
+                        LineLimitListener.StyledLogRecord record;
+                        while ((record = logQueue.poll()) != null) {
+                            currentLength = doc.getLength();
+                            doc.insertString(currentLength, record.text, record.style);
+                        }
+
+                        if (doAutoScroll) {
+                            jTextPaneLog.setCaretPosition(doc.getLength());
+                        }
+
+                    } catch (BadLocationException ex) {
+                        System.err.println("BadLocationException during styled batched log update: " + ex.getMessage());
+                    }
+                }
+            }
+        });
+        logUpdateTimer.start();
+
         Handler logHandler = new Handler() {
             @Override
             public void publish(final LogRecord lr) {
-                /* This entire block (the "else" part) needs to be executed on the EDT.
-                   If we're not on the EDT, schedule *this entire logic* to run on the EDT. */
-                if (!SwingUtilities.isEventDispatchThread()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            /* Now, call the publish method again. This time, it *will* be on the EDT. */
-                            publish(lr);
-                        }
-                    });
-                    return; /* Important: exit the current call as it's been re-dispatched. */
-                }
+                String txt;
+                String excTxt = "";
+                Throwable exc = lr.getThrown();
+                AttributeSet targetStyle;
 
-                /* If we reach here, we are guaranteed to be on the Event Dispatch Thread (EDT). */
                 try {
-                    String txt;
-                    String excTxt = "";
-                    Throwable exc = lr.getThrown();
-
                     if (exc != null) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         PrintStream ps = new PrintStream(baos);
@@ -305,7 +321,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         txt = excTxt;
                     }
                     else {
-                        /* Handle MessageFormat carefully, especially if parameters are null */
                         if (lr.getParameters() != null) {
                             txt = java.text.MessageFormat.format(lr.getMessage(), lr.getParameters());
                         }
@@ -318,46 +333,34 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         }
                     }
 
-                    String formattedMessage = txt + "\n";
-
-                    /* Get the document length just before insertion to ensure it's current. */
-                    int currentLength = jTextPaneLog.getDocument().getLength();
-
                     if (lr.getLevel() == Level.SEVERE) {
-                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleSevere);
+                        targetStyle = styleSevere;
                         if (bGrabFocusOnSevereErrors) {
-                            doAutoScroll = true;
-                            MainFrame.this.toFront();
+                            doAutoScroll = true; 
+                            SwingUtilities.invokeLater(() -> MainFrame.this.toFront());
                         }
                     }
                     else if (lr.getLevel() == Level.WARNING) {
-                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleWarning);
+                        targetStyle = styleWarning;
                     }
                     else {
-                        jTextPaneLog.getDocument().insertString(currentLength, formattedMessage, styleInfo);
+                        targetStyle = styleInfo;
                     }
 
-                    if (doAutoScroll) {
-                        jTextPaneLog.setCaretPosition(jTextPaneLog.getDocument().getLength());
-                    }
-                }
-                catch (BadLocationException ex) {
-                    System.err.println(Instant.now() + " BadLocationException when logging to GUI: " + ex.getMessage());
-                    ex.printStackTrace(System.out);
+                    String formattedMessage = txt + "\n";
+                    logQueue.offer(new LineLimitListener.StyledLogRecord(formattedMessage, targetStyle));
                 }
                 catch (UnsupportedEncodingException ex) {
                     System.err.println(Instant.now() + " UnsupportedEncodingException in log handler: " + ex.getMessage());
-                    ex.printStackTrace(System.out);
                 }
                 catch (Exception ex) {
                     System.err.println(Instant.now() + " Unexpected exception in log handler: " + ex.getMessage());
-                    ex.printStackTrace(System.out);
                 }
             }
 
             @Override
             public void flush() {
-                jScrollPaneLog.removeAll();
+                SwingUtilities.invokeLater(() -> jScrollPaneLog.removeAll());
             }
 
             @Override
@@ -386,7 +389,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             jMenuItemRefreshFWID.setVisible(false);
         }
 
-        // jMenuItemEnterDFU.setVisible(Axoloti.isDeveloper());
         /* Enter Rescue Mode option always available */
         jMenuItemEnterDFU.setVisible(true);
 
@@ -561,11 +563,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
                     axoObjects = new AxoObjects();
                     axoObjects.LoadAxoObjects();
-
-                // }
-                // catch (BindException e) {
-                    // e.printStackTrace(System.out);
-                    // System.exit(1);
                 }
                 catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error during MainFrame init task: " + e.getMessage());
@@ -969,6 +966,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jTextPaneLog.setCaretColor(new Color(0,0,0,0));
         jTextPaneLog.setEditable(false);
         jScrollPaneLog.setViewportView(jTextPaneLog);
+        jTextPaneLog.getDocument().addDocumentListener(
+            new LineLimitListener(jTextPaneLog, 50000) /* Limit to 50,000 lines */
+        );
 
         getContentPane().add(jScrollPaneLog);
 
@@ -1704,45 +1704,20 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     }
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
-        // String fname = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "mounter" + File.separator + "mounter_build";
-        // if (Preferences.getInstance().getFirmwareMode().contains("Ksoloti Core")) {
-        //     fname += File.separator + "ksoloti_mounter.bin";
-        // }
-        // else if (Preferences.getInstance().getFirmwareMode().contains("Axoloti Core")) {
-        //     fname += File.separator + "axoloti_mounter.bin";
-        // }
-        // File f = new File(fname);
-        // if (f.canRead()) {
-        //     setCurrentLivePatch(null);
-        //     try {
-        //         SCmdUploadPatch uploadMounterCmd = new SCmdUploadPatch(f);
-        //         uploadMounterCmd.Do();
-        //         if (!uploadMounterCmd.waitForCompletion() || !uploadMounterCmd.isSuccessful()) {
-        //             return;
-        //         }
-        //     } catch (Exception e) {
-        //         LOGGER.log(Level.SEVERE, "Error during Mounter upload command: " + e.getMessage());
-        //         e.printStackTrace(System.out);
-        //     }
-
-            try {
-                SCmdStartMounter startMounterCmd = new SCmdStartMounter(true); /* Start inbuilt mounter */
-                LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
-                startMounterCmd.Do();
-                LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
-                /* Do not waitForCompletion or check isSuccessful here 
-                   because MCU will have rebooted automatically by now,
-                   which counts as success */
-                USBBulkConnection.getInstance().disconnect();
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error during Mounter start command: " + e.getMessage());
-                e.printStackTrace(System.out);
-                return;
-            }
-        // }
-        // else {
-        //     LOGGER.log(Level.SEVERE, "Cannot read Mounter firmware. Please compile firmware first!\n(File: {0})", fname);
-        // }
+        try {
+            SCmdStartMounter startMounterCmd = new SCmdStartMounter(true); /* Start inbuilt mounter */
+            LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
+            startMounterCmd.Do();
+            LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
+            /* Do not waitForCompletion or check isSuccessful here 
+                because MCU will have rebooted automatically by now,
+                which counts as success */
+            USBBulkConnection.getInstance().disconnect();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error during Mounter start command: " + e.getMessage());
+            e.printStackTrace(System.out);
+            return;
+        }
     }
 
     public static void openFilesFromListener(ArrayList<File> files) {
@@ -1999,7 +1974,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         jMenuItemFDisconnect.setEnabled(connect);
 
         jMenuItemFConnect.setEnabled(!connect);
-        // jMenuItemSelectCom.setEnabled(!connect);
 
         jMenuItemEnterDFU.setEnabled(connect);
         jMenuItemMount.setEnabled(connect);
