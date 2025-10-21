@@ -41,8 +41,6 @@
 #define SECTION_CCMSRAM __attribute__((section(".ccmsram")))
 #define SECTION_SDRAM __attribute__((section(".sdram")))
 
-void axoloti_init(void);
-
 extern void ADAU1961_WriteRegister(uint16_t RegisterAddr, uint8_t RegisterValue);
 
 void LogTextMessage(const char* format, ...);

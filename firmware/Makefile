@@ -193,7 +193,6 @@ CSRC = ${FIRMWARE}/exceptions.c \
   $(CHIBIOS)/os/various/memstreams.c \
   ${FIRMWARE}/codec.c \
   ${FIRMWARE}/i2scodec.c \
-  ${FIRMWARE}/axoloti.c \
   ${FIRMWARE}/axoloti_filters.c \
   ${FIRMWARE}/axoloti_math.c \
   ${FIRMWARE}/axoloti_oscs.c \
