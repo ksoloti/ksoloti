@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2023 - 2024 by Ksoloti
+ * Copyright (C) 2023 - 2025 by Ksoloti
  *
  * This file is part of Ksoloti.
  *
