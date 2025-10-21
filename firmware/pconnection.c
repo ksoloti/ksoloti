@@ -176,9 +176,9 @@ void LogTextMessage(const char* format, ...) {
     if ((usbGetDriverStateI(BDU1.config->usbp) == USB_ACTIVE) && (connected)) {
         if(chMtxTryLock(&LogMutex)) {
             MemoryStream ms;
-            uint8_t      tmp[256-5]; /* nead AxoL and null */
+            uint8_t      tmp[LOG_BUFFER_SIZE-5]; /* nead "AxoL" and '\0' */
 
-            msObjectInit(&ms, (uint8_t*) tmp, 256-5, 0); 
+            msObjectInit(&ms, (uint8_t*) tmp, LOG_BUFFER_SIZE-5, 0); 
 
             va_list ap;
             va_start(ap, format);
