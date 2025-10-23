@@ -85,6 +85,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         jTextFieldAuthor.setText(settings.getAuthor());
         jComboBoxLicense.setSelectedItem(settings.getLicense());
         jTextFieldAttributions.setText(settings.getAttributions());
+        jComboBoxMPEZone.setSelectedIndex(settings.getMPEZone());
         switch (settings.subpatchmode) {
             case no:
                 jComboBoxMode.setSelectedIndex(0);
@@ -107,6 +108,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
         }
         jCheckBoxHasMidiSelector.setSelected(settings.GetMidiSelector());
         jCheckBoxSaturate.setSelected(settings.getSaturate());
+        jComboBoxModeActionPerformed(null);
 
         this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyUtils.CONTROL_OR_CMD_MASK), "closeFrame");
@@ -505,7 +507,7 @@ public class PatchSettingsFrame extends javax.swing.JFrame implements DocumentWi
 
         /* Set subpatch items as enabled unless overridden by subpatch mode "no" */
         jCheckBoxHasMidiSelector.setEnabled(true);
-        /* Set MPE eoptions as disables unless subpatch mode "polyexpression" overrides them */
+        /* Set MPE options as disabled unless subpatch mode "polyexpression" overrides them */
         setEnabledMPEOptions(false);
 
         switch (jComboBoxMode.getSelectedIndex()) {
