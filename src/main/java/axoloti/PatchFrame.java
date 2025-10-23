@@ -1536,19 +1536,69 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         case WIN:
                             /* Windows command to open explorer and select the file */
                             cmdStr = new String[]{"explorer.exe", "/select,", f.getAbsolutePath()};
+                            Runtime.getRuntime().exec(cmdStr); /* Send command to OS */
                             break;
                         case MAC:
                             /* macOS command to reveal the file in Finder */
                             cmdStr = new String[]{"open", "-R", f.getAbsolutePath()};
+                            Runtime.getRuntime().exec(cmdStr); /* Send command to OS */
                             break;
                         case LINUX:
                         default:
-                            /* Linux command to open the containing folder.
-                               Note: xdg-open doesn't support selecting the file. */
+                            String fullFilePath = f.getAbsolutePath();
+                            boolean success = false;
+                            
+                            /* Try the file managers that support the --select flag */
+                            String[] linuxSelectCommands = new String[]{
+                                "nautilus", /* GNOME/Unity */
+                                "dolphin",  /* KDE */
+                                "konqueror" /* Old KDE */
+                            };
+                            
+                            for (String cmd : linuxSelectCommands) {
+                                try {
+                                    /* Execute: [manager] --select [full_file_path] */
+                                    Runtime.getRuntime().exec(new String[]{cmd, "--select", fullFilePath});
+                                    success = true;
+                                    break;
+                                } catch (IOException ioEx) {
+                                    /* Command not found in PATH, try next manager */
+                                }
+                            }
+
+                            if (!success) {
+                                /* Try the file managers that do not support the --select flag (and pass parent folder) */
+                                System.out.println("Failed to launch file manager with selection. Falling back to file manager for containing folder.");
+                                linuxSelectCommands = new String[]{
+                                    "caja", "thunar", "nemo", "pcmanfm"
+                                };
+                                
+                                String parentPath = f.getParentFile().getAbsolutePath();
+                                for (String cmd : linuxSelectCommands) {
+                                    try {
+                                        /* Execute: [manager] [parent folder] */
+                                        Runtime.getRuntime().exec(new String[]{cmd, parentPath});
+                                        success = true;
+                                        break;
+                                    } catch (IOException ioEx) {
+                                        /* Command not found in PATH, try next manager */
+                                    }
+                                }
+                            }
+                            
+                            if (!success) {
+                                /* Final Fallback: Generic xdg-open (opens parent directory, but may trigger the system's 'default application' which may not be your file manager!) */
+                                System.out.println("Failed to launch file manager for containing folder. Falling back to xdg-open. This may trigger the system's 'default application' which may not be your file manager!");
+                                try {
+                                    /* Execute: xdg-open [parent_directory_path] */
                             cmdStr = new String[]{"xdg-open", f.getParentFile().getAbsolutePath()};
+                                    Runtime.getRuntime().exec(cmdStr);
+                                } catch (IOException ex) {
+                                    System.out.println("Failed to launch xdg-open as final fallback.");
+                                }
+                            }
                             break;
                         }
-                        Runtime.getRuntime().exec(cmdStr); /* Send command to OS */
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Failed to reveal file location using OS commands: " + ex.getMessage());
                     ex.printStackTrace(System.out);
