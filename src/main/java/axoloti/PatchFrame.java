@@ -1547,14 +1547,14 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                         default:
                             String fullFilePath = f.getAbsolutePath();
                             boolean success = false;
-                            
+
                             /* Try the file managers that support the --select flag */
                             String[] linuxSelectCommands = new String[]{
                                 "nautilus", /* GNOME/Unity */
                                 "dolphin",  /* KDE */
                                 "konqueror" /* Old KDE */
                             };
-                            
+
                             for (String cmd : linuxSelectCommands) {
                                 try {
                                     /* Execute: [manager] --select [full_file_path] */
@@ -1572,7 +1572,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                 linuxSelectCommands = new String[]{
                                     "caja", "thunar", "nemo", "pcmanfm"
                                 };
-                                
+
                                 String parentPath = f.getParentFile().getAbsolutePath();
                                 for (String cmd : linuxSelectCommands) {
                                     try {
@@ -1585,20 +1585,20 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     }
                                 }
                             }
-                            
+
                             if (!success) {
                                 /* Final Fallback: Generic xdg-open (opens parent directory, but may trigger the system's 'default application' which may not be your file manager!) */
                                 System.out.println("Failed to launch file manager for containing folder. Falling back to xdg-open. This may trigger the system's 'default application' which may not be your file manager!");
                                 try {
                                     /* Execute: xdg-open [parent_directory_path] */
-                            cmdStr = new String[]{"xdg-open", f.getParentFile().getAbsolutePath()};
+                                    cmdStr = new String[]{"xdg-open", f.getParentFile().getAbsolutePath()};
                                     Runtime.getRuntime().exec(cmdStr);
                                 } catch (IOException ex) {
                                     System.out.println("Failed to launch xdg-open as final fallback.");
                                 }
                             }
                             break;
-                        }
+                    }
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "Failed to reveal file location using OS commands: " + ex.getMessage());
                     ex.printStackTrace(System.out);
@@ -1618,7 +1618,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuItemUploadSDActionPerformed(java.awt.event.ActionEvent evt) {
         CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
-            
+
             @Override
             protected Void doInBackground() throws Exception {
                 patch.UploadToSDCard(); 
@@ -1635,7 +1635,7 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     private void jMenuItemUploadSDStartActionPerformed(java.awt.event.ActionEvent evt) {
         CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
-            
+
             @Override
             protected Void doInBackground() throws Exception {
                 patch.UploadToSDCard("/start.bin"); 

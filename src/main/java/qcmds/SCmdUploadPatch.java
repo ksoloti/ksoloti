@@ -139,8 +139,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
             int MaxBlockSize = 32768;
             int chunkNum = 0;
             int remLength = tlength;
-            // long totalBytesSent = 0;
-            // long pct = 0;
 
             do {
                 chunkNum++;
@@ -186,66 +184,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
 
                 remLength -= nRead;
 
-                // long newpct = (100 * totalBytesSent) / tlength;
-                // if (newpct != pct) {
-                //     StringBuilder progressbar = new StringBuilder("                         "); /* 25-chars long progress bar */
-                //     for (int i = 0; i < (int) newpct/4; i++) {
-                //         progressbar.setCharAt(i, '='); /* fill the progress bar depending on the percentage */
-                //     }
-
-                //     final String progressMessage = "Uploading\t[" + progressbar + "] " + String.format("%3d", newpct) + "%";
-                //     SwingUtilities.invokeLater(() -> {
-
-                //         try {
-                //             Document doc = MainFrame.jTextPaneLog.getDocument();
-                //             String content = doc.getText(0, doc.getLength());
-                //             content = content.replaceAll("\r\n", "\n");
-
-                //             int docLength = content.length();
-
-                //             int startOfLineToRemove = -1;
-                //             String lastLineContent = "";
-
-                //             if (docLength > 0) {
-                //                 /* Find the index of the *last character* of the content */
-                //                 int endOfContent = docLength;
-                //                 while (endOfContent > 0 && content.charAt(endOfContent - 1) == '\n') {
-                //                     endOfContent--;
-                //                 }
-
-                //                 if (endOfContent > 0) {
-                //                     /* Find the newline before this actual last line of content */
-                //                     int lastNewlineBeforeContent = content.lastIndexOf('\n', endOfContent - 1);
-
-                //                     /* Calculate the start index of the line to remove */
-                //                     startOfLineToRemove = (lastNewlineBeforeContent == -1) ? 0 : (lastNewlineBeforeContent + 1);
-
-                //                     /* Extract the actual content of the last line */
-                //                     lastLineContent = content.substring(startOfLineToRemove, endOfContent);
-                //                 }
-                //             }
-
-                //             /* Check if the last line matches the progress bar pattern */
-                //             if (lastLineContent.trim().startsWith("Uploading\t[")) {
-                //                 /* If it matches, remove this last line and all trailing newlines */
-                //                 doc.remove(startOfLineToRemove, doc.getLength() - startOfLineToRemove);
-                //             } else {
-                //                 /* If the previous line was NOT a progress bar, append back a newline before inserting the new one */
-                //                 if (docLength > 0 && content.charAt(docLength - 1) != '\n') {
-                //                     doc.insertString(doc.getLength(), "\n", null);
-                //                 }
-                //             }
-
-                //             doc.insertString(doc.getLength(), progressMessage + "\n", MainFrame.styleInfo);
-                //             // MainFrame.jTextPaneLog.setCaretPosition(doc.getLength());
-                //         }
-                //         catch (Exception ex) {
-                //             LOGGER.log(Level.SEVERE, "Unexpected exception in progress update: " + ex.getMessage());
-                //             ex.printStackTrace(System.out);
-                //         }
-                //     });
-                // }
-                // pct = newpct;
             } while (remLength > 0);
 
             if (!connection.isConnected()) {
@@ -275,13 +213,13 @@ public class SCmdUploadPatch extends AbstractSCmd {
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            LOGGER.log(Level.SEVERE, "Patch upload interrupted for '" + filename + "': " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Patch upload interrupted: " + ex.getMessage());
             ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
         }
         catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during patch upload for '" + filename + "': " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during upload: " + ex.getMessage());
             ex.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;

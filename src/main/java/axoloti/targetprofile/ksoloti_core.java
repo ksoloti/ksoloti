@@ -96,7 +96,7 @@ public class ksoloti_core {
     }
 
     public int getPatchAddr() {
-        // SRAM1 - must match with patch.ld
+        // SRAM1 - must match with ramlink_*.ld
         return 0x20011000;
     }
 
