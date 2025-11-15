@@ -24,7 +24,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti launch (openocd)",
@@ -42,7 +42,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti attach (gdb)",
@@ -55,7 +55,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti attach (openocd)",
@@ -72,7 +72,7 @@
             ],
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti launch",
@@ -86,7 +86,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti attach",
@@ -99,7 +99,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti SPILink launch",
@@ -113,7 +113,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti SPILink attach",
@@ -126,7 +126,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti SPILink launch",
@@ -140,7 +140,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti SPILink attach",
@@ -153,7 +153,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti I2SCodec launch",
@@ -167,7 +167,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Ksoloti I2SCodec attach",
@@ -180,7 +180,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti I2SCodec launch",
@@ -194,7 +194,7 @@
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Axoloti I2SCodec attach",
@@ -207,7 +207,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "svdFile": "./debug/STM32F429.svd",
-            "liveWatch": { "enabled": true, "samplesPerSecond": 4 }
+            "showDevDebugOutput": "raw"
         }
        ]
 }

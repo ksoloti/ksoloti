@@ -15,7 +15,6 @@
         "*.axh": "xml",
         "*.axp": "xml",
         "*.axs": "xml",
-        "stm32f427xx.h": "c"
     },
     "C_Cpp.default.compilerPath": "",
     "cortex-debug.variableUseNaturalFormat": false
