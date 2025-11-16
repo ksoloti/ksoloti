@@ -16,7 +16,8 @@
         "Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar",
         "Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine",
         "Dsun.java2d.opengl=true",
-        "Dsun.java2d.dpiaware=true"
+        "Dsun.java2d.dpiaware=true",
+        "Dsun.java2d.uiScale=1.0"
     ],
     "resources": [
         "chibios",
