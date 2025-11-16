@@ -666,7 +666,7 @@ void PExReceiveByte(unsigned char c) {
     static volatile uint32_t offset;
     static volatile uint32_t length;
     static volatile uint32_t patchid;
-    static volatile uint32_t total_write_length;
+    // static volatile uint32_t total_write_length;
 
     AddPCDebug(c, state);
 
@@ -810,7 +810,7 @@ void PExReceiveByte(unsigned char c) {
                         uint8_t res = StopPatch();
                         if (res == FR_OK) {
                             write_position = offset; /* Initialize write_position here */
-                            total_write_length = (uint32_t)value;
+                            // total_write_length = (uint32_t)value;
                         }
                         send_AxoResult('W', res);
                         state = 0; header = 0;
