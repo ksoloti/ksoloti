@@ -1862,16 +1862,18 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (this.currentLivePatch != null) {
             this.currentLivePatch.Unlock(); /* GUI-side unlock */
             System.out.println(Instant.now() + " Unlocked previous live patch: " + this.currentLivePatch.getFileNamePath());
-            try {
-                SCmdStop stopCmd = new SCmdStop();
-                stopCmd.Do();
-                if (!stopCmd.waitForCompletion() || !stopCmd.isSuccessful()) {
-                    return;
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + ", " + e.getMessage());
-                e.printStackTrace(System.out);
+        }
+        try {
+            CommandManager.getInstance().startLongOperation();
+            SCmdStop stopCmd = new SCmdStop();
+            stopCmd.Do();
+            CommandManager.getInstance().endLongOperation();
+            if (!stopCmd.waitForCompletion() || !stopCmd.isSuccessful()) {
+                return;
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + this.currentLivePatch.getFileNamePath() + ", " + e.getMessage());
+            e.printStackTrace(System.out);
         }
 
         /* Update the reference to the new live patch --- */
