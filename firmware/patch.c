@@ -351,7 +351,6 @@ static int StartPatch1(void) {
                 #endif
 
                 StopPatch1();
-                SetPatchStatus(STOPPED);
                 codec_clearbuffer();
             }
             else if (patchStatus == STOPPED) {
