@@ -23,8 +23,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti launch (openocd)",
@@ -41,8 +40,7 @@
             ],
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti attach (gdb)",
@@ -54,8 +52,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti attach (openocd)",
@@ -71,8 +68,7 @@
                 "target/stm32f4x.cfg"
             ],
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti launch",
@@ -85,8 +81,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti attach",
@@ -98,8 +93,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti SPILink launch",
@@ -112,8 +106,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti SPILink attach",
@@ -125,8 +118,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti SPILink launch",
@@ -139,8 +131,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti SPILink attach",
@@ -152,8 +143,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti I2SCodec launch",
@@ -166,8 +156,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Ksoloti I2SCodec attach",
@@ -179,8 +168,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti I2SCodec launch",
@@ -193,8 +181,7 @@
             "interface": "swd",
             "runToEntryPoint": "main",
             "preLaunchTask": "kompile_shortcut",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         },
         {
             "name": "Axoloti I2SCodec attach",
@@ -206,8 +193,7 @@
             "device": "STM32F429ZG",
             "interface": "swd",
             "runToEntryPoint": "main",
-            "svdFile": "./debug/STM32F429.svd",
-            "showDevDebugOutput": "raw"
+            "svdFile": "./debug/STM32F429.svd"
         }
        ]
 }
