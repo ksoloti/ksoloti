@@ -413,6 +413,18 @@ public class FileMenu extends JMenu {
 
                             if (USBBulkConnection.getInstance().isConnected()) {
                                 LOGGER.log(Level.INFO, "Core is connected - Attempting test upload of patches and measuring DSP load.");
+                                try {
+                                    CommandManager.getInstance().startLongOperation();
+                                    SCmdStop stopCmd = new SCmdStop();
+                                    stopCmd.Do();
+                                    CommandManager.getInstance().endLongOperation();
+                                    if (!stopCmd.waitForCompletion() || !stopCmd.isSuccessful()) {
+                                        return;
+                                    }
+                                } catch (Exception e) {
+                                    LOGGER.log(Level.SEVERE, "Failed to send stop command to Core for previous patch: " + e.getMessage());
+                                    e.printStackTrace(System.out);
+                                }
                             }
 
                             LOGGER.log(Level.INFO, "Testing directories:");
