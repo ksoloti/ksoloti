@@ -585,6 +585,7 @@ static FRESULT AppendFile(uint32_t length) {
     if (op_result == FR_OK && bytes_written != length) {
         op_result = FR_DISK_ERR;
     }
+    return op_result;
 }
 
 
