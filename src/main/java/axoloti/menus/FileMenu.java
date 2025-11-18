@@ -40,6 +40,9 @@ import axoloti.utils.FileUtils;
 import axoloti.utils.KeyUtils;
 import axoloti.utils.Preferences;
 import generatedobjects.GeneratedObjects;
+import qcmds.CommandManager;
+import qcmds.SCmdStop;
+
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
