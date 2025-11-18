@@ -422,7 +422,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                             "- Compile firmware, Refresh firmware ID (Board -> Firmware)\n" + 
                             "- Generate and/or compile patch code, simulate lock/unlock, also while no Core is connected (patch windows -> Patch)\n" + 
                             "- Remove read-only restrictions: Edit and save to read-only libraries (axoloti-factory, *oloti-contrib, ksoloti-objects)\n" + 
-                            "- Test-compile all patches in all libraries, or all patches (recursively) in specified folder (File -> Test Compilation)\n"
+                            "- Test-compile all patches (recursively) in specified folder (File -> Test Compilation, check 'Test patches and help patches')\n" +
+                            "- Test-compile all objects and subpatches (recursively) in specified folder (File -> Test Compilation, check 'Test objects and subpatches')\n"
                         );
                     }
 
