@@ -66,13 +66,18 @@ extern void i2s_init(void);
 
 
 int main(void) {
-    /* copy vector table to SRAM1! */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
-    memcpy((char *)0x20000000, (const char*)0x00000000, 0x200);
+    /* Copy vector table to SRAM1! */
+    memcpy((char*) 0x20000000, (const char*) 0x00000000, 0x200);
+
+    /* Clear patch RAM */
+    memset((char*) PATCHMAINLOC, 0xFFFFFFFF, PATCHFLASHSIZE);
+    memset((char*) PATCHMAINLOC_SRAM2, 0xFFFFFFFF, PATCHFLASHSIZE_SRAM2);
+    memset((char*) PATCHMAINLOC_SRAM3, 0xFFFFFFFF, PATCHFLASHSIZE_SRAM3);
 #pragma GCC diagnostic pop
 
-    /* remap SRAM1 to 0x00000000 */
+    /* Remap SRAM1 to 0x00000000 */
     SYSCFG->MEMRMP |= 0x03;
 
     halInit();
@@ -158,6 +163,7 @@ int main(void) {
 
             if (fs_ready) {
                 LoadPatchStartSD();
+                chThdSleepMilliseconds(100); /* Worst-case time if a huge patch is being loaded */
             }
 
             /* If no patch booting or running yet try loading from flash */

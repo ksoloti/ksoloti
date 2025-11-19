@@ -115,13 +115,17 @@ uint8_t StopPatch(void);
 
 void start_dsp_thread(void);
 
-#define PATCHMAINLOC 0x20011000
+#define PATCHMAINLOC          0x20011000 /* Area in SRAM1 */
+#define PATCHFLASHLOC         0x080E0000 /* Internal flash patch is located in sector 11 */
+#define PATCHFLASHSIZE        0x0000B000
 
-// patch is located in sector 11
-#define PATCHFLASHLOC 0x080E0000
-#define PATCHFLASHSIZE 0xB000
+#define PATCHMAINLOC_SRAM2    0x2001C000 /* Area in SRAM2 */
+#define PATCHFLASHSIZE_SRAM2  0x00002000 /* Called "FLASH" for consistency, however never saved in flash */
 
-void StartLoadPatchTread(void);
+#define PATCHMAINLOC_SRAM3    0x20020000 /* Area in SRAM3 */
+#define PATCHFLASHLOC_SRAM3   0x080D0000 /* Located in second half of sector 10 (64k of 128k) */
+#define PATCHFLASHSIZE_SRAM3  0x00010000
+
 void LoadPatch(const char* name);
 void LoadPatchStartSD(void);
 void LoadPatchStartFlash(void);
