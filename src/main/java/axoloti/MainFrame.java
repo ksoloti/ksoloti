@@ -1186,7 +1186,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 return;
             }
 
-            new SwingWorker<Boolean, Void>() {
+            new SwingWorker<Boolean, String>() {
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     return USBBulkConnection.getInstance().connect();
@@ -1195,10 +1195,16 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 @Override
                 protected void done() {
                     try {
-                        get();
+                        boolean success = get();
+                        if (success) {
+                            ShowConnect();
+                        }
+                        else {
+                            ShowDisconnect();
+                        }
                     }
                     catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Error during connection SwingWorker: " + e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Connection worker failed unexpectedly: " + e.getMessage());
                         e.printStackTrace(System.out);
                         USBBulkConnection.getInstance().ShowDisconnect();
                     }
@@ -1963,6 +1969,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
             
             jToggleButtonConnect.setText("Connected");
             ShowConnectionFlags(USBBulkConnection.getInstance().GetConnectionFlags());
+            if (USBBulkConnection.getInstance().GetSDCardPresent()) {
+                ShowSDCardMounted();
+            } else {
+                ShowSDCardUnmounted();
+            }
         }
         else {
             jToggleButtonConnect.setText("Connect");
@@ -2219,6 +2230,9 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     public void ShowSDCardUnmounted() {
         if (USBBulkConnection.getInstance().isConnected()) {
             jLabelSDCardPresent.setText("No SD Card");
+        }
+        else {
+            jLabelSDCardPresent.setText(" ");
         }
         jMenuItemMount.setEnabled(false);
     }
