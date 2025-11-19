@@ -658,7 +658,7 @@ void MidiInMsgHandler(midi_device_t dev, uint8_t port, uint8_t status, uint8_t d
 void LoadPatch(const char* name) {
     strcpy(loadFName, name);
     loadPatchIndex = BY_FILENAME;
-    chEvtSignal(pThreadDSP, (eventmask_t)2);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_LOAD_PATCH);
 }
 
 
@@ -666,21 +666,20 @@ void LoadPatchStartSD(void) {
     palClearPad(LED1_PORT, LED1_PIN);
     strcpy(loadFName, startbin_fn);
     loadPatchIndex = START_SD;
-    chEvtSignal(pThreadDSP, (eventmask_t)2);
-    chThdSleepMilliseconds(50);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_LOAD_PATCH);
 }
 
 
 void LoadPatchStartFlash(void) {
     loadPatchIndex = START_FLASH;
-    chEvtSignal(pThreadDSP, (eventmask_t)2);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_LOAD_PATCH);
 }
 
 
 void LoadPatchIndexed(uint32_t index) {
     loadPatchIndex = index;
     loadFName[0] = 0;
-    chEvtSignal(pThreadDSP, (eventmask_t)2);
+    chEvtSignal(pThreadDSP, (eventmask_t)EVENT_LOAD_PATCH);
 }
 
 
