@@ -320,10 +320,12 @@ static int StartPatch1(void) {
         if (evt == EVENT_START_DSP_CYCLE) {
 #if FW_USBAUDIO             
             volatile uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost - DSP_USB_AUDIO_FIRMWARE_COST;;
-            if(aduIsUsbInUse())
+            if (aduIsUsbInUse()) {
                 uDspTimeslice -= DSP_USB_AUDIO_STREAMING_COST;
-            if(usbAudioResample)
+            }
+            if (usbAudioResample) {
                 uDspTimeslice -= DSP_USB_AUDIO_RESAMPLE_COST;
+            }
 #else
             uint16_t uDspTimeslice = DSP_CODEC_TIMESLICE - uPatchUIMidiCost;
 #endif
@@ -363,19 +365,22 @@ static int StartPatch1(void) {
             adc_convert();
             uint32_t tEnd = hal_lld_get_counter_value();
             uint32_t tTaken;
-            if(tEnd < tStart)
-                tTaken = ((uint32_t)0xFFFFFFFF-tStart) + tEnd;
-            else
+            if (tEnd < tStart) {
+                tTaken = ((uint32_t) 0xFFFFFFFF - tStart) + tEnd;
+            }
+            else {
                 tTaken = (tEnd - tStart);
-
+            }
             DspTime = RTT2US(tTaken);
 
 #if USE_NONTHREADED_FIFO_PUMP                
             volatile uint32_t FifoTime = RTT2US(fifoTicksUsed);
-            if(FifoTime > DspTime)
+            if (FifoTime > DspTime) {
                 DspTime = 0;
-            else
+            }
+            else {
                 DspTime -= FifoTime;
+            }
 #endif
 #if USE_MOVING_AVERAGE
             ma_add(&ma, DspTime);
@@ -433,7 +438,7 @@ static int StartPatch1(void) {
                 int res = sdcard_loadPatch1(loadFName);
                 if (!res) StartPatch1();
             }
-            else {
+            else { /* Patch load from patchbank index (index.axb) triggered */
                 FRESULT err;
                 FIL f;
                 uint32_t bytes_read;
@@ -499,7 +504,9 @@ static int StartPatch1(void) {
                                 loadPatchIndex = START_SD;
                                 strcpy(&loadFName[0], startbin_fn);
                                 res = sdcard_loadPatch1(loadFName);
-                                if (!res) StartPatch1();
+                                if (!res) {
+                                    StartPatch1();
+                                }
                             }
                         }
                         goto cont;
@@ -518,7 +525,9 @@ static int StartPatch1(void) {
                     loadPatchIndex = START_SD;
                     strcpy(&loadFName[0], startbin_fn);
                     int res = sdcard_loadPatch1(loadFName);
-                    if (!res) StartPatch1();
+                    if (!res) {
+                        StartPatch1();
+                    }
                 }
 
                 cont: ;
@@ -611,8 +620,9 @@ void start_dsp_thread(void) {
     ma_init(&dsptimeSmoothing, dsptimeSmoothingData, sizeof(dsptimeSmoothingData) / sizeof(float), false);
 #endif
 
-    if (!pThreadDSP)
+    if (!pThreadDSP) {
         pThreadDSP = chThdCreateStatic(waThreadDSP, sizeof(waThreadDSP), PATCH_NORMAL_PRIO, (void*) ThreadDSP, NULL);
+    }
 }
 
 
@@ -625,10 +635,12 @@ void computebufI(int32_t* inp, int32_t* outp) {
     outbuf = outp;
 
 #if FW_USBAUDIO     
-    if(usbAudioResample)
+    if (usbAudioResample) {
         aduDataExchangeResample(inbufUsb, outbufUsb);
-    else
+    }
+    else {
         aduDataExchangeNoResample(inbufUsb, outbufUsb);
+    }
 #endif
 
     chSysLockFromIsr();
