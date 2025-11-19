@@ -1957,6 +1957,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     private void ShowConnectDisconnect(boolean connect) {
 
         if (connect) {
+            /* Trigger an Acknowledge packet containing the LIVE SD card status, voltages, 
+               and flags. This will trigger the listeners to update the labels. */
+            USBBulkConnection.getInstance().TransmitPing();
+            
             jToggleButtonConnect.setText("Connected");
             ShowConnectionFlags(USBBulkConnection.getInstance().GetConnectionFlags());
         }
