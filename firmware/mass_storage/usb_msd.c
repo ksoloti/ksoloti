@@ -70,7 +70,7 @@
 #define SCSI_ASENSEQ_INITIALIZING_COMMAND_REQUIRED     0x02
 #define SCSI_ASENSEQ_OPERATION_IN_PROGRESS             0x07
 
-#define N_BLOCKS_PER_WRITE 1 /* Currently only 1 works ¯\_(ツ)_/¯ */
+#define N_BLOCKS_PER_WRITE 4 /* Increases write speeds dramatically \(ツ)/ */
 
 /**
  * @brief Response to a READ_CAPACITY_10 SCSI command
@@ -89,11 +89,6 @@ PACK_STRUCT_BEGIN typedef struct {
     uint32_t block_count;
     uint32_t desc_and_block_length;
 } PACK_STRUCT_STRUCT msd_scsi_read_format_capacities_response_t PACK_STRUCT_END;
-
-/**
- * @brief   Read-write buffers
- */
-static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE];
 
 /**
  * @brief Byte-swap a 32 bits unsigned integer
@@ -360,7 +355,7 @@ bool_t msd_scsi_process_send_diagnostic(USBMassStorageDriver *msdp) {
 /**
  * @brief Processes a READ_WRITE_10 SCSI command
  */
-bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
+bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp, uint8_t** buff) {
 
     msd_cbw_t *cbw = &(msdp->cbw);
 
@@ -397,22 +392,30 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
     if (cbw->scsi_cmd_data[0] == SCSI_CMD_WRITE_10) {
         /* process a write command */
 
+        /* Calculate first chunk size */
+        uint16_t first_chunk_blocks = (total > N_BLOCKS_PER_WRITE) ? N_BLOCKS_PER_WRITE : total;
+
         /* get the first packet */
-        msd_start_receive(msdp, rw_buf[current_buf_idx], N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE);
+        msd_start_receive(msdp, buff[current_buf_idx], first_chunk_blocks * MMCSD_BLOCK_SIZE);
         msd_wait_for_isr(msdp);
 
-        /* loop over all blocks, processing them in chunks of N_BLOCKS_PER_WRITE (currently only 1 works) */
+        /* loop over all blocks, processing them in chunks of N_BLOCKS_PER_WRITE */
         for (i = 0; i < total;) {
-            /* How many blocks to write in this iteration (could be less than N_BLOCKS_PER_WRITE for the last chunk) */
+            /* How many blocks to write in this iteration (could be less than N_BLOCKS_PER_WRITE) */
             uint16_t blocks_to_write = (total - i > N_BLOCKS_PER_WRITE) ? N_BLOCKS_PER_WRITE : (total - i);
 
-            uint8_t *buffer_to_process = rw_buf[current_buf_idx];
+            uint8_t *buffer_to_process = buff[current_buf_idx];
 
             if (i + blocks_to_write < total) {
                 /* Switch to the other buffer */
                 current_buf_idx = (current_buf_idx == 0) ? 1 : 0;
+
+                /* Calculate next chunk size */
+                uint16_t next_i = i + blocks_to_write;
+                uint16_t next_chunk_blocks = (total - next_i > N_BLOCKS_PER_WRITE) ? N_BLOCKS_PER_WRITE : (total - next_i);
+
                 /* Start receiving the next chunk into the other buffer */
-                msd_start_receive(msdp, rw_buf[current_buf_idx], N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE);
+                msd_start_receive(msdp, buff[current_buf_idx], next_chunk_blocks * MMCSD_BLOCK_SIZE);
             }
 
             chThdSleepMicroseconds(5); /* Yields a slight speed increase: typically 210 kB/s VS 175 kb/s */
@@ -455,7 +458,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
         i = 0;
 
         /* read the first block from block device */
-        if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_FAILED) {
+        if (blkRead(msdp->config->bbdp, rw_block_address++, buff[i % 2], 1) == CH_FAILED) {
             /* read failed */
             msd_scsi_set_sense(msdp,
                                SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -470,14 +473,14 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
         /* loop over each block */
         for (i = 0; i < total; i++) {
             /* transmit the block */
-            msd_start_transmit(msdp, rw_buf[i % 2], msdp->block_dev_info.blk_size);
+            msd_start_transmit(msdp, buff[i % 2], msdp->block_dev_info.blk_size);
 
             chThdSleepMicroseconds(10); /* Required for stability. Possibly waiting for cache/prefetch...*/
 
             if (i < (total - 1)) {
                 /* there is at least one more block to be read from device */
                 /* so read that whilst the USB transfer takes place */
-                if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[(i + 1) % 2], 1) == CH_FAILED) {
+                if (blkRead(msdp->config->bbdp, rw_block_address++, buff[(i + 1) % 2], 1) == CH_FAILED) {
                     /* read failed */
                     msd_scsi_set_sense(msdp,
                                        SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -599,7 +602,7 @@ bool_t msd_wait_for_command_block(USBMassStorageDriver *msdp) {
 /**
  * @brief Reads a newly received command block
  */
-bool_t msd_read_command_block(USBMassStorageDriver *msdp) {
+bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
 
     msd_cbw_t *cbw = &(msdp->cbw);
 
@@ -640,7 +643,7 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp) {
     case SCSI_CMD_WRITE_10:
         if (msdp->config->rw_activity_callback)
             msdp->config->rw_activity_callback(TRUE);
-        sleep = msd_scsi_process_start_read_write_10(msdp);
+        sleep = msd_scsi_process_start_read_write_10(msdp, buff);
         if (msdp->config->rw_activity_callback)
             msdp->config->rw_activity_callback(FALSE);
         break;
@@ -740,10 +743,15 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp) {
 /**
  * @brief Mass storage thread that processes commands
  */
-static WORKING_AREA(mass_storage_thread_wa, 2048);
 static msg_t mass_storage_thread(void *arg) {
 
     USBMassStorageDriver *msdp = (USBMassStorageDriver *)arg;
+
+    static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE] __attribute__((section(".sram2")));
+    static uint8_t* rw_buf_ptrs[2]; 
+
+    rw_buf_ptrs[0] = rw_buf[0];
+    rw_buf_ptrs[1] = rw_buf[1];
 
     chRegSetThreadName("USB-MSD");
 
@@ -761,7 +769,7 @@ static msg_t mass_storage_thread(void *arg) {
             wait_for_isr = msd_wait_for_command_block(msdp);
             break;
         case MSD_READ_COMMAND_BLOCK:
-            wait_for_isr = msd_read_command_block(msdp);
+            wait_for_isr = msd_read_command_block(msdp, rw_buf_ptrs);
             break;
         case MSD_EJECTED:
             /* disconnect usb device */
@@ -857,6 +865,7 @@ int msdStart(USBMassStorageDriver *msdp, const USBMassStorageConfig *config) {
     config->usbp->in_params[config->bulk_ep] = (void *)msdp;
     config->usbp->out_params[config->bulk_ep] = (void *)msdp;
 
+    static WORKING_AREA(mass_storage_thread_wa, 1024);
     /* run the thread */
     msdp->thread = chThdCreateStatic(mass_storage_thread_wa, sizeof(mass_storage_thread_wa), NORMALPRIO, (void*) mass_storage_thread, msdp);
     
