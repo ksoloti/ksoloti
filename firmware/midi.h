@@ -98,10 +98,10 @@
 
 typedef enum
 {
-    MIDI_DEVICE_OMNI = 0,        /* for filtering */
+    MIDI_DEVICE_OMNI = 0,        /* For filtering */
     MIDI_DEVICE_DIN,             /* MIDI_DIN */
-    MIDI_DEVICE_USB_DEVICE,      /* Board acting as Midi device over MicroUSB */
-    MIDI_DEVICE_USB_HOST,        /* Board hosting devices vid USB host port */
+    MIDI_DEVICE_USB_DEVICE,      /* Board acting as MIDI device over USB prog port */
+    MIDI_DEVICE_USB_HOST,        /* Board hosting devices via USB host port */
     MIDI_DEVICE_DIGITAL_X1,      /* x1 pins - not implemented */
     MIDI_DEVICE_DIGITAL_X2,      /* x2 pins - not implemented */
     MIDI_DEVICE_INTERNAL = 0x0F  /* internal (to the board) midi */
