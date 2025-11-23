@@ -40,8 +40,13 @@ public class SCmdGetFWVersion extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this); 
-        connection.TransmitGetFWVersion();
+        int writeResult = connection.TransmitGetFWVersion();
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Failed to send get firmware version command: USB write error.");
+            setCompletedWithStatus(1);
+            return this;
+        }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -62,6 +67,9 @@ public class SCmdGetFWVersion extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during get firmware version command: " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

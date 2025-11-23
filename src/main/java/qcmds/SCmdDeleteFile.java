@@ -53,10 +53,10 @@ public class SCmdDeleteFile extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
             LOGGER.log(Level.SEVERE, "Failed to send delete file command for '" + filename + "': USB connection lost.");
+            setCompletedWithStatus(1);
             return this;
         }
 
@@ -66,6 +66,7 @@ public class SCmdDeleteFile extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -87,6 +88,9 @@ public class SCmdDeleteFile extends AbstractSCmd {
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
         }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
+        }
         return this;
     }
 
@@ -94,7 +98,6 @@ public class SCmdDeleteFile extends AbstractSCmd {
         /* 'silent' argument is a dummy for the purpose of overloading this method.
            Calling this will direct all log messages to the CLI only. */
         System.out.println(Instant.now() + " " + GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
 
         if (!connection.isConnected()) {
             System.out.println(Instant.now() + " Failed to send delete file command for '" + filename + "': USB connection lost.");
@@ -108,6 +111,7 @@ public class SCmdDeleteFile extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -128,6 +132,9 @@ public class SCmdDeleteFile extends AbstractSCmd {
             System.out.println(Instant.now() + " Error during delete file command for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

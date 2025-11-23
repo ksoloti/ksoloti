@@ -45,6 +45,7 @@ public class SCmdUpdatePreset extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         connection.TransmitUpdatedPreset(b);
+        setCompletedWithStatus(0);
         return this;
     }
 }

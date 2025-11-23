@@ -78,6 +78,7 @@ import qcmds.SCmdGetFileList;
 import qcmds.SCmdMemRead;
 import qcmds.SCmdMemRead1Word;
 import qcmds.SCmdPing;
+import qcmds.CommandManager;
 import qcmds.QCmdProcessor;
 import qcmds.SCmd;
 import qcmds.SCmdStart;
@@ -1158,7 +1159,7 @@ public class USBBulkConnection extends Connection {
            uDspLimit200     (1)
          */
         short uUIMidiCost = Preferences.getInstance().getUiMidiThreadCost();
-        byte  uDspLimit200 = (byte)(Preferences.getInstance().getDspLimitPercent()*2);
+        byte  uDspLimit200 = (byte)((Preferences.getInstance().getDspLimitPercent()*2) & 0xFF);
         
         ByteBuffer buffer = ByteBuffer.allocateDirect(7).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(Axos_pckt);
@@ -1895,10 +1896,7 @@ public class USBBulkConnection extends Connection {
                                 }
                                 else if (commandByte == 'e') {
                                     ((SCmdUploadPatch) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
-                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                    if (isComplete) {
-                                        setCurrentExecutingCommand(null);
-                                    }
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
                                 }
                             }
                             /* Special handling for SCmdUploadFile's sub-commands */
@@ -1911,10 +1909,7 @@ public class USBBulkConnection extends Connection {
                                 }
                                 else if (commandByte == 'c') {
                                     ((SCmdUploadFile) currentExecutingCommand).setCloseFileCompletedWithStatus(statusCode);
-                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                    if (isComplete) {
-                                        setCurrentExecutingCommand(null);
-                                    }
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
                                 }
                             }
                             /* Special handling for SCmdUploadFWSDRam's sub-commands */
@@ -1927,10 +1922,7 @@ public class USBBulkConnection extends Connection {
                                 }
                                 else if (commandByte == 'e') {
                                     ((SCmdUploadFWSDRam) currentExecutingCommand).setCloseMemWriteCompletedWithStatus(statusCode);
-                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                    if (isComplete) {
-                                        setCurrentExecutingCommand(null);
-                                    }
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
                                 }
                             }
                             /* Handling for other SCmd's that expect an AxoR for their completion */
@@ -1946,10 +1938,7 @@ public class USBBulkConnection extends Connection {
                                 /* Any commands with no explicitly set command byte ('\0') will fall through */
                                 if (currentExecutingCommand.getExpectedAckCommandByte() == commandByte) {
                                     /* for example, ('l' == 'l') -> TRUE */
-                                    boolean isComplete = currentExecutingCommand.setCompletedWithStatus(statusCode);
-                                    if (isComplete) {
-                                        setCurrentExecutingCommand(null);
-                                    }
+                                    currentExecutingCommand.setCompletedWithStatus(statusCode);
                                 }
                             }
                         }
@@ -2085,10 +2074,7 @@ public class USBBulkConnection extends Connection {
                             synchronized (currentExecutingCommandLock) {
                                 if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead) {
                                     ((SCmdMemRead) currentExecutingCommand).setValuesRead(memReadBuffer);
-                                    boolean isComplete = ((SCmdMemRead) currentExecutingCommand).setCompletedWithStatus(0);
-                                    if (isComplete) {
-                                        setCurrentExecutingCommand(null);
-                                    }
+                                    ((SCmdMemRead) currentExecutingCommand).setCompletedWithStatus(0);
                                 }
                             }
 
@@ -2138,10 +2124,7 @@ public class USBBulkConnection extends Connection {
                         synchronized (currentExecutingCommandLock) {
                             if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdMemRead1Word) {
                                 ((SCmdMemRead1Word) currentExecutingCommand).setValueRead(memRead1WordValue);
-                                boolean isComplete = currentExecutingCommand.setCompletedWithStatus(0);
-                                if (isComplete) {
-                                    setCurrentExecutingCommand(null);
-                                }
+                                currentExecutingCommand.setCompletedWithStatus(0);
                                 System.out.println(Instant.now() + " SCmdMemRead1Word address 0x" + Integer.toHexString(memReadAddr).toUpperCase() + ", value read: 0x" + Integer.toHexString(memRead1WordValue).toUpperCase());
                             }
                         }
@@ -2200,10 +2183,7 @@ public class USBBulkConnection extends Connection {
                         }
                         synchronized (currentExecutingCommandLock) {
                             if (currentExecutingCommand != null && currentExecutingCommand instanceof SCmdGetFWVersion) {
-                                boolean isComplete = currentExecutingCommand.setCompletedWithStatus(0);
-                                if (isComplete) {
-                                    setCurrentExecutingCommand(null);
-                                }
+                                currentExecutingCommand.setCompletedWithStatus(0);
                             }
                         }
                         setIdleState();

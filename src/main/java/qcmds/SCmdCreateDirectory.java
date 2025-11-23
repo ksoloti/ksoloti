@@ -59,7 +59,6 @@ public class SCmdCreateDirectory extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitCreateDirectory(dirname, date);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
@@ -67,6 +66,7 @@ public class SCmdCreateDirectory extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -91,6 +91,9 @@ public class SCmdCreateDirectory extends AbstractSCmd {
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         LOGGER.info(GetDoneMessage());
         return this;

@@ -50,15 +50,14 @@ public class SCmdStart extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this);
-        connection.setPatch(p);
-
         int writeResult = connection.TransmitStart();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send start patch command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setPatch(p);
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (this instanceof SCmdStartFlasher || this instanceof SCmdStartMounter) {
@@ -88,6 +87,9 @@ public class SCmdStart extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during patch start: " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

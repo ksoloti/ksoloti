@@ -40,6 +40,7 @@ public class SCmdGetSpilinkSynced extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
         connection.TransmitGetSpilinkSynced();
+        setCompletedWithStatus(0);
         return this;
     }
 }

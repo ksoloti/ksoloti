@@ -112,8 +112,6 @@ public class SCmdUploadFile extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this);
-
         this.createFileStatus = 0xFF;
         this.appendFileStatus = 0xFF;
         this.closeFileStatus = 0xFF;
@@ -122,20 +120,20 @@ public class SCmdUploadFile extends AbstractSCmd {
             if (inputStream == null) {
                 if (!file.exists()) {
                     LOGGER.log(Level.WARNING, "File does not exist: '" + filename + "'\n");
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
                 if (file.isDirectory()) {
                     LOGGER.log(Level.WARNING, "Cannot upload directories: '" + filename + "'\n");
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
                 if (!file.canRead()) {
                     LOGGER.log(Level.WARNING, "Cannot read file: '" + filename + "'\n");
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
                 inputStream = new FileInputStream(file);
@@ -159,24 +157,31 @@ public class SCmdUploadFile extends AbstractSCmd {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": USB connection lost.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
                 return this;
             }
 
-            createFileLatch = new CountDownLatch(1);
-            connection.TransmitCreateFile(filename, tlength, ts);
+            int writeResult = connection.TransmitCreateFile(filename, tlength, ts);
+            if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+                LOGGER.log(Level.SEVERE, "Failed to send file upload command (create): USB write error.");
+                setCompletedWithStatus(1);
+                return this;
+            }
+            connection.setCurrentExecutingCommand(this);
 
+            createFileLatch = new CountDownLatch(1);
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
+                connection.clearIfCurrentExecutingCommand(this);
+                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 return this;
             }
             if (createFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(createFileStatus) + ") during file creation.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
+                connection.clearIfCurrentExecutingCommand(this);
+                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 return this;
             }
 
@@ -198,8 +203,9 @@ public class SCmdUploadFile extends AbstractSCmd {
 
                 if (nRead == -1) {
                     LOGGER.log(Level.SEVERE, "Unexpected end of file or read error for '" + filename + "'. Read " + nRead + " bytes. Chunk number " + chunkNum);
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    connection.clearIfCurrentExecutingCommand(this);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
                 if (nRead != bytesToRead) {
@@ -211,24 +217,32 @@ public class SCmdUploadFile extends AbstractSCmd {
 
                 if (!connection.isConnected()) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': USB connection lost.");
+                    setCompletedWithStatus(1);
+                    connection.clearIfCurrentExecutingCommand(this);
                     new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
+                    return this;
+                }
+
+                writeResult = connection.TransmitAppendFile(buffer);
+                if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+                    LOGGER.log(Level.SEVERE, "Failed to send file upload command (append): USB write error.");
                     setCompletedWithStatus(1);
                     return this;
                 }
 
                 appendFileLatch = new CountDownLatch(1);
-                connection.TransmitAppendFile(buffer);
-
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    connection.clearIfCurrentExecutingCommand(this);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
                 if (appendFileStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(appendFileStatus) + ") during chunk append. Chunk number " + chunkNum);
-                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     setCompletedWithStatus(1);
+                    connection.clearIfCurrentExecutingCommand(this);
+                    new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                     return this;
                 }
 
@@ -298,24 +312,30 @@ public class SCmdUploadFile extends AbstractSCmd {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': USB connection lost.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
+                setCompletedWithStatus(1);
+                return this;
+            }
+
+            writeResult = connection.TransmitCloseFile(filename, ts); 
+            if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+                LOGGER.log(Level.SEVERE, "Failed to send file upload command (close): USB write error.");
                 setCompletedWithStatus(1);
                 return this;
             }
 
             closeFileLatch = new CountDownLatch(1);
-            connection.TransmitCloseFile(filename, ts); 
-
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge file close within timeout.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
+                connection.clearIfCurrentExecutingCommand(this);
+                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 return this;
             }
             if (closeFileStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core reported error (" + SDCardInfo.getFatFsErrorString(closeFileStatus) + ") during file close.");
-                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 setCompletedWithStatus(1);
+                connection.clearIfCurrentExecutingCommand(this);
+                new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
                 return this;
             }
 
@@ -326,24 +346,27 @@ public class SCmdUploadFile extends AbstractSCmd {
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "File I/O error during upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
-            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
+            connection.clearIfCurrentExecutingCommand(this);
+            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.SEVERE, "Upload interrupted for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
-            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
+            connection.clearIfCurrentExecutingCommand(this);
+            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
         }
         catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during upload for '" + filename + "': " + ex.getMessage());
             ex.printStackTrace(System.out);
-            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
             setCompletedWithStatus(1);
+            connection.clearIfCurrentExecutingCommand(this);
+            new SCmdDeleteFile(filename).Do(connection, true); /* Silently delete file stub */
         }
         finally {
-            connection.setCurrentExecutingCommand(null);
+            connection.clearIfCurrentExecutingCommand(this);
             if (inputStream != null) {
                 try {
                     inputStream.close();

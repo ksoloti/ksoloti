@@ -48,7 +48,6 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
@@ -56,13 +55,15 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "Copy patch to Flash command timed out.");
                 setCompletedWithStatus(1);
                 return this;
-            } else if (!isSuccessful()) {
+            }
+            else if (!isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "Failed to copy patch to Flash.");
                 return this;
             }
@@ -77,6 +78,9 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
             return this;
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         LOGGER.info(GetDoneMessage());
         return this;

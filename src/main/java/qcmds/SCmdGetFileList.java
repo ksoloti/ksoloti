@@ -46,18 +46,15 @@ public class SCmdGetFileList extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
-        connection.setCurrentExecutingCommand(this);
-
-        /* This method sends the Axol packet to the MCU. */
         int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send get file list command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
-            /* Wait for the final AxoRl response from the MCU */
             if (!waitForCompletion()) {
                 LOGGER.log(Level.SEVERE, "Get file list command timed out.");
                 setCompletedWithStatus(1);
@@ -75,6 +72,9 @@ public class SCmdGetFileList extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during get file list command: " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

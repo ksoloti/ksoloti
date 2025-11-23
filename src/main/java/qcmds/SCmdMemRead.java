@@ -51,8 +51,13 @@ public class SCmdMemRead extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
+        int writeResult = connection.TransmitMemoryRead(addr, length);
+        if (writeResult != org.usb4java.LibUsb.SUCCESS) {
+            LOGGER.log(Level.SEVERE, "Failed to send memory read command: USB write error.");
+            setCompletedWithStatus(1);
+            return this;
+        }
         connection.setCurrentExecutingCommand(this);
-        connection.TransmitMemoryRead(addr, length);
 
         try {
             if (!waitForCompletion()) {
@@ -73,6 +78,9 @@ public class SCmdMemRead extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during MemRead command: " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

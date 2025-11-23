@@ -50,7 +50,6 @@ public class SCmdGetFileInfo extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
 
         int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
@@ -58,6 +57,7 @@ public class SCmdGetFileInfo extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -78,6 +78,9 @@ public class SCmdGetFileInfo extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during get file info command for '" + filename + "': " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }

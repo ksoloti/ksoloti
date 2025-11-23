@@ -50,7 +50,11 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
     @Override
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
-        connection.setCurrentExecutingCommand(this);
+        if (!connection.isConnected()) {
+            LOGGER.log(Level.SEVERE, "Failed to send change directory command for " + path + ": USB connection lost.");
+            setCompletedWithStatus(1);
+            return this;
+        }
 
         int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
@@ -58,6 +62,7 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
             setCompletedWithStatus(1);
             return this;
         }
+        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {
@@ -80,6 +85,9 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
             LOGGER.log(Level.SEVERE, "Error during change directory command for " + path + ": " + e.getMessage());
             e.printStackTrace(System.out);
             setCompletedWithStatus(1);
+        }
+        finally {
+            connection.clearIfCurrentExecutingCommand(this);
         }
         return this;
     }
