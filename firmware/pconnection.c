@@ -466,11 +466,11 @@ static void ManipulateFile(void) {
             return;
         }
 
-        op_result = f_lseek(&pFile, pFileSize);
-        if (op_result != FR_OK) {
-            report_fatfs_error(op_result, &FileName[0]);
-            return;
-        }
+        // op_result = f_lseek(&pFile, pFileSize);
+        // if (op_result != FR_OK) {
+        //     report_fatfs_error(op_result, &FileName[0]);
+        //     return;
+        // }
 
         op_result = f_lseek(&pFile, 0);
         if (op_result != FR_OK) {
@@ -508,10 +508,10 @@ static void ManipulateFile(void) {
                 goto Cf_result_and_exit;
             }
 
-            op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
-            if (op_result != FR_OK) {
-                goto Cf_result_and_exit;
-            }
+            // op_result = f_lseek(&pFile, pFileSize); /* pFileSize holds the size from received AxoCf command */
+            // if (op_result != FR_OK) {
+            //     goto Cf_result_and_exit;
+            // }
 
             op_result = f_lseek(&pFile, 0);
 
