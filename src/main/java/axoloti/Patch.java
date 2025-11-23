@@ -91,6 +91,7 @@ import org.simpleframework.xml.core.Validate;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.stream.Format;
 
+import qcmds.CommandManager;
 import qcmds.QCmdCompilePatch;
 import qcmds.SCmdCreateDirectory;
 import qcmds.SCmdGetFileList;
@@ -273,8 +274,10 @@ public class Patch {
 
         /* Get current latest file list from SD to compare to */
         try {
+            CommandManager.getInstance().startLongOperation();
             SCmdGetFileList getFileListCmd = new SCmdGetFileList();
             getFileListCmd.Do();
+            CommandManager.getInstance().endLongOperation();
             if (!getFileListCmd.waitForCompletion() || !getFileListCmd.isSuccessful()) {
                 return;
             }
@@ -312,8 +315,10 @@ public class Patch {
                     if (SDCardInfo.getInstance().find(currentPath) == null) {
                         LOGGER.log(Level.INFO, "Creating directory: " + currentPath);
                         try {
+                            CommandManager.getInstance().startLongOperation();
                             SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(currentPath, Calendar.getInstance());
                             createDirCmd.Do();
+                            CommandManager.getInstance().endLongOperation();
                             if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                                 return;
                             }
@@ -360,8 +365,10 @@ public class Patch {
                 // }
 
                 try {
+                    CommandManager.getInstance().startLongOperation();
                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, targetfn);
                     uploadFileCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                         continue;
                     }
@@ -3123,19 +3130,21 @@ public class Patch {
     }
 
     public void UploadToSDCard(String sdfilename) {
-        WriteCode();
-        LOGGER.log(Level.INFO, "SD card filename: " + sdfilename);
-
-        this.Compile();
         mainframe.setCurrentLivePatch(null);
-        // create subdirs...
+        WriteCode();
 
+        LOGGER.log(Level.INFO, "SD card filename: " + sdfilename);
+        this.Compile();
+        
+        // create subdirs...
         for (int i = 1; i < sdfilename.length(); i++) {
             if (sdfilename.charAt(i) == '/') {
                 Calendar cal = Calendar.getInstance();
                 try {
+                    CommandManager.getInstance().startLongOperation();
                     SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(sdfilename.substring(0, i), cal);
                     createDirCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                         return;
                     }
@@ -3163,13 +3172,16 @@ public class Patch {
 
         if (getBinFile().exists()) {
             try {
+                CommandManager.getInstance().startLongOperation();
                 SCmdUploadFile uploadFileCmd = new SCmdUploadFile(getBinFile(), sdfilename, cal);
                 uploadFileCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                     return;
                 }
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error while uploading patch: " + e.getMessage());
+                e.printStackTrace(System.out);
                 Thread.currentThread().interrupt();
             }
             if (getBinFile_sram3().exists() && getBinFile_sram3().length() > 0) {
@@ -3206,8 +3218,10 @@ public class Patch {
                     String backupFilePath = dir + "/" + f.getName() + ".backup" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) + f.getName().substring(f.getName().lastIndexOf("."));
 
                     try {
+                        CommandManager.getInstance().startLongOperation();
                         SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, backupFilePath, cal);
                         uploadFileCmd.Do();
+                        CommandManager.getInstance().endLongOperation();
                         if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                             return;
                         }

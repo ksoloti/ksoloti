@@ -686,12 +686,16 @@ public class USBBulkConnection extends Connection {
                 LOGGER.log(Level.WARNING, "Connected\n");
 
                 /* Post-Connection Commands (Firmware version, CPU revision, board ID) */
+                CommandManager.getInstance().startLongOperation();
                 SCmdGetFWVersion fwVersionCmd = new SCmdGetFWVersion();
                 fwVersionCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 Thread.sleep(20);
 
+                CommandManager.getInstance().startLongOperation();
                 SCmdMemRead1Word cpuRevisionCmd = new SCmdMemRead1Word(targetProfile.getCPUIDCodeAddr());
                 cpuRevisionCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 Thread.sleep(20);
                 if (!cpuRevisionCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get CPU revision command timed out.");
@@ -701,8 +705,10 @@ public class USBBulkConnection extends Connection {
                 }
                 targetProfile.setCPUIDCode(cpuRevisionCmd.getValueRead());
 
+                CommandManager.getInstance().startLongOperation();
                 SCmdMemRead boardIDCmd = new SCmdMemRead(targetProfile.getCPUSerialAddr(), targetProfile.getCPUSerialLength());
                 boardIDCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 Thread.sleep(20);
                 if (!boardIDCmd.waitForCompletion()) {
                     LOGGER.log(Level.SEVERE, "Get board ID command timed out.");
@@ -715,6 +721,7 @@ public class USBBulkConnection extends Connection {
 
                 ShowConnect(); /* Notify UI */
                 isConnecting = false;
+                setCurrentExecutingCommand(null);
                 return true;
             }
             catch (LibUsbException e) {
@@ -728,9 +735,6 @@ public class USBBulkConnection extends Connection {
                 ex.printStackTrace(System.out);
                 disconnect();
                 return false;
-            }
-            finally {
-                isConnecting = false;
             }
         } /* End synchronized (handleLock) */
     }

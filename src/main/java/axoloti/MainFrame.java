@@ -799,19 +799,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
         setCurrentLivePatch(null);
 
-        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Boolean, String>() {
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
+                    CommandManager.getInstance().startLongOperation();
                     SCmdUploadFWSDRam uploadFwCmd = new SCmdUploadFWSDRam(p);
                     uploadFwCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!uploadFwCmd.waitForCompletion() || !uploadFwCmd.isSuccessful()) {
                         return false;
                     }
 
+                    CommandManager.getInstance().startLongOperation();
                     SCmdUploadPatch uploadPatchCmd = new SCmdUploadPatch(f);
                     uploadPatchCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!uploadPatchCmd.waitForCompletion() || !uploadPatchCmd.isSuccessful()) {
                         return false;
                     }
@@ -820,7 +823,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     return true;
 
                 } catch (Exception e) {
-                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Exception during firmware/Flasher upload: " + e.getMessage());
                     e.printStackTrace(System.out);
                     return false;
@@ -829,14 +831,15 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
             @Override
             protected void done() {
-                CommandManager.getInstance().endLongOperation();
                 try {
                     boolean success = get();
                     if (success) {
                         /* If code reaches here, the background process was successful */
+                        CommandManager.getInstance().startLongOperation();
                         SCmdStartFlasher startFlasherCmd = new SCmdStartFlasher();
                         LOGGER.log(Level.INFO, startFlasherCmd.GetStartMessage());
                         startFlasherCmd.Do();
+                        CommandManager.getInstance().endLongOperation();
                         LOGGER.log(Level.SEVERE, startFlasherCmd.GetDoneMessage());
                         /* Do not waitForCompletion or check isSuccessful here 
                            because MCU will have rebooted automatically by now,
@@ -849,6 +852,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 } catch (java.util.concurrent.ExecutionException e) {
                     LOGGER.log(Level.SEVERE, "Error during background task: " + e.getMessage());
                     e.printStackTrace(System.out);
+                } finally {
+                    CommandManager.getInstance().endLongOperation();
                 }
             }
         }.execute();
@@ -1723,9 +1728,11 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
 
     private void jMenuItemMountActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            CommandManager.getInstance().startLongOperation();
             SCmdStartMounter startMounterCmd = new SCmdStartMounter(true); /* Start inbuilt mounter */
             LOGGER.log(Level.INFO, startMounterCmd.GetStartMessage());
             startMounterCmd.Do();
+            CommandManager.getInstance().endLongOperation();
             LOGGER.log(Level.WARNING, startMounterCmd.GetDoneMessage());
             /* Do not waitForCompletion or check isSuccessful here 
                 because MCU will have rebooted automatically by now,
@@ -1900,8 +1907,10 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
         if (this.currentLivePatch != null) {
             /* Send SCmdStart to MCU before GUI-side Lock() */
             try {
+                CommandManager.getInstance().startLongOperation();
                 SCmdStart startCmd = new SCmdStart(this.currentLivePatch);
                 startCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 if (!startCmd.waitForCompletion() || !startCmd.isSuccessful()) {
                     return;
                 }

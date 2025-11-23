@@ -431,7 +431,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                 }
             }
 
-            CommandManager.getInstance().startLongOperation();
             new SwingWorker<Boolean, String>() {
                 PatchGUI previouslyLive = null;
                 boolean compilationTimeout = false;
@@ -482,15 +481,19 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         if (SDCardInfo.getInstance().find(f) == null) {
                                             Calendar cal = Calendar.getInstance();
 
+                                            CommandManager.getInstance().startLongOperation();
                                             SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(f, cal);
                                             createDirCmd.Do();
+                                            CommandManager.getInstance().endLongOperation();
                                             if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                                                 return false;
                                             }
                                         }
 
+                                        CommandManager.getInstance().startLongOperation();
                                         SCmdChangeWorkingDirectory changeDirCmd = new SCmdChangeWorkingDirectory(f);
                                         changeDirCmd.Do();
+                                        CommandManager.getInstance().endLongOperation();
                                         if (!changeDirCmd.waitForCompletion() || !changeDirCmd.isSuccessful()) {
                                             return false;
                                         }
@@ -498,7 +501,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                         /* If code reaches here, all preparations were successful */
                                         patch.UploadDependentFiles("/" + patch.getSDCardPath());
                                     } catch (Exception e) {
-                                        CommandManager.getInstance().endLongOperation();
                                         LOGGER.log(Level.SEVERE, "Patch dependent files upload to SD failed with exception: ", e);
                                     }
                                 } else {
@@ -531,7 +533,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     /* If code reaches here, success */
                                     return true;
                                 } catch (Exception e) {
-                                    CommandManager.getInstance().endLongOperation();
                                     LOGGER.log(Level.SEVERE, "Patch upload failed with exception: ", e);
                                     return false;
                                 }
@@ -544,7 +545,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             return false;
                         }
                     } catch (Exception e) {
-                        CommandManager.getInstance().endLongOperation();
                         return false;
                     }
                 }
@@ -1642,7 +1642,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemUploadSDActionPerformed(java.awt.event.ActionEvent evt) {
-        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
 
             @Override
@@ -1659,7 +1658,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
     }
 
     private void jMenuItemUploadSDStartActionPerformed(java.awt.event.ActionEvent evt) {
-        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
 
             @Override
@@ -1693,7 +1691,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
 
         jMenuItemUploadInternalFlash.setEnabled(false);
 
-        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Boolean, String>() {
 
             @Override
@@ -1733,7 +1730,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                                     return false;
                                 }
                             } catch (Exception e) {
-                                CommandManager.getInstance().endLongOperation();
                                 LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed with exception: ", e);
                                 return false;
                             }
@@ -1752,7 +1748,6 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     }
                 }
                 catch (Exception e) {
-                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Patch upload to internal Flash failed:", e);
                     return false;
                 }

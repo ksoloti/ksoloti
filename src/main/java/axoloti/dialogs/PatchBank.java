@@ -81,6 +81,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import qcmds.CommandManager;
 import qcmds.SCmdUploadFile;
 
 /**
@@ -855,8 +856,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         if (USBBulkConnection.getInstance().isConnected()) {
             try {
                 MainFrame.mainframe.setCurrentLivePatch(null);
+                CommandManager.getInstance().startLongOperation();
                 SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                 uploadFileCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                     return;
                 }
@@ -1024,8 +1027,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
                     MainFrame.mainframe.setCurrentLivePatch(null);
                     LOGGER.log(Level.INFO, "Uploading Patchbank index...");
                     try {
+                        CommandManager.getInstance().startLongOperation();
                         SCmdUploadFile uploadFileCmd = new SCmdUploadFile(new ByteArrayInputStream(GetContents()), "/index.axb");
                         uploadFileCmd.Do();
+                        CommandManager.getInstance().endLongOperation();
                         if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                             return;
                         }

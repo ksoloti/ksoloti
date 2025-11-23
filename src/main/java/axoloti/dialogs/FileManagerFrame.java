@@ -196,7 +196,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                         }
                     }
 
-                    CommandManager.getInstance().startLongOperation();
                     new SwingWorker<Void, String>() {
                         @Override
                         protected Void doInBackground() throws Exception {
@@ -214,8 +213,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                         continue; /* Skip to next file */
                                     }
 
+                                    CommandManager.getInstance().startLongOperation();
                                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(f, f.getName());
                                     uploadFileCmd.Do();
+                                    CommandManager.getInstance().endLongOperation();
                                     if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         continue; /* Skip to next file */
                                     }
@@ -611,8 +612,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             System.out.println(Instant.now() + " Attempting to delete empty directory: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
             try {
+                CommandManager.getInstance().startLongOperation();
                 SCmdDeleteFile deleteDirCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteDirCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 if (!deleteDirCmd.waitForCompletion() || !deleteDirCmd.isSuccessful()) {
                     return false;
                 }
@@ -631,8 +634,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             System.out.println(Instant.now() + " Identified as file. Attempting to delete file: '" + sdCardPath + "' (normalized for FatFs: '" + pathForFatFsDelete + "')");
 
             try {
+                CommandManager.getInstance().startLongOperation();
                 SCmdDeleteFile deleteFileCmd = new SCmdDeleteFile(pathForFatFsDelete);
                 deleteFileCmd.Do();
+                CommandManager.getInstance().endLongOperation();
                 if (!deleteFileCmd.waitForCompletion() || !deleteFileCmd.isSuccessful()) {
                     return false;
                 }
@@ -690,20 +695,19 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
         System.out.println(Instant.now() + " Starting asynchronous UI refresh (via timer)...");
         fileListRefreshInProgress = true; // Set the flag immediately when starting a new refresh
 
-        CommandManager.getInstance().startLongOperation();
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    System.out.println(Instant.now() + " Sending SCmdGetFileList()...");
+                    CommandManager.getInstance().startLongOperation();
                     SCmdGetFileList getFileListCmd = new SCmdGetFileList();
                     getFileListCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!getFileListCmd.waitForCompletion() || !getFileListCmd.isSuccessful()) {
                         return null;
                     }
                 }
                 catch (Exception e) {
-                    CommandManager.getInstance().endLongOperation();
                     LOGGER.log(Level.SEVERE, "Error during background refresh command execution: " + e.getMessage());
                     e.printStackTrace(System.out);
                     throw e; /* Re-throw to be caught by done() */
@@ -713,8 +717,8 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
             @Override
             protected void done() {
+                CommandManager.getInstance().endLongOperation();
                 try {
-                    CommandManager.getInstance().endLongOperation();
                     get(); /* Re-throws exceptions from doInBackground */
                     System.out.println(Instant.now() + " Asynchronous UI refresh complete. Updating JTable...");
                     setTableData();
@@ -776,7 +780,6 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
 
                 final String targetDirectory = dir;
                 
-                CommandManager.getInstance().startLongOperation();
                 new SwingWorker<String, String>() {
                     @Override
                     protected String doInBackground() throws Exception {
@@ -798,8 +801,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
                                     continue; /* Skip to next file if failed */
                                 }
                                 try {
+                                    CommandManager.getInstance().startLongOperation();
                                     SCmdUploadFile uploadFileCmd = new SCmdUploadFile(file, targetDirectory + file.getName());
                                     uploadFileCmd.Do();
+                                    CommandManager.getInstance().endLongOperation();
                                     if (!uploadFileCmd.waitForCompletion() || !uploadFileCmd.isSuccessful()) {
                                         failedCount++;
                                         continue; /* Skip to next file if failed */
@@ -991,8 +996,10 @@ public class FileManagerFrame extends javax.swing.JFrame implements ConnectionSt
             if (fn != null && !fn.isEmpty()) {
                 Calendar cal = Calendar.getInstance();
                 try {
+                    CommandManager.getInstance().startLongOperation();
                     SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(dir + fn, cal);
                     createDirCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
                         return;
                     }
