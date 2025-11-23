@@ -58,7 +58,7 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
         connection.setCurrentExecutingCommand(this);
 
         try {
-            if (!waitForCompletion()) {
+            if (!waitForCompletion(10000)) {
                 LOGGER.log(Level.SEVERE, "Copy patch to Flash command timed out.");
                 setCompletedWithStatus(1);
                 return this;

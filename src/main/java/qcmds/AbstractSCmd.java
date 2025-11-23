@@ -47,7 +47,7 @@ public abstract class AbstractSCmd implements SCmd {
     @Override
     public boolean waitForCompletion() throws InterruptedException {
         /* standard 5-second timeout */
-        return latch.await(5000, TimeUnit.MILLISECONDS);
+        return latch.await(5, TimeUnit.SECONDS);
     }
 
     @Override
