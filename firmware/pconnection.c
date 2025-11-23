@@ -591,6 +591,7 @@ static FRESULT AppendFile(uint32_t length) {
 
 static uint8_t CopyPatchToFlash(void) {
     flash_unlock();
+    flash_Erase_sector(10);
     flash_Erase_sector(11);
 
     int src_addr = PATCHMAINLOC;
@@ -615,6 +616,33 @@ static uint8_t CopyPatchToFlash(void) {
         src_addr += 4;
         flash_addr += 4;
     }
+
+    /* Check if patch includes SRAM3 code (64kB), if yes write it to second half of flash sector 10
+       It is up to the object code if and how this data can be used! (executable code, array data) */
+    if ((*(uint32_t*) PATCHMAINLOC_SRAM3 != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC_SRAM3 != 0)) {
+
+        src_addr = PATCHMAINLOC_SRAM3;
+        flash_addr = PATCHFLASHLOC_SRAM3;
+
+        for (c = 0; c < PATCHFLASHSIZE_SRAM3; c += 4) {
+            flash_ProgramWord(flash_addr, *(int32_t*) src_addr);
+            src_addr += 4;
+            flash_addr += 4;
+        }
+
+        /* Verify */
+        src_addr = PATCHMAINLOC_SRAM3;
+        flash_addr = PATCHFLASHLOC_SRAM3;
+
+        for (c = 0; c < PATCHFLASHSIZE_SRAM3; c += 4) {
+            if (*(int32_t*) flash_addr != *(int32_t*) src_addr) {
+                err++;
+            }
+            src_addr += 4;
+            flash_addr += 4;
+        }
+    }
+
     flash_lock();
 
     if (err) {

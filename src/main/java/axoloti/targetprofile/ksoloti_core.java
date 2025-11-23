@@ -100,6 +100,11 @@ public class ksoloti_core {
         return 0x20011000;
     }
 
+    public int getPatchAddr_sram3() {
+        // SRAM3 - must match with ramlink_*.ld
+        return 0x20020000;
+    }
+
     public int getSDRAMAddr() {
         return 0xC0000000;
     }

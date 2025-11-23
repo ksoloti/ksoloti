@@ -1511,12 +1511,22 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                 if (USBBulkConnection.getInstance().isConnected()) {
 
                     CommandManager.getInstance().startLongOperation();
-                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch1.getBinFile());
+                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch1.getBinFile(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr(), "patch");
                     uploadCmd.Do();
                     CommandManager.getInstance().endLongOperation();
                     if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
-                        USBBulkConnection.getInstance().disconnect();
                         return false; /* Abort test of this patch */
+                    }
+
+                    File sram3binFile = patch1.getBinFile_sram3();
+                    if (sram3binFile.exists() && sram3binFile.length() > 0) {
+                        CommandManager.getInstance().startLongOperation();
+                        SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(patch1.getBinFile_sram3(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
+                        sram3uploadCmd.Do();
+                        CommandManager.getInstance().endLongOperation();
+                        if (!sram3uploadCmd.waitForCompletion() || !sram3uploadCmd.isSuccessful()) {
+                            return false; /* Abort test of this patch */
+                        }
                     }
 
                     setCurrentLivePatch(patch1);
@@ -1535,6 +1545,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     Thread.sleep(500);
 
                     QCmdProcessor.getInstance().AppendToQueue(new QCmdGuiShowLog());
+                    setCurrentLivePatch(null);
                     Thread.sleep(100);
                     return true;
                 }

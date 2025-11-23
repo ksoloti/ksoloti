@@ -509,10 +509,23 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                             /* Upload and start the new patch */
                             if (USBBulkConnection.getInstance().isConnected()) {
                                 try {
-                                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
+                                    CommandManager.getInstance().startLongOperation();
+                                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr(), "patch");
                                     uploadCmd.Do();
+                                    CommandManager.getInstance().endLongOperation();
                                     if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                                         return false;
+                                    }
+
+                                    File sram3binFile = patch.getBinFile_sram3();
+                                    if (sram3binFile.exists() && sram3binFile.length() > 0) {
+                                        CommandManager.getInstance().startLongOperation();
+                                        SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(patch.getBinFile_sram3(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
+                                        sram3uploadCmd.Do();
+                                        CommandManager.getInstance().endLongOperation();
+                                        if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
+                                            return false;
+                                        }
                                     }
 
                                     /* If code reaches here, success */
@@ -1388,10 +1401,23 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
             mainframe.setCurrentLivePatch(null);
             if (patch.getBinFile().exists()) {
                 try {
-                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
+                    CommandManager.getInstance().startLongOperation();
+                    SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr(), "patch");
                     uploadCmd.Do();
+                    CommandManager.getInstance().endLongOperation();
                     if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                         return;
+                    }
+
+                    File sram3binFile = patch.getBinFile_sram3();
+                    if (sram3binFile.exists() && sram3binFile.length() > 0) {
+                        CommandManager.getInstance().startLongOperation();
+                        SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(patch.getBinFile_sram3(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
+                        sram3uploadCmd.Do();
+                        CommandManager.getInstance().endLongOperation();
+                        if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
+                            return;
+                        }
                     }
 
                     mainframe.setCurrentLivePatch(patch);
@@ -1680,14 +1706,29 @@ public class PatchFrame extends javax.swing.JFrame implements DocumentWindow, Co
                     if (patch.getBinFile().exists()) {
                         if (USBBulkConnection.getInstance().isConnected()) {
                             try {
-                                SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile());
+                                CommandManager.getInstance().startLongOperation();
+                                SCmdUploadPatch uploadCmd = new SCmdUploadPatch(patch.getBinFile(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr(), "patch");
                                 uploadCmd.Do();
+                                CommandManager.getInstance().endLongOperation();
                                 if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
                                     return false;
                                 }
 
+                                File sram3binFile = patch.getBinFile_sram3();
+                                if (sram3binFile.exists() && sram3binFile.length() > 0) {
+                                    CommandManager.getInstance().startLongOperation();
+                                    SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(patch.getBinFile_sram3(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
+                                    sram3uploadCmd.Do();
+                                    CommandManager.getInstance().endLongOperation();
+                                    if (!uploadCmd.waitForCompletion() || !uploadCmd.isSuccessful()) {
+                                        return false;
+                                    }
+                                }
+
+                                CommandManager.getInstance().startLongOperation();
                                 SCmdCopyPatchToFlash copyToFlashCmd = new SCmdCopyPatchToFlash();
                                 copyToFlashCmd.Do();
+                                CommandManager.getInstance().endLongOperation();
                                 if (!copyToFlashCmd.waitForCompletion() || !copyToFlashCmd.isSuccessful()) {
                                     return false;
                                 }

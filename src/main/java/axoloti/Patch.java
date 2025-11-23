@@ -3112,6 +3112,11 @@ public class Patch {
         return new File(bfPath);
     }
 
+    public File getBinFile_sram3() {
+        String bfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".bin_sram3";
+        return new File(bfPath);
+    }
+
     public File getCppFile() {
         String cfPath = System.getProperty(Axoloti.LIBRARIES_DIR) + File.separator + "build" + generateBuildFilenameStem(true) + ".cpp";
         return new File(cfPath);
@@ -3166,6 +3171,23 @@ public class Patch {
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Thread interrupted while uploading file.", e);
                 Thread.currentThread().interrupt();
+            }
+            if (getBinFile_sram3().exists() && getBinFile_sram3().length() > 0) {
+                try {
+                    String sdfilename_sram3 = sdfilename + "_sram3";
+                    LOGGER.log(Level.INFO, "SRAM3 data detected, uploading... '" + sdfilename_sram3 + "'");
+                    CommandManager.getInstance().startLongOperation();
+                    SCmdUploadFile uploadFileCmd_sram3 = new SCmdUploadFile(getBinFile_sram3(), sdfilename_sram3, cal);
+                    uploadFileCmd_sram3.Do();
+                    CommandManager.getInstance().endLongOperation();
+                    if (!uploadFileCmd_sram3.waitForCompletion() || !uploadFileCmd_sram3.isSuccessful()) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error while uploading SRAM3 data: " + e.getMessage());
+                    e.printStackTrace(System.out);
+                    Thread.currentThread().interrupt();
+                }
             }
 
             String dir;

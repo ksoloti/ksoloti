@@ -422,21 +422,31 @@ static int StartPatch1(void) {
             StopPatch1();
             SetPatchStatus(STOPPED);
 
-            if (loadPatchIndex == START_FLASH) {
+            if (loadPatchIndex == START_SD) {
+                strcpy(&loadFName[0], startbin_fn);
+                int res = sdcard_loadPatch1(loadFName);
+                if (!res) {
+                    StartPatch1();
+                }
+            }
+            else if (loadPatchIndex == START_FLASH) {
                 /* Patch in flash sector 11 */
                 memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
+
+                /* Check if patch includes SRAM3 code (64kB) in second half of flash sector 10, if yes load it */
+                if ((*(uint32_t*) PATCHFLASHLOC_SRAM3 != 0xFFFFFFFF) && (*(uint32_t*) PATCHFLASHLOC_SRAM3 != 0)) {
+                    memcpy((uint8_t*) PATCHMAINLOC_SRAM3, (uint8_t*) PATCHFLASHLOC_SRAM3, PATCHFLASHSIZE_SRAM3);
+                }
+
                 if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
                     StartPatch1();
                 }
             }
-            else if (loadPatchIndex == START_SD) {
-                strcpy(&loadFName[0], startbin_fn);
+            else if (loadPatchIndex == BY_FILENAME) { /* Patch load from file name triggered TODO: must test!! */
                 int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
-            }
-            else if (loadFName[0]) {
-                int res = sdcard_loadPatch1(loadFName);
-                if (!res) StartPatch1();
+                if (!res) {
+                    StartPatch1();
+                }
             }
             else { /* Patch load from patchbank index (index.axb) triggered */
                 FRESULT err;

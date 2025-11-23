@@ -150,17 +150,19 @@ INCDIR = $(CMSIS)/Core/Include \
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
 LLIBDIR = $(patsubst %,-L%,$(DLIBDIR) $(ULIBDIR))
 
-all: ${BUILDDIR}/$(BUILDFILENAME).bin
+
+all: ${BUILDDIR}/$(BUILDFILENAME).bin ${BUILDDIR}/$(BUILDFILENAME).bin_sram3
 
 ${BUILDDIR}/xpatch.h.gch: ${FIRMWARE}/xpatch.h ${FIRMWARE}/patch.h ${FIRMWARE}/axoloti.h ${FIRMWARE}/parameter_functions.h ${FIRMWARE}/axoloti_math.h ${FIRMWARE}/axoloti_filters.h
 
 #	@echo Building precompiled header
 	@$(CPP) $(CCFLAGS) $(DEFS) $(IINCDIR) -Winvalid-pch -MD -MP -c "${FIRMWARE}/xpatch.h" -o "${BUILDDIR}/xpatch.h.gch"
 
-${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/xpatch.h.gch
+
+${BUILDDIR}/$(BUILDFILENAME).elf: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/xpatch.h.gch
 
 #	@echo Removing previous build files
-	@rm -f "${BUILDDIR}/$(BUILDFILENAME).o" "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin" "${BUILDDIR}/$(BUILDFILENAME).d" "${BUILDDIR}/$(BUILDFILENAME).map" "${BUILDDIR}/$(BUILDFILENAME).lst"
+	@rm -f "${BUILDDIR}/$(BUILDFILENAME).o" "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin" "${BUILDDIR}/$(BUILDFILENAME).bin_sram3" "${BUILDDIR}/$(BUILDFILENAME).d" "${BUILDDIR}/$(BUILDFILENAME).map" "${BUILDDIR}/$(BUILDFILENAME).lst"
 
 #	@echo Compiling patch dependencies
 	@$(CPP) $(CCFLAGS) $(DEFS) -H $(IINCDIR) -Winvalid-pch -MD -MP --include "${BUILDDIR}/xpatch.h" -c "${BUILDDIR}/$(BUILDFILENAME).cpp" -o "${BUILDDIR}/$(BUILDFILENAME).o"
@@ -168,8 +170,17 @@ ${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/x
 #	@echo Linking patch dependencies
 	@$(LD) $(LDFLAGS) "${BUILDDIR}/$(BUILDFILENAME).o" -lm -Wl,-Map="${BUILDDIR}/$(BUILDFILENAME).map",--cref,--just-symbols="${FIRMWARE}/build/$(ELFNAME).elf" -o "${BUILDDIR}/$(BUILDFILENAME).elf"
 
-#	@echo Creating binary
-	@$(CP) -O binary "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin"
+
+${BUILDDIR}/$(BUILDFILENAME).bin_sram3: ${BUILDDIR}/$(BUILDFILENAME).elf
+
+#	@echo Creating SRAM3 binary
+	@$(CP) -O binary --only-section .sram3 --set-section-flags .sram3=alloc,load,contents "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin_sram3"
+
+
+${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).elf ${BUILDDIR}/$(BUILDFILENAME).bin_sram3
+
+#	@echo Creating main binary
+	@$(CP) -O binary --remove-section .sram3 "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin"
 
 #	@echo Creating LST file for debugging
 	@$(OD) $(ODFLAGS) "${BUILDDIR}/$(BUILDFILENAME).elf" > "${BUILDDIR}/$(BUILDFILENAME).lst" 
@@ -181,6 +192,6 @@ ${BUILDDIR}/$(BUILDFILENAME).bin: ${BUILDDIR}/$(BUILDFILENAME).cpp ${BUILDDIR}/x
 #	@cp "${BUILDDIR}/$(BUILDFILENAME).bin" "${BUILDDIR}/xpatch.bin"
 
 clean:
-	@rm -f "${BUILDDIR}/$(BUILDFILENAME).o" "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin" "${BUILDDIR}/$(BUILDFILENAME).d" "${BUILDDIR}/$(BUILDFILENAME).map" "${BUILDDIR}/$(BUILDFILENAME).lst" "${BUILDDIR}/xpatch.h.gch"
+	@rm -f "${BUILDDIR}/$(BUILDFILENAME).o" "${BUILDDIR}/$(BUILDFILENAME).elf" "${BUILDDIR}/$(BUILDFILENAME).bin" "${BUILDDIR}/$(BUILDFILENAME).bin_sram3" "${BUILDDIR}/$(BUILDFILENAME).d" "${BUILDDIR}/$(BUILDFILENAME).map" "${BUILDDIR}/$(BUILDFILENAME).lst" "${BUILDDIR}/xpatch.h.gch"
 
 .PHONY: all clean
