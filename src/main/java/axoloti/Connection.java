@@ -94,6 +94,7 @@ public abstract class Connection {
     abstract public int GetConnectionFlags();
     abstract public void setCurrentExecutingCommand(SCmd command);
     abstract public SCmd getCurrentExecutingCommand();
+    abstract public boolean clearIfCurrentExecutingCommand(SCmd cmd);
     abstract public String getTargetCpuId();
     abstract public String getDetectedCpuId();
 

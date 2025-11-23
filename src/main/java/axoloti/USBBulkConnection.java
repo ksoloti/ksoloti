@@ -581,6 +581,16 @@ public class USBBulkConnection extends Connection {
         }
     }
 
+    public boolean clearIfCurrentExecutingCommand(SCmd cmd) {
+        synchronized (currentExecutingCommandLock) {
+            if (currentExecutingCommand == cmd) {
+                currentExecutingCommand = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void setPatch(Patch patch) {
         this.patch = patch;
