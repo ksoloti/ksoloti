@@ -102,7 +102,7 @@ public class USBBulkConnection extends Connection {
     private volatile Thread receiverThread;
     private volatile Thread byteProcessorThread;
     private final BlockingQueue<SCmd> queueSerialTask;
-    private final BlockingQueue<Byte> receiverBlockingQueue;
+    private final BlockingQueue<byte[]> receiverBlockingQueue;
     private String targetCpuId;
     private String detectedCpuId;
     private ksoloti_core targetProfile;
@@ -218,12 +218,7 @@ public class USBBulkConnection extends Connection {
                         sz = transfered.get(0);
 
                         /* Check interrupted status immediately after a blocking call returns */
-                        if (Thread.currentThread().isInterrupted()) {
-                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Thread interrupted after bulkTransfer. Exiting loop.");
-                            break;
-                        }
-                        if (disconnectRequested) {
-                            // System.out.println(Instant.now() + " [DEBUG] Receiver: Disconnect requested after bulkTransfer. Exiting loop.");
+                        if (Thread.currentThread().isInterrupted() || disconnectRequested) {
                             break;
                         }
 
@@ -241,14 +236,13 @@ public class USBBulkConnection extends Connection {
                         byte[] receivedData = new byte[sz]; /* Copy chunk to faster in-memory array */
                         recvbuffer.position(0); 
                         recvbuffer.get(receivedData);
-                        for (int i = 0; i < sz; i++) {
-                            try {
-                                receiverBlockingQueue.put(receivedData[i]); 
-                            }
-                            catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                break;
-                            }
+                        
+                        try {
+                            receiverBlockingQueue.put(receivedData); 
+                        }
+                        catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
                         }
                     }
                 }
@@ -285,6 +279,10 @@ public class USBBulkConnection extends Connection {
                                 }
                             }
                         }
+                        catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break; 
+                        }
                         catch (Exception e) {
                             LOGGER.log(Level.SEVERE, "Error executing command " + cmd.getClass().getSimpleName() + ": " + e.getMessage());
                             e.printStackTrace(System.out);
@@ -311,18 +309,29 @@ public class USBBulkConnection extends Connection {
             try {
                 // Continuously take bytes from the queue and process them
                 while (!Thread.currentThread().isInterrupted() && !disconnectRequested) {
-                    Byte b = receiverBlockingQueue.take();
-                    processByte(b);
+                    byte[] chunk = receiverBlockingQueue.take();
+                    for (byte b : chunk) {
+                        try {
+                            processByte(b);
+                        } catch (Exception e) {
+                            LOGGER.log(Level.SEVERE, "Exception processing byte: " + e.getMessage());
+                            e.printStackTrace(System.out);
+                        }
+                    }
                 }
             }
             catch (InterruptedException e) {
                 // Thread was interrupted, exit gracefully
                 Thread.currentThread().interrupt();
             }
+            catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error during ByteProcessor thread: " + e.getMessage());
+                e.printStackTrace(System.out);
+            }
         }
     }
 
-	protected USBBulkConnection() {
+    protected USBBulkConnection() {
         initialize();
         this.sync = new Sync();
         this.patch = null;
@@ -638,7 +647,9 @@ public class USBBulkConnection extends Connection {
                     return false;
                 }
 
-                QCmdProcessor.getInstance().setConnection(this);
+                if (QCmdProcessor.getInstance() != null) {
+                    QCmdProcessor.getInstance().setConnection(this);
+                }
 
                 /* Start Trinity of Threads */
                 receiverBlockingQueue.clear();
