@@ -161,15 +161,15 @@ public class SCmdUploadFile extends AbstractSCmd {
                 return this;
             }
 
+            connection.setCurrentExecutingCommand(this);
+            createFileLatch = new CountDownLatch(1);
             int writeResult = connection.TransmitCreateFile(filename, tlength, ts);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send file upload command (create): USB write error.");
                 setCompletedWithStatus(1);
                 return this;
             }
-            connection.setCurrentExecutingCommand(this);
 
-            createFileLatch = new CountDownLatch(1);
             if (!createFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file " + filename + ": Core did not acknowledge file creation within timeout.");
                 setCompletedWithStatus(1);
@@ -223,6 +223,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                     return this;
                 }
 
+                appendFileLatch = new CountDownLatch(1);
                 writeResult = connection.TransmitAppendFile(buffer);
                 if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                     LOGGER.log(Level.SEVERE, "Failed to send file upload command (append): USB write error.");
@@ -230,7 +231,6 @@ public class SCmdUploadFile extends AbstractSCmd {
                     return this;
                 }
 
-                appendFileLatch = new CountDownLatch(1);
                 if (!appendFileLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setCompletedWithStatus(1);
@@ -316,6 +316,7 @@ public class SCmdUploadFile extends AbstractSCmd {
                 return this;
             }
 
+            closeFileLatch = new CountDownLatch(1);
             writeResult = connection.TransmitCloseFile(filename, ts); 
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send file upload command (close): USB write error.");
@@ -323,7 +324,6 @@ public class SCmdUploadFile extends AbstractSCmd {
                 return this;
             }
 
-            closeFileLatch = new CountDownLatch(1);
             if (!closeFileLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Failed to upload file '" + filename + "': Core did not acknowledge file close within timeout.");
                 setCompletedWithStatus(1);

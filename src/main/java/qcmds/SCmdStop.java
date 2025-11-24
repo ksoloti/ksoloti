@@ -47,13 +47,13 @@ public class SCmdStop extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
+        connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitStop();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send stop patch command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
-        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {

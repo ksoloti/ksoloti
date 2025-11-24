@@ -56,13 +56,13 @@ public class SCmdChangeWorkingDirectory extends AbstractSCmd {
             return this;
         }
 
+        connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitChangeWorkingDirectory(path);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send change directory command for " + path + ": USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
-        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {

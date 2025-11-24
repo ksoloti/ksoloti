@@ -49,13 +49,13 @@ public class SCmdCopyPatchToFlash extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
 
+        connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitCopyToFlash();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send copy to Flash command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
-        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion(10000)) {

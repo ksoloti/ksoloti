@@ -51,13 +51,13 @@ public class SCmdGetFileInfo extends AbstractSCmd {
     public SCmd Do(Connection connection) {
         LOGGER.info(GetStartMessage());
 
+        connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitGetFileInfo(filename);
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send get file info command for '" + filename + "': USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
-        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {

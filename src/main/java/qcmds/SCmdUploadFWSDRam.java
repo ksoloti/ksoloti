@@ -192,15 +192,16 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
             }
 
             int sdramAddr = connection.getTargetProfile().getSDRAMAddr();
+
+            connection.setCurrentExecutingCommand(this);
+            startMemWriteLatch = new CountDownLatch(1);
             int writeResult = connection.TransmitStartMemWrite(sdramAddr, (int) totalBytesToTransfer);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send firmware upload to SDRAM command (start): USB write error.");
                 setCompletedWithStatus(1);
                 return this;
             }
-            connection.setCurrentExecutingCommand(this);
 
-            startMemWriteLatch = new CountDownLatch(1);
             if (!startMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge start memory write within timeout.");
                 setCompletedWithStatus(1);
@@ -248,6 +249,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                 return this;
             }
 
+            appendMemWriteLatch = new CountDownLatch(1);
             writeResult = connection.TransmitAppendMemWrite(firstChunkBuffer);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send firmware upload to SDRAM command (append): USB write error.");
@@ -255,7 +257,6 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                 return this;
             }
 
-            appendMemWriteLatch = new CountDownLatch(1);
             if (!appendMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge first chunk receipt within timeout.");
                 setCompletedWithStatus(1);
@@ -299,6 +300,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                     return this;
                 }
 
+                appendMemWriteLatch = new CountDownLatch(1);
                 writeResult = connection.TransmitAppendMemWrite(buffer);
                 if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                     LOGGER.log(Level.SEVERE, "Failed to send firmware upload to SDRAM command (append): USB write error.");
@@ -306,7 +308,6 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                     return this;
                 }
 
-                appendMemWriteLatch = new CountDownLatch(1);
                 if (!appendMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setCompletedWithStatus(1);
@@ -391,6 +392,7 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                 return this;
             }
 
+            closeMemWriteLatch = new CountDownLatch(1);
             writeResult = connection.TransmitCloseMemWrite(sdramAddr, (int) totalBytesToTransfer);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send firmware upload to SDRAM command (close): USB write error.");
@@ -398,7 +400,6 @@ public class SCmdUploadFWSDRam extends AbstractSCmd {
                 return this;
             }
 
-            closeMemWriteLatch = new CountDownLatch(1);
             if (!closeMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Firmware upload to SDRAM failed: Core did not acknowledge memory write close within timeout.");
                 setCompletedWithStatus(1);

@@ -46,13 +46,13 @@ public class SCmdGetFileList extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
+        connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitGetFileList();
         if (writeResult != org.usb4java.LibUsb.SUCCESS) {
             LOGGER.log(Level.SEVERE, "Failed to send get file list command: USB write error.");
             setCompletedWithStatus(1);
             return this;
         }
-        connection.setCurrentExecutingCommand(this);
 
         try {
             if (!waitForCompletion()) {

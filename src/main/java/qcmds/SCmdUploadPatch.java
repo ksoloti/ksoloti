@@ -134,15 +134,15 @@ public class SCmdUploadPatch extends AbstractSCmd {
 
             resetLatches();
 
+            connection.setCurrentExecutingCommand(this);
+            startMemWriteLatch = new CountDownLatch(1);
             int writeResult = connection.TransmitStartMemWrite(this.targetAddress, tlength);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send patch upload command (start): USB write error.");
                 setCompletedWithStatus(1);
                 return false;
             }
-            connection.setCurrentExecutingCommand(this);
             
-            startMemWriteLatch = new CountDownLatch(1);
             if (!startMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge memory write (Start) within timeout.");
                 setCompletedWithStatus(1);
@@ -184,6 +184,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
                     return false;
                 }
 
+                appendMemWriteLatch = new CountDownLatch(1);
                 writeResult = connection.TransmitAppendMemWrite(buffer);
                 if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                     LOGGER.log(Level.SEVERE, "Failed to send patch upload command (append): USB write error.");
@@ -191,7 +192,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
                     return false;
                 }
 
-                appendMemWriteLatch = new CountDownLatch(1);
                 if (!appendMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
                     setCompletedWithStatus(1);
@@ -213,6 +213,7 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 return false;
             }
 
+            closeMemWriteLatch = new CountDownLatch(1);
             writeResult = connection.TransmitCloseMemWrite(this.targetAddress, tlength); 
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send "+ this.name + " upload command (close): USB write error.");
@@ -220,7 +221,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 return false;
             }
 
-            closeMemWriteLatch = new CountDownLatch(1);
             if (!closeMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge write close within timeout.");
                 setCompletedWithStatus(1);
