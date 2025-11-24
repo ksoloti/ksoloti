@@ -1526,7 +1526,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     File sram3binFile = patch1.getBinFile_sram3();
                     if (sram3binFile.exists() && sram3binFile.length() > 0) {
                         CommandManager.getInstance().startLongOperation();
-                        SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(patch1.getBinFile_sram3(), USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
+                        SCmdUploadPatch sram3uploadCmd = new SCmdUploadPatch(sram3binFile, USBBulkConnection.getInstance().getTargetProfile().getPatchAddr_sram3(), "SRAM3 data");
                         sram3uploadCmd.Do();
                         CommandManager.getInstance().endLongOperation();
                         if (!sram3uploadCmd.waitForCompletion() || !sram3uploadCmd.isSuccessful()) {
