@@ -126,7 +126,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
         try (FileInputStream inputStream = new FileInputStream(this.fileToUpload)) {
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": USB connection lost.");
-                setCompletedWithStatus(1);
                 return false;
             }
 
@@ -139,18 +138,15 @@ public class SCmdUploadPatch extends AbstractSCmd {
             int writeResult = connection.TransmitStartMemWrite(this.targetAddress, tlength);
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send patch upload command (start): USB write error.");
-                setCompletedWithStatus(1);
                 return false;
             }
             
             if (!startMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge memory write (Start) within timeout.");
-                setCompletedWithStatus(1);
                 return false;
             }
             if (startMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core reported error (" + startMemWriteStatus + ") during file creation.");
-                setCompletedWithStatus(1);
                 return false;
             }
 
@@ -180,7 +176,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
 
                 if (!connection.isConnected()) {
                     LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": USB connection lost.");
-                    setCompletedWithStatus(1);
                     return false;
                 }
 
@@ -188,18 +183,15 @@ public class SCmdUploadPatch extends AbstractSCmd {
                 writeResult = connection.TransmitAppendMemWrite(buffer);
                 if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                     LOGGER.log(Level.SEVERE, "Failed to send patch upload command (append): USB write error.");
-                    setCompletedWithStatus(1);
                     return false;
                 }
 
                 if (!appendMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge chunk receipt within timeout. Chunk number " + chunkNum);
-                    setCompletedWithStatus(1);
                     return false;
                 }
                 if (appendMemWriteStatus != 0x00) {
                     LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core reported error (" + SDCardInfo.getFatFsErrorString(appendMemWriteStatus) + ") during chunk append. Chunk Number " + chunkNum);
-                    setCompletedWithStatus(1);
                     return false;
                 }
 
@@ -209,7 +201,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
 
             if (!connection.isConnected()) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": USB connection lost.");
-                setCompletedWithStatus(1);
                 return false;
             }
 
@@ -217,18 +208,15 @@ public class SCmdUploadPatch extends AbstractSCmd {
             writeResult = connection.TransmitCloseMemWrite(this.targetAddress, tlength); 
             if (writeResult != org.usb4java.LibUsb.SUCCESS) {
                 LOGGER.log(Level.SEVERE, "Failed to send "+ this.name + " upload command (close): USB write error.");
-                setCompletedWithStatus(1);
                 return false;
             }
 
             if (!closeMemWriteLatch.await(3, TimeUnit.SECONDS)) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core did not acknowledge write close within timeout.");
-                setCompletedWithStatus(1);
                 return false;
             }
             if (closeMemWriteStatus != 0x00) {
                 LOGGER.log(Level.SEVERE, "Upload failed for " + this.name + ": Core reported error (" + closeMemWriteStatus + ") during write close (Close).");
-                setCompletedWithStatus(1);
                 return false;
             }
             return true;
