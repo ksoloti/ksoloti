@@ -254,6 +254,9 @@ public class SCmdUploadPatch extends AbstractSCmd {
             if (!doUpload(connection)) {
                 setCompletedWithStatus(1);
             }
+            else {
+                LOGGER.info(GetDoneMessage());
+            }
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -269,7 +272,6 @@ public class SCmdUploadPatch extends AbstractSCmd {
         finally {
             connection.clearIfCurrentExecutingCommand(this);
         }
-        LOGGER.info(GetDoneMessage());
         return this;
     }
 }
