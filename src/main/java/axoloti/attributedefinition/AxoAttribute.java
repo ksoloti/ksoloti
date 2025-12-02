@@ -18,10 +18,6 @@
  */
 package axoloti.attributedefinition;
 
-/**
- *
- * @author Johannes Taelman
- */
 import axoloti.atom.AtomDefinition;
 import axoloti.attribute.AttributeInstance;
 import axoloti.object.AxoObjectInstance;
@@ -31,6 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.simpleframework.xml.Attribute;
 
+/**
+ *
+ * @author Johannes Taelman
+ */
 public abstract class AxoAttribute implements AtomDefinition, Cloneable {
 
     @Attribute
