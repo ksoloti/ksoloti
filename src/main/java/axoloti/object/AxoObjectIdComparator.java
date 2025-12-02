@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Ksoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package axoloti.object;
 
 import java.util.Comparator;
