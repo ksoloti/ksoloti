@@ -823,7 +823,9 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         fileMenu1.setText("File");
         fileMenu1.add(jSeparator1);
 
+        jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK));
         jMenuItemSave.setText("Save");
+        jMenuItemSave.setMnemonic('S');
         jMenuItemSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSaveActionPerformed(evt);
@@ -831,7 +833,10 @@ public class PatchBank extends javax.swing.JFrame implements DocumentWindow, Con
         });
         fileMenu1.add(jMenuItemSave);
 
+        jMenuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyUtils.CONTROL_OR_CMD_MASK | KeyEvent.SHIFT_DOWN_MASK));
         jMenuItemSaveAs.setText("Save As...");
+        jMenuItemSaveAs.setMnemonic('A');
+        jMenuItemSaveAs.setDisplayedMnemonicIndex(5);
         jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSaveAsActionPerformed(evt);
