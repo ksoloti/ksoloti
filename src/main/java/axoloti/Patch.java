@@ -609,11 +609,11 @@ public class Patch {
     }
 
     public AxoObjectInstanceAbstract AddObjectInstance(AxoObjectAbstract obj, Point loc) {
-        if (!IsLocked()) {
-            if (obj == null) {
-                LOGGER.log(Level.SEVERE, "AddObjectInstance NULL");
-                return null;
-            }
+        if (obj == null) {
+            LOGGER.log(Level.SEVERE, "AddObjectInstance NULL");
+            return null;
+        }
+        if (!IsLocked() || obj.id.equals("patch/comment")) {
 
             String baseName = obj.getDefaultInstanceName();
             /* Check if the object has a canonical ID and use the short name */
