@@ -32,6 +32,7 @@ import components.ScrollPaneComponent;
 import static axoloti.MainFrame.fc;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -69,6 +70,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -575,6 +577,26 @@ public class PreferencesFrame extends JFrame {
             jTableLibraries.getColumnModel().getColumn(2).setPreferredWidth(280);
             jTableLibraries.getColumnModel().getColumn(3).setPreferredWidth(60);
         }
+        jTableLibraries.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (value instanceof Boolean) {
+                    Boolean enabled = (Boolean) value;
+                    if (enabled) {
+                        label.setText("✓"); /* Unicode checkmark (✓ - \u2714 for heavy checkmark) */
+                    } else {
+                        label.setText(""); /* Empty string means not enabled */
+                    }
+                    label.setHorizontalAlignment(CENTER);
+                } else {
+                    label.setText(""); /* Fallback */
+                }
+
+                return label;
+            }
+        });
 
         jButtonAddLib.setText("➕");
         jButtonAddLib.setToolTipText("Add a library...");
