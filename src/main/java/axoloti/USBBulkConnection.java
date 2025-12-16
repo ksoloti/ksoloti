@@ -810,6 +810,7 @@ public class USBBulkConnection extends Connection {
                 isConnecting = false;
                 disconnectRequested = false;
 
+                MainFrame.mainframe.setCurrentLivePatch(null);
                 ShowDisconnect(); /* Notify UI */
                 LOGGER.log(Level.WARNING, "Disconnected\n");
             }
