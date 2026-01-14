@@ -133,11 +133,12 @@ int main(void) {
 
     bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 
+    codec_init(is_master);
+
 #ifdef FW_I2SCODEC
     i2s_init();
 #endif
 
-    codec_init(is_master);
 
 #ifdef FW_SPILINK
     spilink_init(is_master);
