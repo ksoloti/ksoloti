@@ -136,6 +136,7 @@ int main(void) {
     codec_init(is_master);
 
 #ifdef FW_I2SCODEC
+    chThdSleepMilliseconds(10); /* Wait for ADAU1961 clocks to stabilize */
     i2s_init();
 #endif
 
