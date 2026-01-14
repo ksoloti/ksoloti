@@ -176,17 +176,35 @@ void i2s_init(void) {
 
     i2s_dma_init();
 
-    /* Enable DMA streams */
-    dmaStreamClearInterrupt(i2s_tx_dma);
-    dmaStreamEnable(i2s_tx_dma);
-    dmaStreamClearInterrupt(i2s_rx_dma);
-    dmaStreamEnable(i2s_rx_dma);
+    /* Reset state */
+    SPI3->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
+    I2S3ext->I2SCFGR &= ~SPI_I2SCFGR_I2SE;
 
-    /* Enable DMA, I2S */
-    SPI3->CR2 = SPI_CR2_TXDMAEN;
-    I2S3ext->CR2 = SPI_CR2_RXDMAEN;
-    SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
-    I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
+    /* STM32F42x errata: "In I2S Slave mode, the WS level must be set by the external master when enabling the I2S" */
+    /* In other words, the I2S3 peripheral must be enabled while WS is high. */
+    
+    palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_INPUT); /* Temporarily read WS pin directly */
+    volatile uint32_t timeout = 1000000;
+    while (palReadPad(I2S3_WS_PORT, I2S3_WS_PIN) == 0 && --timeout); /* Wait for WS to be HIGH */
+
+    palSetPadMode(I2S3_WS_PORT, I2S3_WS_PIN, PAL_MODE_ALTERNATE(6)); /* Switch back to I2S function */
+
+    if (timeout > 0) {
+        /* Enable everything */
+        I2S3ext->I2SCFGR |= SPI_I2SCFGR_I2SE;
+        SPI3->I2SCFGR |= SPI_I2SCFGR_I2SE;
+
+        SPI3->CR2 |= SPI_CR2_TXDMAEN;
+        I2S3ext->CR2 |= SPI_CR2_RXDMAEN;
+        
+        dmaStreamEnable(i2s_rx_dma);
+        dmaStreamEnable(i2s_tx_dma);
+    } else {
+        /* Timed out - Core codec error? */
+        setErrorFlag(ERROR_CODEC_I2C);
+        while(1);
+
+    }
 }
 
 
