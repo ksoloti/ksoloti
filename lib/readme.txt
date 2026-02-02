@@ -7,7 +7,6 @@ JSCH - ssh security, used by JGIT
 libusb4java - Native JNI wrapper for libusb
 flatlaf - modern UI
 flatlaf-intellij-themes - for modern UI
-marlin - for more efficient graphic rendering
 rsyntaxtextarea, autocomplete - object editor code syntax
 jsvg - handle SVG icons
 batik - SVG graphic tools

@@ -28,7 +28,6 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/jsch-2.27.2.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-3.6.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/flatlaf-intellij-themes-3.6.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-api-2.0.17.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/slf4j-simple-2.0.17.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/simple-xml-2.7.1.jar"/>
@@ -189,7 +188,6 @@
                 <include name="jsch-*.jar"/>
                 <include name="flatlaf-*.jar"/>
                 <include name="flatlaf-intellij-themes-*.jar"/>
-                <include name="marlin-*.jar"/>
                 <include name="slf4j-api-*.jar"/>
                 <include name="slf4j-simple-*.jar"/>
                 <include name="simple-xml-*.jar"/>

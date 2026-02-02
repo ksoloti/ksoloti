@@ -27,19 +27,19 @@ export axoloti_firmware=${axoloti_firmware:="$axoloti_home/firmware"}
 which java >/dev/null || printf "\nJava not found in path\n"
 
 heap_jvmargs='-Xms256m -Xmx2g'
-marlin_jvmargs='-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -Dsun.java2d.opengl=true -Dsun.java2d.dpiaware=true'
+graphics_jvmargs='-Dsun.java2d.opengl=true -Dsun.java2d.dpiaware=true'
 
 if [ -f $rootdir/dist/Ksoloti.jar ]
 then
     case "$platform" in
         mac)
-            java -Xdock:name=Ksoloti $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java -Xdock:name=Ksoloti $heap_jvmargs $graphics_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         linux)
-            java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java $heap_jvmargs $graphics_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
         windows)
-            java $heap_jvmargs $marlin_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
+            java $heap_jvmargs $graphics_jvmargs -jar $rootdir/dist/Ksoloti.jar $* 2>&1 | tee "$axoloti_home/ksoloti.log"
         ;;
     esac
 else

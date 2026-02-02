@@ -232,8 +232,6 @@ JPACKAGE_ARGS=(
     --verbose
     --java-options "-Xms256m"
     --java-options "-Xmx2g"
-    --java-options "-Xbootclasspath/a:lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar"
-    --java-options "-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
     # --jlink-options "--strip-native-commands --strip-debug --no-man-pages --no-header-files --compress=2"
     --runtime-image "$TARGET_JDK_PATH" # Specifies the JDK for the target platform
 )
@@ -315,7 +313,6 @@ esac
 
 # Copy other application-specific resources
 cp src/main/java/resources/appicons/ksoloti_icon_512.png "$APP_ROOT_DIR/lib/app/" # Or wherever your app expects it at runtime
-cp lib/marlin-0.9.4.8-Unsafe-OpenJDK17.jar "$APP_ROOT_DIR/lib/app/"
 
 printf "Resource copying complete.\n"
 
