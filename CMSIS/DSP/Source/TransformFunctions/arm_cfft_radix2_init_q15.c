@@ -79,7 +79,11 @@ arm_status arm_cfft_radix2_init_q15(
   S->fftLen = fftLen;
 
   /*  Initialise the Twiddle coefficient pointer */
+#if KSO_INCLUDE_LARGE_FFT_TABLES
   S->pTwiddle = (q15_t *) twiddleCoef_4096_q15;
+#else
+  S->pTwiddle = (q15_t *) twiddleCoef_1024_q15;
+#endif
   /*  Initialise the Flag for selection of CFFT or CIFFT */
   S->ifftFlag = ifftFlag;
   /*  Initialise the Flag for calculation Bit reversal or not */

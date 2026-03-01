@@ -40,8 +40,10 @@
    extern const arm_cfft_instance_f32 arm_cfft_sR_f32_len256;
    extern const arm_cfft_instance_f32 arm_cfft_sR_f32_len512;
    extern const arm_cfft_instance_f32 arm_cfft_sR_f32_len1024;
+#if KSO_INCLUDE_LARGE_FFT_TABLES
    extern const arm_cfft_instance_f32 arm_cfft_sR_f32_len2048;
    extern const arm_cfft_instance_f32 arm_cfft_sR_f32_len4096;
+#endif //0
 
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len16;
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len32;
@@ -50,8 +52,10 @@
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len256;
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len512;
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len1024;
+#if KSO_INCLUDE_LARGE_FFT_TABLES
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len2048;
    extern const arm_cfft_instance_q31 arm_cfft_sR_q31_len4096;
+#endif //0
 
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len16;
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len32;
@@ -60,7 +64,9 @@
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len256;
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len512;
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len1024;
+#if KSO_INCLUDE_LARGE_FFT_TABLES
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len2048;
    extern const arm_cfft_instance_q15 arm_cfft_sR_q15_len4096;
+#endif //0
 
 #endif
