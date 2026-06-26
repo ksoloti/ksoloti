@@ -35,23 +35,23 @@ fi
 
 case $OS in
     Ubuntu|Debian|DebianJessie32bit|MX)
-        echo "apt-get install -y libtool libudev-dev automake autoconf curl lib32z1 lib32ncurses5 lib32bz2-1.0 build-essential"
+        echo "apt-get install -y libtool libudev-dev automake autoconf curl lib32z1 lib32ncurses6 libbz2-1.0:i386 build-essential"
       if [ $OS==DebianJessie32bit ]; then
             sudo apt-get install -y libtool libudev-dev automake autoconf \
                ant curl build-essential
       else
             sudo apt-get install -y libtool libudev-dev automake autoconf \
-               ant curl lib32z1 lib32ncurses5 build-essential
+               ant curl lib32z1 lib32ncurses6 build-essential
       fi
 
         # On more recent versions of Ubuntu
-        # the libbz2 and libncurses5 packages are multi-arch
+        # the libbz2 and libncurses6 packages are multi-arch
         install_lib_bz2() {
             if [ $ARCH=aarch64 ]; then
-              sudo apt-get install -y libncurses5-dev
+              sudo apt-get install -y libncurses6-dev
               sudo apt-get install -y libbz2-dev
             else
-              sudo apt-get install -y lib32bz2-1.0
+              sudo apt-get install -y libbz2-1.0:i386
               sudo apt-get install -y lib32ncurses5
             fi
         }
