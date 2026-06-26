@@ -140,8 +140,8 @@ public class Boards {
 
     public enum MemoryLayoutType {
         Code64Data64("64 KB Code and 64 KB Data"),
-        Code256Data64("256 KB Code and 64 KB Data."),
-        Code256Shared("256 KB shared Code and Data."),
+        Code256Data64("256 KB Code and 64 KB Data"),
+        Code256Shared("256 KB shared Code and Data"),
         NA("N/A");
 
         private final String name;
