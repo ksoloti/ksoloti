@@ -449,7 +449,7 @@ INCDIR = \
   ${MUTABLE_INSTRUMENTS}/rings \
   ${MUTABLE_INSTRUMENTS}/elements \
   ${MUTABLE_INSTRUMENTS}/stmlib \
-	$(CHIBIOS)/os/hal/lib/streams \
+  $(CHIBIOS)/os/hal/lib/streams \
   ${CHIBIOS}/os/common/abstractions/cmsis_os
 
 #
