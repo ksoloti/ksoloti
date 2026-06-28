@@ -136,19 +136,22 @@ include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
 INCDIR = $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
-  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(PORTINC) $(KERNINC) $(CONFDIR) $(ALLINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) \
   $(OSALINC) \
-  ${FIRMWARE} \
   $(CHIBIOS) \
+  $(CHIBIOS)/os/license \
   $(CHIBIOS)/os/various \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
-  ${FIRMWARE}/mutable_instruments \
-  $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+  $(CHIBIOS)/os/common/startup/ARMCMx/devices/STM32F4xx \
   $(CHIBIOS)/os/ext/CMSIS/include \
-  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx
+  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
+  $(CHIBIOS)/os/hal/lib/streams \
+  ${CHIBIOS}/os/common/abstractions/cmsis_os \
+  $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
+  ${FIRMWARE} \
+  ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+  ${FIRMWARE}/mutable_instruments
 
 # Paths
 IINCDIR = $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR))
