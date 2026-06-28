@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@
  * @file    memstreams.h
  * @brief   Memory streams structures and macros.
  
- * @addtogroup memory_streams
+ * @addtogroup HAL_MEMORY_STREAMS
  * @{
  */
 
-#ifndef _MEMSTREAMS_H_
-#define _MEMSTREAMS_H_
+#ifndef MEMSTREAMS_H
+#define MEMSTREAMS_H
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -45,7 +45,7 @@
  * @brief   @p MemStream specific data.
  */
 #define _memory_stream_data                                                 \
-  _base_sequential_stream_data                                              \
+  _base_buffered_stream_data                                                \
   /* Pointer to the stream buffer.*/                                        \
   uint8_t               *buffer;                                            \
   /* Size of the stream.*/                                                  \
@@ -59,7 +59,7 @@
  * @brief   @p MemStream virtual methods table.
  */
 struct MemStreamVMT {
-  _base_sequential_stream_methods
+  _base_buffered_stream_methods
 };
 
 /**
@@ -90,6 +90,6 @@ extern "C" {
 }
 #endif
 
-#endif /* _MEMSTREAMS_H_ */
+#endif /* MEMSTREAMS_H */
 
 /** @} */

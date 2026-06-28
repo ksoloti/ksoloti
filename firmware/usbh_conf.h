@@ -43,6 +43,7 @@
 #include <string.h>
 
 #include "ch.h"
+#include "cmsis_os.h"
 #include "chprintf.h"
 #include "migration_v16.h"
 #include "mcuconf.h"
@@ -85,43 +86,29 @@
 extern void* fakemalloc(size_t size);
 extern void fakefree(void * p);
 
-#define osThreadId Thread *
-
+/* Map ST v1 5-args to ChibiOS v2 array layout */
+#undef osThreadDef
 #define osThreadDef(name, fn, prio, instances, stacksz) \
-  static WORKING_AREA(wa##name, 640); \
-  Thread *name = chThdCreateStatic(wa##name, sizeof(wa##name), USB_HOST_CONF_PRIO, (void*) fn, phost); \
-  phost->os_event = name;
-#define osThreadCreate(x,y) x
-#define osThread(x) x
+  const osThreadDef_t os_thread_def_##name = { \
+    (fn), \
+    (osPriority)(prio), \
+    (stacksz), \
+    #name \
+  }
 
-#if 0
-#define osMessageQId InputQueue *
-//#define osMessagePut(q,val,time) chSysLockFromIsr(); chIQPutI (q,val); chSysUnlockFromIsr();
-#define osMessagePut(q,val,time) chIQPutI (q,val);
-#define osMessageGet(q,to) \
-   (osEvent)chIQGetTimeout(q, TIME_INFINITE)
-
-#else
-#define osMessageQId Thread *
-#define osMessagePutI(q,val,time) chEvtSignalI (q,1<<val);
-#define osMessagePut(q,val,time) chEvtSignal (q,1<<val);
-#define osMessageGet(q,to) chEvtWaitOneTimeout(0xFF, MS2ST(to))
+#ifndef osMessagePutI
+  #define osMessagePutI(queue_id, info, millisec)    osMessagePut(queue_id, info, millisec)
 #endif
 
-// osThreadId
-#define osMessageQDef(name, queue_sz, type) \
-  static type buf[queue_sz]; \
-  INPUTQUEUE_DECL(name, &buf, sizeof(buf), NULL, NULL)
-#define osMessageCreate(queue_def, thread_id)  &queue_def
-#define osMessageQ(x) x
-#define osWaitForever TIME_INFINITE
-#define osEventMessage 1
-typedef uint8_t osEvent;
-
-//#define DEBUG_ON_GPIO
+#undef USB_DESC_DEVICE
+#undef USB_DESC_CONFIGURATION
+#undef USB_DESC_STRING
+#undef USB_DESC_INTERFACE
+#undef USB_DESC_ENDPOINT
+#undef USB_DESC_HID
+#undef USB_DESC_HID_REPORT
 
  /* DEBUG macros */
-
 
 #if (USBH_DEBUG_LEVEL > 0)
 extern void LogTextMessage(const char* format, ...);

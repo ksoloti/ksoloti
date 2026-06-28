@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@
  * @file    nullstreams.h
  * @brief   Null streams structures and macros.
  
- * @addtogroup null_streams
+ * @addtogroup HAL_NULL_STREAMS
  * @{
  */
 
-#ifndef _NULLSTREAMS_H_
-#define _NULLSTREAMS_H_
+#ifndef NULLSTREAMS_H
+#define NULLSTREAMS_H
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -45,17 +45,17 @@
  * @brief   @p NullStream specific data.
  */
 #define _null_stream_data                                                   \
-  _base_sequential_stream_data
+  _base_buffered_stream_data
 
 /**
  * @brief   @p NullStream virtual methods table.
  */
 struct NullStreamVMT {
-  _base_sequential_stream_methods
+  _base_buffered_stream_methods
 };
 
 /**
- * @extends BaseSequentialStream
+ * @extends BaseBufferedStream
  *
  * @brief   Null stream object.
  */
@@ -81,6 +81,6 @@ extern "C" {
 }
 #endif
 
-#endif /* _NULLSTREAMS_H_ */
+#endif /* NULLSTREAMS_H */
 
 /** @} */

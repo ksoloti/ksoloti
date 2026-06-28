@@ -30,7 +30,7 @@
 #include "ff.h"
 #include <string.h>
 
-#if USE_KVP
+#ifdef USE_KVP
 
 // Btn_Nav_States_struct Btn_Nav_CurStates;
 // Btn_Nav_States_struct Btn_Nav_PrevStates;
@@ -202,7 +202,7 @@ __attribute__((noreturn)) static msg_t ThreadUI(void *arg) {
 
 
 void ui_init(void) {
-#if USE_KVP    
+#ifdef USE_KVP    
     KeyValuePair_s *p = chCoreAlloc(sizeof(KeyValuePair_s) * 6);
     ObjectKvpRoot = &p[0];
 #endif

@@ -75,7 +75,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Alternate = 0;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init((GPIO_TypeDef *)GPIOA, &GPIO_InitStruct);
 #endif
 
   if (hHCD->Instance == USB_OTG_FS) {
@@ -90,7 +90,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init((GPIO_TypeDef *)GPIOA, &GPIO_InitStruct);
 
     /* This for ID line debug */ /* Ksoloti Core: deactivated since PA10 is used for Switch 2 */
     // GPIO_InitStruct.Pin = GPIO_PIN_10;
@@ -98,14 +98,14 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     // GPIO_InitStruct.Pull = GPIO_PULLUP;
     // GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     // GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-    // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    // HAL_GPIO_Init((GPIO_TypeDef *)GPIOA, &GPIO_InitStruct);
 
     /* Configure Power Switch Vbus Pin */
     GPIO_InitStruct.Pin = HOST_POWERSW_VBUS;
     GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(HOST_POWERSW_PORT, &GPIO_InitStruct);
+    HAL_GPIO_Init((GPIO_TypeDef *)HOST_POWERSW_PORT, &GPIO_InitStruct);
 
     /* Enable USB FS Clocks */
     __USB_OTG_FS_CLK_ENABLE();
@@ -131,7 +131,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init((GPIO_TypeDef *)GPIOB, &GPIO_InitStruct);
 
     /* This for ID line debug */ /* Ksoloti Core: deactivated since PB12 is used as GPIO */
     // GPIO_InitStruct.Pin = GPIO_PIN_12;
@@ -139,7 +139,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     // GPIO_InitStruct.Pull = GPIO_PULLUP;
     // GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     // GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
-    // HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    // HAL_GPIO_Init((GPIO_TypeDef *)GPIOB, &GPIO_InitStruct);
 
 
     /* Configure Power Switch Vbus Pin */
@@ -147,8 +147,8 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hHCD) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(HOST_POWERSW_PORT, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_RESET);
+    HAL_GPIO_Init((GPIO_TypeDef *)HOST_POWERSW_PORT, &GPIO_InitStruct);
+    HAL_GPIO_WritePin((GPIO_TypeDef *)HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_RESET);
 
     /* Enable USB FS Clocks */
     __USB_OTG_HS_CLK_ENABLE();
@@ -397,11 +397,11 @@ USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state) 
    */
   if (0 == state) {
     /* DISABLE is needed on output of the Power Switch */
-    HAL_GPIO_WritePin(HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_SET);
+    HAL_GPIO_WritePin((GPIO_TypeDef *)HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_SET);
   }
   else {
     /*ENABLE the Power Switch by driving the Enable LOW */
-    HAL_GPIO_WritePin(HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin((GPIO_TypeDef *)HOST_POWERSW_PORT, HOST_POWERSW_VBUS, GPIO_PIN_RESET);
   }
 
   HAL_Delay(200);
@@ -650,7 +650,7 @@ CH_IRQ_HANDLER(Vector174) {
   HAL_HCD_IRQHandler(&hHCD);
   chSysUnlockFromIsr();
 #if (DEBUG_ON_GPIO)
-  HAL_GPIO_WritePin( GPIOA, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin((GPIO_TypeDef *) GPIOA, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_RESET);
 #endif
   CH_IRQ_EPILOGUE();
 }

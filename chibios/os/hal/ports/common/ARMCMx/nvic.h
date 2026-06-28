@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _NVIC_H_
-#define _NVIC_H_
+#ifndef NVIC_H
+#define NVIC_H
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -75,14 +75,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+  void nvicInit(void);
   void nvicEnableVector(uint32_t n, uint32_t prio);
   void nvicDisableVector(uint32_t n);
   void nvicSetSystemHandlerPriority(uint32_t handler, uint32_t prio);
   void nvicClearPending(uint32_t n);
+  void nvicSetPending(uint32_t n);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _NVIC_H_ */
+#endif /* NVIC_H */
 
 /** @} */

@@ -161,7 +161,7 @@ void exception_init(void) {
         RCC->CSR |= RCC_CSR_RMVF;
     }
 
-#if WATCHDOG_ENABLED
+#ifdef WATCHDOG_ENABLED
     WWDG->SR = 0;
     WWDG->CR = 0x7F;
 #endif
@@ -437,7 +437,7 @@ void prvGetRegistersFromStack(uint32_t* pulFaultStackAddress) {
     exceptiondump->mmfar = SCB->MMFAR;
     exceptiondump->bfar = SCB->BFAR;
 
-#if WATCHDOG_ENABLED
+#ifdef WATCHDOG_ENABLED
     WWDG->CR = WWDG_CR_T;
 #endif
 

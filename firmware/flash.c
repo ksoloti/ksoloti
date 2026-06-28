@@ -23,7 +23,7 @@
 
 static __attribute__ ((section (".ramtext"))) int flash_WaitForLastOperation(void) {
     while (FLASH->SR & FLASH_SR_BSY) {
-#if WATCHDOG_ENABLED
+#ifdef WATCHDOG_ENABLED
         WWDG->CR = WWDG_CR_T;
 #else
         __ASM volatile ("nop");

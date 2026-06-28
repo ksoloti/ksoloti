@@ -23,7 +23,7 @@
 
 void ui_init(void);
 
-#if USE_KVP
+#ifdef USE_KVP
 
 typedef struct {
     int *value;

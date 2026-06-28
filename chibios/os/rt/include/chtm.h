@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,21 +17,28 @@
 */
 
 /**
- * @file    chtm.h
+ * @file    rt/include/chtm.h
  * @brief   Time Measurement module macros and structures.
  *
  * @addtogroup time_measurement
  * @{
  */
 
-#ifndef _CHTM_H_
-#define _CHTM_H_
+#ifndef CHTM_H
+#define CHTM_H
 
 #if (CH_CFG_USE_TM == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Module constants.                                                         */
 /*===========================================================================*/
+
+/**
+ * @brief   Number of iterations in the calibration loop.
+ * @note    This is required in order to assess the best result in
+ *          architectures with instruction cache.
+ */
+#define TM_CALIBRATION_LOOP             4U
 
 /*===========================================================================*/
 /* Module pre-compile time settings.                                         */
@@ -88,7 +94,6 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void _tm_init(void);
   void chTMObjectInit(time_measurement_t *tmp);
   NOINLINE void chTMStartMeasurementX(time_measurement_t *tmp);
   NOINLINE void chTMStopMeasurementX(time_measurement_t *tmp);
@@ -102,8 +107,34 @@ extern "C" {
 /* Module inline functions.                                                  */
 /*===========================================================================*/
 
+/**
+ * @brief   Time measurement initialization.
+ * @note    Internal use only.
+ *
+ * @param[out] tcp      pointer to the @p tm_calibration_t structure
+ *
+ * @notapi
+ */
+static inline void __tm_calibration_object_init(tm_calibration_t *tcp) {
+  unsigned i;
+  time_measurement_t tm;
+
+  /* Time Measurement subsystem calibration, it does a null measurement
+     and calculates the call overhead which is subtracted to real
+     measurements.*/
+  tcp->offset = (rtcnt_t)0;
+  chTMObjectInit(&tm);
+  i = TM_CALIBRATION_LOOP;
+  do {
+    chTMStartMeasurementX(&tm);
+    chTMStopMeasurementX(&tm);
+    i--;
+  } while (i > 0U);
+  tcp->offset = tm.best;
+}
+
 #endif /* CH_CFG_USE_TM == TRUE */
 
-#endif /* _CHTM_H_ */
+#endif /* CHTM_H */
 
 /** @} */

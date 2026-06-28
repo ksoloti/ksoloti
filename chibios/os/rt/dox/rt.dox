@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,19 +28,62 @@
  */
 
 /**
- * @defgroup config Configuration
+ * @defgroup config_category Configuration
  * @ingroup kernel
  */
 
 /**
- * @defgroup types Kernel Types
+ * @defgroup config Options
+ * @ingroup config_category
+ */
+
+/**
+ * @defgroup conf_checks Checks
+ * @ingroup config_category
+ */
+
+/**
+ * @defgroup rt_restrictions Restrictions
+ * @ingroup config_category
+ */
+
+/**
+ * @defgroup os System
  * @ingroup kernel
+ */
+
+/**
+ * @defgroup port_wrapper Port Interface
+ * @ingroup os
+ */
+
+/**
+ * @defgroup os_structures OS Types and Structures
+ * @ingroup os
+ */
+
+/**
+ * @defgroup instances OS Instances
+ * @ingroup os
+ */
+
+/**
+ * @defgroup rfcu Runtime Faults Collection Unit
+ * @ingroup os
+ */
+
+/**
+ * @defgroup os_lists Lists and Queues
+ * @ingroup os
+ */
+
+/**
+ * @defgroup scheduler Scheduler
+ * @ingroup os
  */
 
 /**
  * @defgroup base Base Kernel Services
- * @details Base kernel services, the base subsystems are always included in
- *          the OS builds.
  * @ingroup kernel
  */
 
@@ -51,7 +93,17 @@
  */
 
 /**
- * @defgroup scheduler Scheduler
+ * @defgroup mem Memory Alignment
+ * @ingroup base
+ */
+
+/**
+ * @defgroup time_intervals Time and Intervals
+ * @ingroup base
+ */
+
+/**
+ * @defgroup time Virtual Timers
  * @ingroup base
  */
 
@@ -61,7 +113,7 @@
  */
 
 /**
- * @defgroup time Time and Virtual Timers
+ * @defgroup time_measurement Time Measurement
  * @ingroup base
  */
 
@@ -73,11 +125,6 @@
 
 /**
  * @defgroup semaphores Counting Semaphores
- * @ingroup synchronization
- */
-
-/**
- * @defgroup binary_semaphores Binary Semaphores
  * @ingroup synchronization
  */
 
@@ -102,50 +149,8 @@
  */
 
 /**
- * @defgroup mailboxes Mailboxes
- * @ingroup synchronization
- */
-
-/**
- * @defgroup io_queues I/O Queues
- * @ingroup synchronization
- */
-
-/**
- * @defgroup memory Memory Management
- * @details Memory Management services.
- * @ingroup kernel
- */
-
-/**
- * @defgroup memcore Core Memory Manager
- * @ingroup memory
- */
-
-/**
- * @defgroup heaps Heaps
- * @ingroup memory
- */
-
-/**
- * @defgroup pools Memory Pools
- * @ingroup memory
- */
-
-/**
  * @defgroup dynamic_threads Dynamic Threads
- * @ingroup memory
- */
-
- /**
- * @defgroup streams Streams and Files
- * @details Stream and Files interfaces.
  * @ingroup kernel
- */
-
-/**
- * @defgroup data_streams Abstract Sequential Streams
- * @ingroup streams
  */
 
 /**
@@ -159,17 +164,16 @@
  */
 
 /**
- * @defgroup time_measurement Time Measurement
- * @ingroup kernel
+ * @defgroup checks_assertions Checks and Assertions
+ * @ingroup debug
+ */
+
+/**
+ * @defgroup trace Tracing
+ * @ingroup debug
  */
 
 /**
  * @defgroup statistics Statistics
- * @ingroup kernel
+ * @ingroup debug
  */
-
-/**
- * @defgroup core Port Layer
- * @ingroup kernel
- */
- 

@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,8 +32,15 @@
  * @{
  */
 
-#ifndef _HAL_STREAMS_H_
-#define _HAL_STREAMS_H_
+#ifndef HAL_STREAMS_H
+#define HAL_STREAMS_H
+
+
+/* Temporary, in order to avoid conflicts with the same definitions in new
+   OOP streams.*/
+#undef STM_OK
+#undef STM_TIMEOUT
+#undef STM_RESET
 
 /**
  * @name    Streams return codes
@@ -44,14 +51,11 @@
 #define STM_RESET            MSG_RESET
 /** @} */
 
-/* The ChibiOS/RT kernel provides the following definitions by itself, this
-   check is performed in order to avoid conflicts. */
-#if !defined(_CHIBIOS_RT_) || defined(__DOXYGEN__)
-
 /**
  * @brief   BaseSequentialStream specific methods.
  */
 #define _base_sequential_stream_methods                                     \
+  _base_object_methods                                                      \
   /* Stream write buffer method.*/                                          \
   size_t (*write)(void *instance, const uint8_t *bp, size_t n);             \
   /* Stream read buffer method.*/                                           \
@@ -59,14 +63,15 @@
   /* Channel put method, blocking.*/                                        \
   msg_t (*put)(void *instance, uint8_t b);                                  \
   /* Channel get method, blocking.*/                                        \
-  msg_t (*get)(void *instance);                                             \
+  msg_t (*get)(void *instance);
 
 /**
  * @brief   @p BaseSequentialStream specific data.
  * @note    It is empty because @p BaseSequentialStream is only an interface
  *          without implementation.
  */
-#define _base_sequential_stream_data
+#define _base_sequential_stream_data                                        \
+  _base_object_data
 
 /**
  * @brief   @p BaseSequentialStream virtual methods table.
@@ -76,6 +81,8 @@ struct BaseSequentialStreamVMT {
 };
 
 /**
+ * @extends BaseObject
+ *
  * @brief   Base stream class.
  * @details This class represents a generic blocking unbuffered sequential
  *          data stream.
@@ -85,8 +92,6 @@ typedef struct {
   const struct BaseSequentialStreamVMT *vmt;
   _base_sequential_stream_data
 } BaseSequentialStream;
-
-#endif /* !defined(_CHIBIOS_RT_)*/
 
 /**
  * @name    Macro Functions (BaseSequentialStream)
@@ -153,6 +158,68 @@ typedef struct {
 #define streamGet(ip) ((ip)->vmt->get(ip))
 /** @} */
 
-#endif /* _HAL_STREAMS_H_ */
+/**
+ * @brief   @p BaseBufferedStream specific methods.
+ */
+#define _base_buffered_stream_methods                                       \
+  _base_sequential_stream_methods                                           \
+  /* Channel unget method */                                                \
+  msg_t (*unget)(void *instance, uint8_t b);
+
+/**
+ * @brief   @p BaseBufferedStream specific data.
+ * @note    It is empty because @p BaseBufferedStream is only an interface
+ *          without implementation.
+ */
+#define _base_buffered_stream_data                                          \
+  _base_sequential_stream_data
+
+/**
+ * @extends BaseSequentialStreamVMT
+ *
+ * @brief   @p BaseBufferedStream virtual methods table.
+ */
+struct BaseBufferedStreamVMT {
+  _base_buffered_stream_methods
+};
+
+/**
+ * @extends BaseSequentialStream
+ *
+ * @brief   Buffered stream class.
+ * @details This class @p extends BaseSequentialStream to represent a generic
+ *          blocking buffered sequential data stream.
+ */
+typedef struct {
+  /** @brief Virtual Methods Table. */
+  const struct BaseBufferedStreamVMT *vmt;
+  _base_buffered_stream_data
+} BaseBufferedStream;
+
+/**
+ * @name    Macro Functions (BaseBufferedStream)
+ * @{
+ */
+/**
+ * @brief   Buffered Stream unget.
+ * @details This function replaces a byte value to a stream. streamUnget
+ *          only guarantees a single byte can be replaced, and multiple
+ *          calls without intervening calls to streamGet or streamRead may fail
+ *
+ * @param[in] ip        pointer to a @p BaseBufferedStream or derived class
+ * @param[in] b         the byte value to be written to the channel
+ *
+ * @post
+ *
+ * @return              The operation status.
+ * @retval STM_OK       if the operation succeeded.
+ * @retval STM_RESET    if the operation failed
+ *
+ * @api
+ */
+#define streamUnget(ip, b) ((ip)->vmt->unget(ip, b))
+/** @} */
+
+#endif /* HAL_STREAMS_H */
 
 /** @} */

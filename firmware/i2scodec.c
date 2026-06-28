@@ -23,7 +23,7 @@
 #include "hal.h"
 #include "sysmon.h"
 #include "stm32f4xx.h"
-#include "stm32f427xx.h"
+// #include "stm32f427xx.h"
 
 #ifdef FW_I2SCODEC
 
@@ -133,7 +133,7 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_TEIE;
         //STM32_DMA_CR_TCIE;
 
-    bool_t b = dmaStreamAllocate(i2s_tx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
+    i2s_tx_dma = dmaStreamAlloc( STM32_SPI_I2S3_TX_DMA_STREAM, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t)dma_i2s_tx_interrupt, (void *)0);
 
     dmaStreamSetPeripheral(i2s_tx_dma, &(SPI3->DR));
     dmaStreamSetMemory0(i2s_tx_dma, i2s_buf);
@@ -154,9 +154,9 @@ void i2s_dma_init(void) {
         STM32_DMA_CR_TEIE;
         //STM32_DMA_CR_TCIE;
 
-    b |= dmaStreamAllocate(i2s_rx_dma, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t) 0, (void*) 0);
+    i2s_rx_dma = dmaStreamAlloc( STM32_SPI_I2S3_RX_DMA_STREAM, STM32_SPI_I2S3_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
 
-    if (b) {
+    if (!i2s_rx_dma || !i2s_tx_dma ) {
         setErrorFlag(ERROR_CODEC_I2C);
         while (1);
     }

@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +17,7 @@
 */
 
 /**
- * @file    chregistry.c
+ * @file    rt/src/chregistry.c
  * @brief   Threads registry code.
  *
  * @addtogroup registry
@@ -44,6 +43,9 @@
  *          option must be enabled in @p chconf.h.
  * @{
  */
+
+#include <string.h>
+
 #include "ch.h"
 
 #if (CH_CFG_USE_REGISTRY == TRUE) || defined(__DOXYGEN__)
@@ -64,12 +66,6 @@
 /* Module local functions.                                                   */
 /*===========================================================================*/
 
-#define _offsetof(st, m)                                                    \
-  /*lint -save -e9005 -e9033 -e413 [11.8, 10.8 1.3] Normal pointers
-    arithmetic, it is safe.*/                                               \
-  ((size_t)((char *)&((st *)0)->m - (char *)0))                             \
-  /*lint -restore*/
-
 /*===========================================================================*/
 /* Module exported functions.                                                */
 /*===========================================================================*/
@@ -78,41 +74,72 @@
  * OS signature in ROM plus debug-related information.
  */
 ROMCONST chdebug_t ch_debug = {
-  {'m', 'a', 'i', 'n'},
-  (uint8_t)0,
-  (uint8_t)sizeof (chdebug_t),
-  (uint16_t)(((unsigned)CH_KERNEL_MAJOR << 11U) |
-             ((unsigned)CH_KERNEL_MINOR << 6U) |
-             ((unsigned)CH_KERNEL_PATCH << 0U)),
-  (uint8_t)sizeof (void *),
-  (uint8_t)sizeof (systime_t),
-  (uint8_t)sizeof (thread_t),
-  (uint8_t)_offsetof(thread_t, p_prio),
-  (uint8_t)_offsetof(thread_t, p_ctx),
-  (uint8_t)_offsetof(thread_t, p_newer),
-  (uint8_t)_offsetof(thread_t, p_older),
-  (uint8_t)_offsetof(thread_t, p_name),
-#if CH_DBG_ENABLE_STACK_CHECK == TRUE
-  (uint8_t)_offsetof(thread_t, p_stklimit),
+  .identifier               = {'m', 'a', 'i', 'n'},
+  .zero                     = (uint8_t)0,
+  .size                     = (uint8_t)sizeof (chdebug_t),
+  .version                  = (uint16_t)(((unsigned)CH_KERNEL_MAJOR << 11U) |
+                                         ((unsigned)CH_KERNEL_MINOR << 6U) |
+                                         ((unsigned)CH_KERNEL_PATCH << 0U)),
+  .ptrsize                  = (uint8_t)sizeof (void *),
+  .timesize                 = (uint8_t)sizeof (systime_t),
+  .intervalsize             = (uint8_t)sizeof (sysinterval_t),
+  .threadsize               = (uint8_t)sizeof (thread_t),
+  .intctxsize               = (uint8_t)sizeof (struct port_intctx),
+  .off_prio                 = (uint8_t)__CH_OFFSETOF(thread_t, hdr.pqueue.prio),
+  .off_ctx                  = (uint8_t)__CH_OFFSETOF(thread_t, ctx),
+  .off_newer                = (uint8_t)__CH_OFFSETOF(thread_t, rqueue.next),
+  .off_older                = (uint8_t)__CH_OFFSETOF(thread_t, rqueue.prev),
+  .off_name                 = (uint8_t)__CH_OFFSETOF(thread_t, name),
+#if (CH_DBG_ENABLE_STACK_CHECK == TRUE) || (CH_CFG_USE_DYNAMIC == TRUE)
+  .off_stklimit             = (uint8_t)__CH_OFFSETOF(thread_t, wabase),
 #else
-  (uint8_t)0,
+  .off_stklimit             = (uint8_t)0,
 #endif
-  (uint8_t)_offsetof(thread_t, p_state),
-  (uint8_t)_offsetof(thread_t, p_flags),
+  .off_state                = (uint8_t)__CH_OFFSETOF(thread_t, state),
+  .off_flags                = (uint8_t)__CH_OFFSETOF(thread_t, flags),
 #if CH_CFG_USE_DYNAMIC == TRUE
-  (uint8_t)_offsetof(thread_t, p_refs),
+  .off_refs                 = (uint8_t)__CH_OFFSETOF(thread_t, refs),
 #else
-  (uint8_t)0,
+  .off_refs                 = (uint8_t)0,
 #endif
 #if CH_CFG_TIME_QUANTUM > 0
-  (uint8_t)_offsetof(thread_t, p_preempt),
+  .off_preempt              = (uint8_t)__CH_OFFSETOF(thread_t, ticks),
 #else
-  (uint8_t)0,
+  .off_preempt              = (uint8_t)0,
 #endif
 #if CH_DBG_THREADS_PROFILING == TRUE
-  (uint8_t)_offsetof(thread_t, p_time)
+  .off_time                 = (uint8_t)__CH_OFFSETOF(thread_t, time),
 #else
-  (uint8_t)0
+  .off_time                 = (uint8_t)0,
+#endif
+  .off_reserved             = {(uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0},
+  .instancesnum             = (uint8_t)PORT_CORES_NUMBER,
+  .off_sys_state            = (uint8_t)__CH_OFFSETOF(ch_system_t, state),
+  .off_sys_instances        = (uint8_t)__CH_OFFSETOF(ch_system_t, instances[0]),
+#if (CH_CFG_USE_REGISTRY == TRUE) && (CH_CFG_SMP_MODE == TRUE)
+  .off_sys_reglist          = (uint8_t)__CH_OFFSETOF(ch_system_t, reglist),
+#else
+  .off_sys_reglist          = (uint8_t)0,
+#endif
+#if CH_CFG_SMP_MODE == TRUE
+  .off_sys_rfcu             = (uint8_t)__CH_OFFSETOF(ch_system_t, rfcu),
+#else
+  .off_sys_rfcu             = (uint8_t)0,
+#endif
+  .off_sys_reserved         = {(uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0},
+  .off_inst_rlist_current   = (uint8_t)__CH_OFFSETOF(os_instance_t, rlist.current),
+  .off_inst_rlist           = (uint8_t)__CH_OFFSETOF(os_instance_t, rlist),
+  .off_inst_vtlist          = (uint8_t)__CH_OFFSETOF(os_instance_t, vtlist),
+#if ((CH_CFG_USE_REGISTRY == TRUE) && (CH_CFG_SMP_MODE == FALSE))
+  .off_inst_reglist         = (uint8_t)__CH_OFFSETOF(os_instance_t, reglist),
+#else
+  .off_inst_reglist         = (uint8_t)0,
+#endif
+  .off_inst_core_id         = (uint8_t)__CH_OFFSETOF(os_instance_t, core_id),
+#if CH_CFG_SMP_MODE == FALSE
+  .off_inst_rfcu            = (uint8_t)__CH_OFFSETOF(os_instance_t, rfcu)
+#else
+  .off_inst_rfcu            = (uint8_t)0
 #endif
 };
 
@@ -130,11 +157,15 @@ ROMCONST chdebug_t ch_debug = {
  */
 thread_t *chRegFirstThread(void) {
   thread_t *tp;
+  uint8_t *p;
 
   chSysLock();
-  tp = ch.rlist.r_newer;
+  p = (uint8_t *)REG_HEADER(currcore)->next;
+  /*lint -save -e413 [1.3] Safe to subtract a calculated offset.*/
+  tp = threadref((p - __CH_OFFSETOF(thread_t, rqueue)));
+  /*lint -restore*/
 #if CH_CFG_USE_DYNAMIC == TRUE
-  tp->p_refs++;
+  tp->refs++;
 #endif
   chSysUnlock();
 
@@ -154,20 +185,27 @@ thread_t *chRegFirstThread(void) {
  */
 thread_t *chRegNextThread(thread_t *tp) {
   thread_t *ntp;
+  ch_queue_t *nqp;
 
   chSysLock();
-  ntp = tp->p_newer;
-  /*lint -save -e9087 -e740 [11.3, 1.3] Cast required by list handling.*/
-  if (ntp == (thread_t *)&ch.rlist) {
-  /*lint -restore*/
+
+  /* Next element in the registry queue.*/
+  nqp = tp->rqueue.next;
+  if (nqp == REG_HEADER(currcore)) {
     ntp = NULL;
   }
-#if CH_CFG_USE_DYNAMIC == TRUE
   else {
-    chDbgAssert(ntp->p_refs < (trefs_t)255, "too many references");
-    ntp->p_refs++;
-  }
+    uint8_t *p = (uint8_t *)nqp;
+    /*lint -save -e413 [1.3] Safe to subtract a calculated offset.*/
+    ntp = threadref((p - __CH_OFFSETOF(thread_t, rqueue)));
+    /*lint -restore*/
+
+#if CH_CFG_USE_DYNAMIC == TRUE
+    chDbgAssert(ntp->refs < (trefs_t)255, "too many references");
+
+    ntp->refs++;
 #endif
+  }
   chSysUnlock();
 #if CH_CFG_USE_DYNAMIC == TRUE
   chThdRelease(tp);
@@ -175,6 +213,90 @@ thread_t *chRegNextThread(thread_t *tp) {
 
   return ntp;
 }
+
+/**
+ * @brief   Retrieves a thread pointer by name.
+ * @note    The reference counter of the found thread is increased by one so
+ *          it cannot be disposed incidentally after the pointer has been
+ *          returned.
+ *
+ * @param[in] name      the thread name
+ * @return              A pointer to the found thread.
+ * @retval NULL         if a matching thread has not been found.
+ *
+ * @api
+ */
+thread_t *chRegFindThreadByName(const char *name) {
+  thread_t *ctp;
+
+  /* Scanning registry.*/
+  ctp = chRegFirstThread();
+  do {
+    if (strcmp(chRegGetThreadNameX(ctp), name) == 0) {
+      return ctp;
+    }
+    ctp = chRegNextThread(ctp);
+  } while (ctp != NULL);
+
+  return NULL;
+}
+
+/**
+ * @brief   Confirms that a pointer is a valid thread pointer.
+ * @note    The reference counter of the found thread is increased by one so
+ *          it cannot be disposed incidentally after the pointer has been
+ *          returned.
+ *
+ * @param[in] tp        pointer to the thread
+ * @return              A pointer to the found thread.
+ * @retval NULL         if a matching thread has not been found.
+ *
+ * @api
+ */
+thread_t *chRegFindThreadByPointer(thread_t *tp) {
+  thread_t *ctp;
+
+  /* Scanning registry.*/
+  ctp = chRegFirstThread();
+  do {
+    if (ctp == tp) {
+      return ctp;
+    }
+    ctp = chRegNextThread(ctp);
+  } while (ctp != NULL);
+
+  return NULL;
+}
+
+#if (CH_DBG_ENABLE_STACK_CHECK == TRUE) || (CH_CFG_USE_DYNAMIC == TRUE) ||  \
+    defined(__DOXYGEN__)
+/**
+ * @brief   Confirms that a working area is being used by some active thread.
+ * @note    The reference counter of the found thread is increased by one so
+ *          it cannot be disposed incidentally after the pointer has been
+ *          returned.
+ *
+ * @param[in] wa        pointer to a static working area
+ * @return              A pointer to the found thread.
+ * @retval NULL         if a matching thread has not been found.
+ *
+ * @api
+ */
+thread_t *chRegFindThreadByWorkingArea(stkalign_t *wa) {
+  thread_t *ctp;
+
+  /* Scanning registry.*/
+  ctp = chRegFirstThread();
+  do {
+    if (chThdGetWorkingAreaX(ctp) == wa) {
+      return ctp;
+    }
+    ctp = chRegNextThread(ctp);
+  } while (ctp != NULL);
+
+  return NULL;
+}
+#endif
 
 #endif /* CH_CFG_USE_REGISTRY == TRUE */
 

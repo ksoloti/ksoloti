@@ -168,7 +168,7 @@ void TransmitDisplayPckt(void) {
     if (length > 2560) {
         return; // FIXME
     }
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &patchMeta.pDisplayVector[0], length);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &patchMeta.pDisplayVector[0], length);
 }
 
 
@@ -184,7 +184,7 @@ void LogTextMessage(const char* format, ...) {
             va_start(ap, format);
             chvprintf((BaseSequentialStream*) &ms, format, ap);
             va_end(ap);
-            chSequentialStreamPut(&ms, 0);
+            streamPut(&ms, 0);
 
             size_t length = strlen((char*) tmp);
             if((length) && (LogBufferUsed + 4 + length + 1) < LOG_BUFFER_SIZE) {
@@ -203,14 +203,14 @@ void LogTextMessage(const char* format, ...) {
 
 
 void PExTransmit(void) {
-    if (!chOQIsEmptyI(&BDU1.oqueue)) {
+    if (!oqIsEmptyI(&BDU1.oqueue)) {
         chThdSleepMilliseconds(1);
         BDU1.oqueue.q_notify(&BDU1.oqueue);
     }
     else {
         if(chMtxTryLock(&LogMutex)) {
             if(LogBufferUsed) {
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) LogBuffer, LogBufferUsed);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) LogBuffer, LogBufferUsed);
                 LogBufferUsed = 0;
             }
             chMtxUnlock(&LogMutex);
@@ -231,7 +231,7 @@ void PExTransmit(void) {
                 ack[5] = loadPatchIndex;
             }
             ack[6] = fs_ready;
-            chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &ack[0], 7 * 4);
+            streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &ack[0], 7 * 4);
 
             connectionFlags.dspOverload = false; /* clear overload flag */
 
@@ -255,7 +255,7 @@ void PExTransmit(void) {
                     pex_msg.patchID = patchMeta.patchID;
                     pex_msg.index = i;
                     pex_msg.value = v;
-                    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &pex_msg, sizeof(pex_msg));
+                    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) &pex_msg, sizeof(pex_msg));
                 }
             }
         }
@@ -285,7 +285,7 @@ static void send_AxoResult(char cmd_byte, uint8_t status) {
     res_msg[0] = 'A'; res_msg[1] = 'x'; res_msg[2] = 'o'; res_msg[3] = 'R';
     res_msg[4] = cmd_byte;
     res_msg[5] = (char) status;
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) res_msg, 6);
 }
 
 
@@ -303,8 +303,8 @@ static FRESULT scan_files(char* path) {
     char* fname;
     char* msg = (char*) &fbuff[128]; /* 128 ints = 512 bytes offset */
 
-    fno.lfname = &FileName[0];
-    fno.lfsize = sizeof(FileName);
+    strcpy(FileName, fno.fname);
+    fno.fsize = sizeof(FileName);
 
     op_result = f_opendir(&dir, path);
     if (op_result == FR_OK) {
@@ -316,11 +316,7 @@ static FRESULT scan_files(char* path) {
             if (fno.fname[0] == '.')
                 continue;
 
-#if _USE_LFN
-            fname = *fno.lfname ? fno.lfname : fno.fname;
-#else
             fname = fno.fname;
-#endif
 
             if (fname[0] == '.') /* ignore hidden items */
                 continue;
@@ -343,7 +339,7 @@ static FRESULT scan_files(char* path) {
                 int l = strlen(&msg[12]);
                 msg[12+l] = '/';
                 msg[13+l] = 0;
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+14);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+14);
 
                 op_result = scan_files(path);
                 if (op_result != FR_OK) {
@@ -374,7 +370,7 @@ static FRESULT scan_files(char* path) {
                 }
 
                 int l = strlen(&msg[12]); /* Calculate total length of the constructed path (starting from msg[12]) */
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, 12 + l + 1);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, 12 + l + 1);
             }
         }
         f_closedir(&dir);
@@ -405,7 +401,7 @@ void ReadDirectoryListing(void) {
     fbuff[1] = clusters;
     fbuff[2] = fsp->csize;
     fbuff[3] = MMCSD_BLOCK_SIZE;
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 16);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 16);
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
 
@@ -426,7 +422,7 @@ void ReadDirectoryListing(void) {
     fbuff[2] = 0;
     ((char*) fbuff)[12] = '/';
     ((char*) fbuff)[13] = '\0';
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 14);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&fbuff[0]), 14);
     chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
 
     RDL_result_and_exit:
@@ -556,8 +552,8 @@ static void ManipulateFile(void) {
 
         else if (FileName[1] == 'I') { /* get file info (AxoCI) */
             FILINFO fno;
-            fno.lfname = &((char*) fbuff)[0]; // fbuff is a global buffer
-            fno.lfsize = 256; // Max size for long file name
+            strcpy(&((char*) fbuff)[0], fno.fname);
+            fno.fsize = 256; // Max size for long file name
 
             FRESULT op_result = f_stat(&FileName[6], &fno); /* Path from FileName[6]+ */
             if (op_result == FR_OK) {
@@ -567,7 +563,7 @@ static void ManipulateFile(void) {
                 uint32_to_le_bytes(fno.fdate + (fno.ftime<<16), &msg[8]);
                 strcpy(&msg[12], &FileName[6]); // Copy from FileName[6]
                 int l = strlen(&msg[12]);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) msg, l+13);
                 chThdSleepMilliseconds(10); /* Give some time for the USB buffer to clear */
             }
 
@@ -669,7 +665,7 @@ void ReplyFWVersion(void) {
     uint32_to_le_bytes(fwid, &reply[8]);
     uint32_to_le_bytes(PATCHMAINLOC, &reply[12]);
 
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 16);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 16);
 }
 
 
@@ -681,7 +677,7 @@ void ReplySpilinkSynced(void) {
     reply[3] = 'Y';
     /* SPILINK pin high means Core is master (default), else synced */
     reply[4] = !palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
-    chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 5);
+    streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 5);
 }
 
 
@@ -1064,8 +1060,8 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[3] = 'r';
                 uint32_to_le_bytes(offset, &read_reply_header[4]);
                 uint32_to_le_bytes(value, &read_reply_header[8]);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (offset), (uint32_t)value);
                 state = 0; header = 0;
                 break;
             default:
@@ -1086,7 +1082,7 @@ void PExReceiveByte(unsigned char c) {
                 read_reply_header[3] = 'y';
                 uint32_to_le_bytes(offset, &read_reply_header[4]);
                 uint32_to_le_bytes(value, &read_reply_header[8]);
-                chSequentialStreamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
+                streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&read_reply_header[0]), 12);
                 state = 0; header = 0;
                 break;
             default:

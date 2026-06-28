@@ -28,6 +28,10 @@ ifeq ($(USE_OPT),)
     -pipe 
 endif 
 
+# Force RAM restriction regardless of prior variable states
+USE_OPT += -DCRT1_AREAS_NUMBER=0
+
+
 # C specific options here (added to USE_OPT).
 ifeq ($(USE_COPT),)
   USE_COPT = 
@@ -45,6 +49,11 @@ ifeq ($(USE_LINK_GC),)
   USE_LINK_GC = yes
 endif
 
+# Linker extra options here.
+ifeq ($(USE_LDOPT),)
+  USE_LDOPT = 
+endif
+
 ifeq ($(USE_LTO),)
   USE_LTO = no
 endif
@@ -59,6 +68,12 @@ ifeq ($(USE_VERBOSE_COMPILE),)
   USE_VERBOSE_COMPILE = no
 endif
 
+# If enabled, this option makes the build process faster by not compiling
+# modules not used in the current configuration.
+ifeq ($(USE_SMART_BUILD),)
+  USE_SMART_BUILD = yes
+endif
+
 #
 # Build global options
 ##############################################################################
@@ -67,10 +82,27 @@ endif
 # Architecture or project specific options
 #
 
+# Stack size to be allocated to the Cortex-M process stack. This stack is
+# the stack used by the main() thread.
+ifeq ($(USE_PROCESS_STACKSIZE),)
+  USE_PROCESS_STACKSIZE = 0x400
+endif
+
+# Stack size to the allocated to the Cortex-M main/exceptions stack. This
+# stack is used for processing interrupts and exceptions.
+ifeq ($(USE_EXCEPTIONS_STACKSIZE),)
+  USE_EXCEPTIONS_STACKSIZE = 0x400
+endif
+
 # Enables the use of FPU on Cortex-M4.
 # Enable this if you really want to use the STM FWLib.
 ifeq ($(USE_FPU),)
   USE_FPU = hard
+endif
+
+# FPU-related options.
+ifeq ($(USE_FPU_OPT),)
+  USE_FPU_OPT = -mfloat-abi=$(USE_FPU) -mfpu=fpv4-sp-d16
 endif
 
 # Enable this if you really want to use the STM FWLib.
@@ -97,33 +129,42 @@ endif
 
 # Imported source files and paths
 CHIBIOS = ${axoloti_home}/chibios
+CONFDIR  := .
 
 include board.mk
 
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+# Other files (optional).
+include $(CHIBIOS)/os/hal/lib/streams/streams.mk
+include $(CHIBIOS)/os/various/shell/shell.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+
+# get the same binary as openOCD flashes from elf
+override BIN = $(CP) -O binary --gap-fill 0xff
+override HEX = $(CP) -O ihex --gap-fill 0xff
 	
 # Define linker script file here
 LDSCRIPT= STM32F427xG_flasher.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(STARTUPSRC) \
-      $(PORTSRC) \
+CSRC = $(PORTSRC) \
       $(KERNSRC) \
       $(HALSRC) \
       $(PLATFORMSRC) \
       $(BOARDSRC) \
-      $(CHIBIOS)/os/various/shell.c \
+      $(CHIBIOS)/os/various/shell/shell.c \
       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
       ../axoloti_board.c \
@@ -160,19 +201,23 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(STARTUPASM) \
-        $(PORTASM)
+ASMSRC =
+
+# List ASM with Preprocessor source files here (.S files)
+ASMXSRC = \
+  $(STARTUPASM) \
+  $(PORTASM)
 
 INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
-  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(PORTINC) $(KERNINC) $(CONFDIR) $(ALLINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) $(OSALINC) \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
-  $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \
-  $(CHIBIOS)/os/common/ports/ARMCMx/devices/STM32F4xx \
+  $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC \
+  $(CHIBIOS)/os/common/startup/ARMCMx/devices/STM32F4xx \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
   $(CHIBIOS)/os/hal/lib/streams \
@@ -215,12 +260,14 @@ TOPT = \
 CWARN = \
     -Wall \
     -Wextra \
-    -Wstrict-prototypes
+    -Wstrict-prototypes \
+    -Wundef
 
 # Define C++ warning options here
 CPPWARN = \
     -Wall \
-    -Wextra
+    -Wextra \
+    -Wundef
 
 #
 # Compiler settings
@@ -256,7 +303,6 @@ DLIBS =
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
     -DARM_MATH_CM4 \
-    -D__FPU_PRESENT \
     -DCRT1_AREAS_NUMBER=0 
 
 # Define ASM defines here
@@ -272,7 +318,6 @@ ULIBDIR = .
 ULIBS =
 
 
-VPATH = .
 #
 # End of user defines
 ##############################################################################
@@ -281,3 +326,13 @@ VPATH = .
 # include $(RULESPATH)/rules.mk
 
 include ../rules.mk
+
+# Provide dummy references for the crt1.c hooks that crt0_v7m.S calls
+override LDFLAGS += -Wl,--defsym=__cpu_init=0
+override LDFLAGS += -Wl,--defsym=__init_ram_areas=0
+override LDFLAGS += -Wl,--defsym=__late_init=0
+override LDFLAGS += -Wl,--defsym=__default_exit=0
+
+#
+# Common rules
+##############################################################################

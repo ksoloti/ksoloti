@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _OSAL_H_
-#define _OSAL_H_
+#ifndef OSAL_H
+#define OSAL_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -54,17 +54,16 @@
  * @{
  */
 #define MSG_OK                              (msg_t)0
-#define MSG_RESET                           (msg_t)-1
-#define MSG_TIMEOUT                         (msg_t)-2
+#define MSG_TIMEOUT                         (msg_t)-1
+#define MSG_RESET                           (msg_t)-2
 /** @} */
-
 
 /**
  * @name    Special time constants
  * @{
  */
-#define TIME_IMMEDIATE                      ((systime_t)0)
-#define TIME_INFINITE                       ((systime_t)-1)
+#define TIME_IMMEDIATE                      ((sysinterval_t)0)
+#define TIME_INFINITE                       ((sysinterval_t)-1)
 /** @} */
 
 /**
@@ -135,6 +134,16 @@
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
+#if !(OSAL_ST_MODE == OSAL_ST_MODE_NONE) &&                                 \
+    !(OSAL_ST_MODE == OSAL_ST_MODE_PERIODIC) &&                             \
+    !(OSAL_ST_MODE == OSAL_ST_MODE_FREERUNNING)
+#error "invalid OSAL_ST_MODE setting in osal.h"
+#endif
+
+#if (OSAL_ST_RESOLUTION != 16) && (OSAL_ST_RESOLUTION != 32)
+#error "invalid OSAL_ST_RESOLUTION, must be 16 or 32"
+#endif
+
 /*===========================================================================*/
 /* Module data structures and types.                                         */
 /*===========================================================================*/
@@ -155,6 +164,18 @@ typedef int32_t msg_t;
 typedef uint32_t systime_t;
 
 /**
+ * @brief   Type of system time interval.
+ */
+typedef uint32_t sysinterval_t;
+
+/**
+ * @brief   Type of time conversion variable.
+ * @note    This type must have double width than other time types, it is
+ *          only used internally for conversions.
+ */
+typedef uint64_t time_conv_t;
+
+/**
  * @brief   Type of realtime counter.
  */
 typedef uint32_t rtcnt_t;
@@ -163,6 +184,11 @@ typedef uint32_t rtcnt_t;
  * @brief   Type of a thread reference.
  */
 typedef void * thread_reference_t;
+
+/**
+ * @brief   Type of an event flags mask.
+ */
+typedef uint32_t eventflags_t;
 
 /**
  * @brief   Type of an event flags object.
@@ -180,11 +206,6 @@ typedef struct event_source event_source_t;
  *          exclusively as an example and for convenience.
  */
 typedef void (*eventcallback_t)(event_source_t *esp);
-
-/**
- * @brief   Type of an event flags mask.
- */
-typedef uint32_t eventflags_t;
 
 /**
  * @brief   Events source object.
@@ -250,7 +271,6 @@ typedef struct {
   }                                                                         \
 } while (false)
 
-
 /**
  * @brief   Function parameters check.
  * @details If the condition check fails then the OSAL panics and halts.
@@ -270,7 +290,6 @@ typedef struct {
     }                                                                       \
   }                                                                         \
 } while (false)
-
 
 /**
  * @brief   I-Class state check.
@@ -321,45 +340,110 @@ typedef struct {
  * @{
  */
 /**
- * @brief   Seconds to system ticks.
+ * @brief   Seconds to time interval.
  * @details Converts from seconds to system ticks number.
  * @note    The result is rounded upward to the next tick boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
  *
- * @param[in] sec       number of seconds
+ * @param[in] secs      number of seconds
  * @return              The number of ticks.
  *
  * @api
  */
-#define OSAL_S2ST(sec)                                                      \
-  ((systime_t)((uint32_t)(sec) * (uint32_t)OSAL_ST_FREQUENCY))
+#define OSAL_S2I(secs)                                                      \
+  ((sysinterval_t)((time_conv_t)(secs) * (time_conv_t)OSAL_ST_FREQUENCY))
 
 /**
- * @brief   Milliseconds to system ticks.
+ * @brief   Milliseconds to time interval.
  * @details Converts from milliseconds to system ticks number.
  * @note    The result is rounded upward to the next tick boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
  *
- * @param[in] msec      number of milliseconds
+ * @param[in] msecs     number of milliseconds
  * @return              The number of ticks.
  *
  * @api
  */
-#define OSAL_MS2ST(msec)                                                    \
-  ((systime_t)((((((uint32_t)(msec)) *                                      \
-                  ((uint32_t)OSAL_ST_FREQUENCY)) - 1UL) / 1000UL) + 1UL))
+#define OSAL_MS2I(msecs)                                                    \
+  ((sysinterval_t)((((time_conv_t)(msecs) *                                 \
+                     (time_conv_t)OSAL_ST_FREQUENCY) +                      \
+                    (time_conv_t)999) / (time_conv_t)1000))
 
 /**
- * @brief   Microseconds to system ticks.
+ * @brief   Microseconds to time interval.
  * @details Converts from microseconds to system ticks number.
  * @note    The result is rounded upward to the next tick boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
  *
- * @param[in] usec      number of microseconds
+ * @param[in] usecs     number of microseconds
  * @return              The number of ticks.
  *
  * @api
  */
-#define OSAL_US2ST(usec)                                                    \
-  ((systime_t)((((((uint32_t)(usec)) *                                      \
-                  ((uint32_t)OSAL_ST_FREQUENCY)) - 1UL) / 1000000UL) + 1UL))
+#define OSAL_US2I(usecs)                                                    \
+  ((sysinterval_t)((((time_conv_t)(usecs) *                                 \
+                     (time_conv_t)OSAL_ST_FREQUENCY) +                      \
+                    (time_conv_t)999999) / (time_conv_t)1000000))
+
+/**
+ * @brief   Time interval to seconds.
+ * @details Converts from system ticks number to seconds.
+ * @note    The result is rounded up to the next second boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
+ *
+ * @param[in] interval  interval in ticks
+ * @return              The number of seconds.
+ *
+ * @api
+ */
+#define OSAL_I2S(interval)                                                  \
+  (time_secs_t)(((time_conv_t)(interval) +                                  \
+                 (time_conv_t)OSAL_ST_FREQUENCY -                           \
+                 (time_conv_t)1) / (time_conv_t)OSAL_ST_FREQUENCY)
+
+/**
+ * @brief   Time interval to milliseconds.
+ * @details Converts from system ticks number to milliseconds.
+ * @note    The result is rounded up to the next millisecond boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
+ *
+ * @param[in] interval  interval in ticks
+ * @return              The number of milliseconds.
+ *
+ * @api
+ */
+#define OSAL_I2MS(interval)                                                 \
+  (time_msecs_t)((((time_conv_t)(interval) * (time_conv_t)1000) +           \
+                  (time_conv_t)OSAL_ST_FREQUENCY - (time_conv_t)1) /        \
+                 (time_conv_t)OSAL_ST_FREQUENCY)
+
+/**
+ * @brief   Time interval to microseconds.
+ * @details Converts from system ticks number to microseconds.
+ * @note    The result is rounded up to the next microsecond boundary.
+ * @note    Use of this macro for large values is not secure because
+ *          integer overflows, make sure your value can be correctly
+ *          converted.
+ *
+ * @param[in] interval  interval in ticks
+ * @return              The number of microseconds.
+ *
+ * @api
+ */
+#define OSAL_I2US(interval)                                                 \
+  (time_msecs_t)((((time_conv_t)(interval) * (time_conv_t)1000000) +        \
+                  (time_conv_t)OSAL_ST_FREQUENCY - (time_conv_t)1) /        \
+                 (time_conv_t)OSAL_ST_FREQUENCY)
 /** @} */
 
 /**
@@ -418,11 +502,11 @@ typedef struct {
  *          system tick clock.
  * @note    The maximum specifiable value is implementation dependent.
  *
- * @param[in] sec       time in seconds, must be different from zero
+ * @param[in] secs      time in seconds, must be different from zero
  *
  * @api
  */
-#define osalThreadSleepSeconds(sec) osalThreadSleep(OSAL_S2ST(sec))
+#define osalThreadSleepSeconds(secs) osalThreadSleep(OSAL_S2I(secs))
 
 /**
  * @brief   Delays the invoking thread for the specified number of
@@ -431,11 +515,11 @@ typedef struct {
  *          system tick clock.
  * @note    The maximum specifiable value is implementation dependent.
  *
- * @param[in] msec      time in milliseconds, must be different from zero
+ * @param[in] msecs     time in milliseconds, must be different from zero
  *
  * @api
  */
-#define osalThreadSleepMilliseconds(msec) osalThreadSleep(OSAL_MS2ST(msec))
+#define osalThreadSleepMilliseconds(msecs) osalThreadSleep(OSAL_MS2I(msecs))
 
 /**
  * @brief   Delays the invoking thread for the specified number of
@@ -444,11 +528,11 @@ typedef struct {
  *          system tick clock.
  * @note    The maximum specifiable value is implementation dependent.
  *
- * @param[in] usec      time in microseconds, must be different from zero
+ * @param[in] usecs     time in microseconds, must be different from zero
  *
  * @api
  */
-#define osalThreadSleepMicroseconds(usec) osalThreadSleep(OSAL_US2ST(usec))
+#define osalThreadSleepMicroseconds(usecs) osalThreadSleep(OSAL_US2I(usecs))
 /** @} */
 
 /*===========================================================================*/
@@ -466,13 +550,13 @@ extern "C" {
   void osalOsTimerHandlerI(void);
   void osalOsRescheduleS(void);
   systime_t osalOsGetSystemTimeX(void);
-  void osalThreadSleepS(systime_t time);
-  void osalThreadSleep(systime_t time);
+  void osalThreadSleepS(sysinterval_t time);
+  void osalThreadSleep(sysinterval_t time);
   msg_t osalThreadSuspendS(thread_reference_t *trp);
-  msg_t osalThreadSuspendTimeoutS(thread_reference_t *trp, systime_t timeout);
+  msg_t osalThreadSuspendTimeoutS(thread_reference_t *trp, sysinterval_t timeout);
   void osalThreadResumeI(thread_reference_t *trp, msg_t msg);
   void osalThreadResumeS(thread_reference_t *trp, msg_t msg);
-  msg_t osalThreadEnqueueTimeoutS(threads_queue_t *tqp, systime_t timeout);
+  msg_t osalThreadEnqueueTimeoutS(threads_queue_t *tqp, sysinterval_t timeout);
   void osalThreadDequeueNextI(threads_queue_t *tqp, msg_t msg);
   void osalThreadDequeueAllI(threads_queue_t *tqp, msg_t msg);
   void osalEventBroadcastFlagsI(event_source_t *esp, eventflags_t flags);
@@ -581,9 +665,38 @@ static inline void osalSysRestoreStatusX(syssts_t sts) {
 }
 
 /**
+ * @brief   Adds an interval to a system time returning a system time.
+ *
+ * @param[in] systime   base system time
+ * @param[in] interval  interval to be added
+ * @return              The new system time.
+ *
+ * @xclass
+ */
+static inline systime_t osalTimeAddX(systime_t systime,
+                                     sysinterval_t interval) {
+
+  return systime + (systime_t)interval;
+}
+
+/**
+ * @brief   Subtracts two system times returning an interval.
+ *
+ * @param[in] start     first system time
+ * @param[in] end       second system time
+ * @return              The interval representing the time difference.
+ *
+ * @xclass
+ */
+static inline sysinterval_t osalTimeDiffX(systime_t start, systime_t end) {
+
+  return (sysinterval_t)((systime_t)(end - start));
+}
+
+/**
  * @brief   Checks if the specified time is within the specified time window.
- * @note    When start==end then the function returns always true because the
- *          whole time range is specified.
+ * @note    When start==end then the function returns always false because the
+ *          time window has zero size.
  * @note    This function can be called from any context.
  *
  * @param[in] time      the time to be verified
@@ -594,11 +707,12 @@ static inline void osalSysRestoreStatusX(syssts_t sts) {
  *
  * @xclass
  */
-static inline bool osalOsIsTimeWithinX(systime_t time,
-                                       systime_t start,
-                                       systime_t end) {
+static inline bool osalTimeIsInRangeX(systime_t time,
+                                      systime_t start,
+                                      systime_t end) {
 
-  return (bool)((time - start) < (end - start));
+  return (bool)((systime_t)((systime_t)time - (systime_t)start) <
+                (systime_t)((systime_t)end - (systime_t)start));
 }
 
 /**
@@ -614,9 +728,9 @@ static inline void osalThreadQueueObjectInit(threads_queue_t *tqp) {
 }
 
 /**
- * @brief   Initializes an event flags object.
+ * @brief   Initializes an event source object.
  *
- * @param[out] esp      pointer to the event flags object
+ * @param[out] esp      pointer to the event source object
  *
  * @init
  */
@@ -630,7 +744,7 @@ static inline void osalEventObjectInit(event_source_t *esp) {
 }
 
 /**
- * @brief   Initializes s @p mutex_t object.
+ * @brief   Initializes a @p mutex_t object.
  *
  * @param[out] mp       pointer to the @p mutex_t object
  *
@@ -643,6 +757,6 @@ static inline void osalMutexObjectInit(mutex_t *mp) {
   *mp = 0;
 }
 
-#endif /* _OSAL_H_ */
+#endif /* OSAL_H */
 
 /** @} */

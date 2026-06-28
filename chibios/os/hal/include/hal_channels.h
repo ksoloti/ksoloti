@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,8 +33,17 @@
  * @{
  */
 
-#ifndef _HAL_CHANNELS_H_
-#define _HAL_CHANNELS_H_
+#ifndef HAL_CHANNELS_H
+#define HAL_CHANNELS_H
+
+/**
+ * @name    Default control operation codes.
+ * @{
+ */
+#define CHN_CTL_INVALID         0   /**< @brief Invalid operation code.     */
+#define CHN_CTL_NOP             1   /**< @brief Does nothing.               */
+#define CHN_CTL_TX_WAIT         2   /**< @brief Wait for TX completion.     */
+/** @} */
 
 /**
  * @brief   @p BaseChannel specific methods.
@@ -42,14 +51,17 @@
 #define _base_channel_methods                                               \
   _base_sequential_stream_methods                                           \
   /* Channel put method with timeout specification.*/                       \
-  msg_t (*putt)(void *instance, uint8_t b, systime_t time);                 \
+  msg_t (*putt)(void *instance, uint8_t b, sysinterval_t time);             \
   /* Channel get method with timeout specification.*/                       \
-  msg_t (*gett)(void *instance, systime_t time);                            \
+  msg_t (*gett)(void *instance, sysinterval_t time);                        \
   /* Channel write method with timeout specification.*/                     \
   size_t (*writet)(void *instance, const uint8_t *bp,                       \
-                   size_t n, systime_t time);                               \
+                   size_t n, sysinterval_t time);                           \
   /* Channel read method with timeout specification.*/                      \
-  size_t (*readt)(void *instance, uint8_t *bp, size_t n, systime_t time);
+  size_t (*readt)(void *instance, uint8_t *bp, size_t n,                    \
+                  sysinterval_t time);                                      \
+  /* Channel control method.*/                                              \
+  msg_t (*ctl)(void *instance, unsigned int operation, void *arg);
 
 /**
  * @brief   @p BaseChannel specific data.
@@ -96,7 +108,6 @@ typedef struct {
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation status.
  * @retval STM_OK       if the operation succeeded.
  * @retval STM_TIMEOUT  if the specified time expired.
@@ -116,7 +127,6 @@ typedef struct {
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              A byte value from the queue.
  * @retval STM_TIMEOUT  if the specified time expired.
  * @retval STM_RESET    if the channel associated queue (if any) has been
@@ -153,7 +163,6 @@ typedef struct {
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The number of bytes transferred.
  *
  * @api
@@ -187,12 +196,27 @@ typedef struct {
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The number of bytes transferred.
  *
  * @api
  */
 #define chnReadTimeout(ip, bp, n, time) ((ip)->vmt->readt(ip, bp, n, time))
+
+/**
+ * @brief   Control operation on a channel.
+ *
+ * @param[in] ip        pointer to a @p BaseChannel or derived class
+ * @param[in] operation control operation code
+ * @param[in,out] arg   operation argument
+ *
+ * @return              The control operation status.
+ * @retval MSG_OK       in case of success.
+ * @retval MSG_TIMEOUT  in case of operation timeout.
+ * @retval MSG_RESET    in case of operation reset.
+ *
+ * @api
+ */
+#define chnControl(ip, operation, arg) ((ip)->vmt->ctl(ip, operation, arg))
 /** @} */
 
 /**
@@ -211,6 +235,20 @@ typedef struct {
 #define CHN_OUTPUT_EMPTY        (eventflags_t)8
 /** @brief Transmission end.*/
 #define CHN_TRANSMISSION_END    (eventflags_t)16
+/** @brief Parity error.*/
+#define CHN_PARITY_ERROR         (eventflags_t)32
+/** @brief Framing error.*/
+#define CHN_FRAMING_ERROR        (eventflags_t)64
+/** @brief Line noise error.*/
+#define CHN_NOISE_ERROR          (eventflags_t)128
+/** @brief Overflow error.*/
+#define CHN_OVERRUN_ERROR        (eventflags_t)256
+/** @brief RX line idle.*/
+#define CHN_IDLE_DETECTED        (eventflags_t)512
+/** @brief LIN Break.*/
+#define CHN_BREAK_DETECTED       (eventflags_t)1024
+/**< @brief RX buffer full. */
+#define CHN_BUFFER_FULL_ERROR    (eventflags_t)2048
 /** @} */
 
 /**
@@ -282,6 +320,6 @@ typedef struct {
 }
 /** @} */
 
-#endif /* _HAL_CHANNELS_H_ */
+#endif /* HAL_CHANNELS_H */
 
 /** @} */

@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,10 +17,10 @@
 */
 
 /**
- * @file    chdebug.c
- * @brief   ChibiOS/RT Debug code.
+ * @file    rt/src/chdebug.c
+ * @brief   Debug support code.
  *
- * @addtogroup debug
+ * @addtogroup checks_assertions
  * @details Debug APIs and services:
  *          - Runtime system state and call protocol check. The following
  *            panic messages can be generated:
@@ -69,10 +68,8 @@
  *              - S-class function not called from within a critical zone.
  *              - Called from an ISR.
  *            .
- *          - Trace buffer.
  *          - Parameters check.
  *          - Kernel assertions.
- *          - Kernel panics.
  *          .
  * @note    Stack checks are not implemented in this module but in the port
  *          layer in an architecture-dependent way.
@@ -111,9 +108,11 @@
  *
  * @notapi
  */
-void _dbg_check_disable(void) {
+void __dbg_check_disable(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#1");
   }
 }
@@ -123,9 +122,11 @@ void _dbg_check_disable(void) {
  *
  * @notapi
  */
-void _dbg_check_suspend(void) {
+void __dbg_check_suspend(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#2");
   }
 }
@@ -135,9 +136,11 @@ void _dbg_check_suspend(void) {
  *
  * @notapi
  */
-void _dbg_check_enable(void) {
+void __dbg_check_enable(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#3");
   }
 }
@@ -147,12 +150,14 @@ void _dbg_check_enable(void) {
  *
  * @notapi
  */
-void _dbg_check_lock(void) {
+void __dbg_check_lock(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#4");
   }
-  _dbg_enter_lock();
+  oip->dbg.lock_cnt = (cnt_t)1;
 }
 
 /**
@@ -160,12 +165,14 @@ void _dbg_check_lock(void) {
  *
  * @notapi
  */
-void _dbg_check_unlock(void) {
+void __dbg_check_unlock(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt <= (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt <= (cnt_t)0))) {
     chSysHalt("SV#5");
   }
-  _dbg_leave_lock();
+  oip->dbg.lock_cnt = (cnt_t)0;
 }
 
 /**
@@ -173,12 +180,14 @@ void _dbg_check_unlock(void) {
  *
  * @notapi
  */
-void _dbg_check_lock_from_isr(void) {
+void __dbg_check_lock_from_isr(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt <= (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt <= (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#6");
   }
-  _dbg_enter_lock();
+  oip->dbg.lock_cnt = (cnt_t)1;
 }
 
 /**
@@ -186,12 +195,14 @@ void _dbg_check_lock_from_isr(void) {
  *
  * @notapi
  */
-void _dbg_check_unlock_from_isr(void) {
+void __dbg_check_unlock_from_isr(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt <= (cnt_t)0) || (ch.dbg.lock_cnt <= (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt <= (cnt_t)0) ||
+               (oip->dbg.lock_cnt <= (cnt_t)0))) {
     chSysHalt("SV#7");
   }
-  _dbg_leave_lock();
+  oip->dbg.lock_cnt = (cnt_t)0;
 }
 
 /**
@@ -199,13 +210,15 @@ void _dbg_check_unlock_from_isr(void) {
  *
  * @notapi
  */
-void _dbg_check_enter_isr(void) {
+void __dbg_check_enter_isr(void) {
+  os_instance_t *oip = currcore;
 
   port_lock_from_isr();
-  if ((ch.dbg.isr_cnt < (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt < (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#8");
   }
-  ch.dbg.isr_cnt++;
+  oip->dbg.isr_cnt++;
   port_unlock_from_isr();
 }
 
@@ -214,13 +227,15 @@ void _dbg_check_enter_isr(void) {
  *
  * @notapi
  */
-void _dbg_check_leave_isr(void) {
+void __dbg_check_leave_isr(void) {
+  os_instance_t *oip = currcore;
 
   port_lock_from_isr();
-  if ((ch.dbg.isr_cnt <= (cnt_t)0) || (ch.dbg.lock_cnt != (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt <= (cnt_t)0) ||
+               (oip->dbg.lock_cnt != (cnt_t)0))) {
     chSysHalt("SV#9");
   }
-  ch.dbg.isr_cnt--;
+  oip->dbg.isr_cnt--;
   port_unlock_from_isr();
 }
 
@@ -233,8 +248,10 @@ void _dbg_check_leave_isr(void) {
  * @api
  */
 void chDbgCheckClassI(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt < (cnt_t)0) || (ch.dbg.lock_cnt <= (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt < (cnt_t)0) ||
+               (oip->dbg.lock_cnt <= (cnt_t)0))) {
     chSysHalt("SV#10");
   }
 }
@@ -248,43 +265,14 @@ void chDbgCheckClassI(void) {
  * @api
  */
 void chDbgCheckClassS(void) {
+  os_instance_t *oip = currcore;
 
-  if ((ch.dbg.isr_cnt != (cnt_t)0) || (ch.dbg.lock_cnt <= (cnt_t)0)) {
+  if (unlikely((oip->dbg.isr_cnt != (cnt_t)0) ||
+               (oip->dbg.lock_cnt <= (cnt_t)0))) {
     chSysHalt("SV#11");
   }
 }
 
 #endif /* CH_DBG_SYSTEM_STATE_CHECK == TRUE */
-
-#if (CH_DBG_ENABLE_TRACE == TRUE) || defined(__DOXYGEN__)
-/**
- * @brief   Trace circular buffer subsystem initialization.
- * @note    Internal use only.
- */
-void _dbg_trace_init(void) {
-
-  ch.dbg.trace_buffer.tb_size = CH_DBG_TRACE_BUFFER_SIZE;
-  ch.dbg.trace_buffer.tb_ptr = &ch.dbg.trace_buffer.tb_buffer[0];
-}
-
-/**
- * @brief   Inserts in the circular debug trace buffer a context switch record.
- *
- * @param[in] otp       the thread being switched out
- *
- * @notapi
- */
-void _dbg_trace(thread_t *otp) {
-
-  ch.dbg.trace_buffer.tb_ptr->se_time   = chVTGetSystemTimeX();
-  ch.dbg.trace_buffer.tb_ptr->se_tp     = currp;
-  ch.dbg.trace_buffer.tb_ptr->se_wtobjp = otp->p_u.wtobjp;
-  ch.dbg.trace_buffer.tb_ptr->se_state  = (uint8_t)otp->p_state;
-  if (++ch.dbg.trace_buffer.tb_ptr >=
-      &ch.dbg.trace_buffer.tb_buffer[CH_DBG_TRACE_BUFFER_SIZE]) {
-    ch.dbg.trace_buffer.tb_ptr = &ch.dbg.trace_buffer.tb_buffer[0];
-  }
-}
-#endif /* CH_DBG_ENABLE_TRACE */
 
 /** @} */

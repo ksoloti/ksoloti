@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
  * @file    memstreams.c
  * @brief   Memory streams code.
  *
- * @addtogroup memory_streams
+ * @addtogroup HAL_MEMORY_STREAMS
+ * @details Memory buffers handled as streams.
  * @{
  */
 
@@ -43,7 +44,7 @@
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-static size_t writes(void *ip, const uint8_t *bp, size_t n) {
+static size_t _writes(void *ip, const uint8_t *bp, size_t n) {
   MemoryStream *msp = ip;
 
   if (msp->size - msp->eos < n)
@@ -53,7 +54,7 @@ static size_t writes(void *ip, const uint8_t *bp, size_t n) {
   return n;
 }
 
-static size_t reads(void *ip, uint8_t *bp, size_t n) {
+static size_t _reads(void *ip, uint8_t *bp, size_t n) {
   MemoryStream *msp = ip;
 
   if (msp->eos - msp->offset < n)
@@ -63,7 +64,7 @@ static size_t reads(void *ip, uint8_t *bp, size_t n) {
   return n;
 }
 
-static msg_t put(void *ip, uint8_t b) {
+static msg_t _put(void *ip, uint8_t b) {
   MemoryStream *msp = ip;
 
   if (msp->size - msp->eos <= 0)
@@ -73,7 +74,7 @@ static msg_t put(void *ip, uint8_t b) {
   return MSG_OK;
 }
 
-static msg_t get(void *ip) {
+static msg_t _get(void *ip) {
   uint8_t b;
   MemoryStream *msp = ip;
 
@@ -84,7 +85,19 @@ static msg_t get(void *ip) {
   return b;
 }
 
-static const struct MemStreamVMT vmt = {writes, reads, put, get};
+static msg_t _unget(void* ip, uint8_t b)
+{
+  MemoryStream* msp = ip;
+
+  if (msp->offset <= 0)
+    return MSG_RESET;
+  msp->offset -= 1;
+  *(msp->buffer + msp->offset) = b;
+
+  return MSG_OK;
+}
+
+static const struct MemStreamVMT vmt = {(size_t)0, _writes, _reads, _put, _get, _unget};
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */

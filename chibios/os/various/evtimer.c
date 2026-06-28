@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,8 +45,10 @@
 /* Module local functions.                                                   */
 /*===========================================================================*/
 
-static void tmrcb(void *p) {
+static void tmrcb(virtual_timer_t *vtp, void *p) {
   event_timer_t *etp = p;
+
+  (void)vtp;
 
   chSysLockFromISR();
   chEvtBroadcastI(&etp->et_es);

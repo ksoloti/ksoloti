@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,15 +20,15 @@
  */
 
 /**
- * @file    chcond.h
+ * @file    rt/include/chcond.h
  * @brief   Condition Variables macros and structures.
  *
  * @addtogroup condvars
  * @{
  */
 
-#ifndef _CHCOND_H_
-#define _CHCOND_H_
+#ifndef CHCOND_H
+#define CHCOND_H
 
 #if (CH_CFG_USE_CONDVARS == TRUE) || defined(__DOXYGEN__)
 
@@ -57,7 +56,7 @@
  * @brief   condition_variable_t structure.
  */
 typedef struct condition_variable {
-  threads_queue_t       c_queue;            /**< @brief Condition variable
+  ch_queue_t            queue;              /**< @brief Condition variable
                                                  threads queue.             */
 } condition_variable_t;
 
@@ -72,7 +71,7 @@ typedef struct condition_variable {
  *
  * @param[in] name      the name of the condition variable
  */
-#define _CONDVAR_DATA(name) {_THREADS_QUEUE_DATA(name.c_queue)}
+#define __CONDVAR_DATA(name) {__CH_QUEUE_DATA(name.queue)}
 
 /**
  * @brief Static condition variable initializer.
@@ -81,7 +80,7 @@ typedef struct condition_variable {
  *
  * @param[in] name      the name of the condition variable
  */
-#define CONDVAR_DECL(name) condition_variable_t name = _CONDVAR_DATA(name)
+#define CONDVAR_DECL(name) condition_variable_t name = __CONDVAR_DATA(name)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -98,8 +97,8 @@ extern "C" {
   msg_t chCondWait(condition_variable_t *cp);
   msg_t chCondWaitS(condition_variable_t *cp);
 #if CH_CFG_USE_CONDVARS_TIMEOUT == TRUE
-  msg_t chCondWaitTimeout(condition_variable_t *cp, systime_t time);
-  msg_t chCondWaitTimeoutS(condition_variable_t *cp, systime_t time);
+  msg_t chCondWaitTimeout(condition_variable_t *cp, sysinterval_t timeout);
+  msg_t chCondWaitTimeoutS(condition_variable_t *cp, sysinterval_t timeout);
 #endif
 #ifdef __cplusplus
 }
@@ -111,6 +110,6 @@ extern "C" {
 
 #endif /* CH_CFG_USE_CONDVARS == TRUE */
 
-#endif /* _CHCOND_H_ */
+#endif /* CHCOND_H */
 
 /** @} */

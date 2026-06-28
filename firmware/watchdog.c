@@ -22,11 +22,11 @@
 #include "ch.h"
 #include "hal.h"
 
-#define WATCHDOG_ENABLED 0
+// #define WATCHDOG_ENABLED
 
 
 void watchdog_init(void) {
-#if WATCHDOG_ENABLED
+#ifdef WATCHDOG_ENABLED
   RCC->APB1ENR |= RCC_APB1ENR_WWDGEN;
   // disable watchdog when debugger active?
   DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_WWDG_STOP;
@@ -38,7 +38,7 @@ void watchdog_init(void) {
 }
 
 void watchdog_feed(void) {
-#if WATCHDOG_ENABLED
+#ifdef WATCHDOG_ENABLED
   if ((WWDG->CR & WWDG_CR_T) != WWDG_CR_T)
     WWDG->CR = WWDG_CR_T;
 #endif

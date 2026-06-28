@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +17,7 @@
 */
 
 /**
- * @file    chstats.c
+ * @file    rt/src/chstats.c
  * @brief   Statistics module code.
  *
  * @addtogroup statistics
@@ -55,25 +54,12 @@
 /*===========================================================================*/
 
 /**
- * @brief   Initializes the statistics module.
- *
- * @init
- */
-void _stats_init(void) {
-
-  ch.kernel_stats.n_irq = (ucnt_t)0;
-  ch.kernel_stats.n_ctxswc = (ucnt_t)0;
-  chTMObjectInit(&ch.kernel_stats.m_crit_thd);
-  chTMObjectInit(&ch.kernel_stats.m_crit_isr);
-}
-
-/**
  * @brief   Increases the IRQ counter.
  */
-void _stats_increase_irq(void) {
+void __stats_increase_irq(void) {
 
   port_lock_from_isr();
-  ch.kernel_stats.n_irq++;
+  currcore->kernel_stats.n_irq++;
   port_unlock_from_isr();
 }
 
@@ -83,42 +69,42 @@ void _stats_increase_irq(void) {
  * @param[in] ntp       the thread to be switched in
  * @param[in] otp       the thread to be switched out
  */
-void _stats_ctxswc(thread_t *ntp, thread_t *otp) {
+void __stats_ctxswc(thread_t *ntp, thread_t *otp) {
 
-  ch.kernel_stats.n_ctxswc++;
-  chTMChainMeasurementToX(&otp->p_stats, &ntp->p_stats);
+  currcore->kernel_stats.n_ctxswc++;
+  chTMChainMeasurementToX(&otp->stats, &ntp->stats);
 }
 
 /**
  * @brief   Starts the measurement of a thread critical zone.
  */
-void _stats_start_measure_crit_thd(void) {
+void __stats_start_measure_crit_thd(void) {
 
-  chTMStartMeasurementX(&ch.kernel_stats.m_crit_thd);
+  chTMStartMeasurementX(&currcore->kernel_stats.m_crit_thd);
 }
 
 /**
  * @brief   Stops the measurement of a thread critical zone.
  */
-void _stats_stop_measure_crit_thd(void) {
+void __stats_stop_measure_crit_thd(void) {
 
-  chTMStopMeasurementX(&ch.kernel_stats.m_crit_thd);
+  chTMStopMeasurementX(&currcore->kernel_stats.m_crit_thd);
 }
 
 /**
  * @brief   Starts the measurement of an ISR critical zone.
  */
-void _stats_start_measure_crit_isr(void) {
+void __stats_start_measure_crit_isr(void) {
 
-  chTMStartMeasurementX(&ch.kernel_stats.m_crit_isr);
+  chTMStartMeasurementX(&currcore->kernel_stats.m_crit_isr);
 }
 
 /**
  * @brief   Stops the measurement of an ISR critical zone.
  */
-void _stats_stop_measure_crit_isr(void) {
+void __stats_stop_measure_crit_isr(void) {
 
-  chTMStopMeasurementX(&ch.kernel_stats.m_crit_isr);
+  chTMStopMeasurementX(&currcore->kernel_stats.m_crit_isr);
 }
 
 #endif /* CH_DBG_STATISTICS == TRUE */

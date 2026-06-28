@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@
  * @file    chprintf.h
  * @brief   Mini printf-like functionality.
  *
- * @addtogroup chprintf
+ * @addtogroup HAL_CHPRINTF
  * @{
  */
 
-#ifndef _CHPRINTF_H_
-#define _CHPRINTF_H_
+#ifndef CHPRINTF_H
+#define CHPRINTF_H
 
 #include <stdarg.h>
+
+#include "hal.h"
 
 /**
  * @brief   Float type support.
@@ -40,10 +42,11 @@ extern "C" {
   int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap);
   int chprintf(BaseSequentialStream *chp, const char *fmt, ...);
   int chsnprintf(char *str, size_t size, const char *fmt, ...);
+  int chvsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CHPRINTF_H_ */
+#endif /* CHPRINTF_H */
 
 /** @} */

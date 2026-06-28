@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +20,7 @@
  */
 
 /**
- * @file    chcond.c
+ * @file    rt/src/chcond.c
  * @brief   Condition Variables code.
  *
  * @addtogroup condvars
@@ -76,7 +75,7 @@ void chCondObjectInit(condition_variable_t *cp) {
 
   chDbgCheck(cp != NULL);
 
-  queue_init(&cp->c_queue);
+  ch_queue_init(&cp->queue);
 }
 
 /**
@@ -91,8 +90,8 @@ void chCondSignal(condition_variable_t *cp) {
   chDbgCheck(cp != NULL);
 
   chSysLock();
-  if (queue_notempty(&cp->c_queue)) {
-    chSchWakeupS(queue_fifo_remove(&cp->c_queue), MSG_OK);
+  if (ch_queue_notempty(&cp->queue)) {
+    chSchWakeupS(threadref(ch_queue_fifo_remove(&cp->queue)), MSG_OK);
   }
   chSysUnlock();
 }
@@ -113,9 +112,9 @@ void chCondSignalI(condition_variable_t *cp) {
   chDbgCheckClassI();
   chDbgCheck(cp != NULL);
 
-  if (queue_notempty(&cp->c_queue)) {
-    thread_t *tp = queue_fifo_remove(&cp->c_queue);
-    tp->p_u.rdymsg = MSG_OK;
+  if (ch_queue_notempty(&cp->queue)) {
+    thread_t *tp = threadref(ch_queue_fifo_remove(&cp->queue));
+    tp->u.rdymsg = MSG_OK;
     (void) chSchReadyI(tp);
   }
 }
@@ -154,8 +153,8 @@ void chCondBroadcastI(condition_variable_t *cp) {
   /* Empties the condition variable queue and inserts all the threads into the
      ready list in FIFO order. The wakeup message is set to @p MSG_RESET in
      order to make a chCondBroadcast() detectable from a chCondSignal().*/
-  while (queue_notempty(&cp->c_queue)) {
-    chSchReadyI(queue_fifo_remove(&cp->c_queue))->p_u.rdymsg = MSG_RESET;
+  while (ch_queue_notempty(&cp->queue)) {
+    chSchReadyI(threadref(ch_queue_fifo_remove(&cp->queue)))->u.rdymsg = MSG_RESET;
   }
 }
 
@@ -203,24 +202,23 @@ msg_t chCondWait(condition_variable_t *cp) {
  * @sclass
  */
 msg_t chCondWaitS(condition_variable_t *cp) {
-  thread_t *ctp = currp;
-  mutex_t *mp;
+  thread_t *currtp = chThdGetSelfX();
+  mutex_t *mp = chMtxGetNextMutexX();
   msg_t msg;
 
   chDbgCheckClassS();
   chDbgCheck(cp != NULL);
-  chDbgAssert(ctp->p_mtxlist != NULL, "not owning a mutex");
+  chDbgAssert(mp != NULL, "not owning a mutex");
 
-  /* Getting "current" mutex and releasing it.*/
-  mp = chMtxGetNextMutexS();
+  /* Releasing "current" mutex.*/
   chMtxUnlockS(mp);
 
   /* Start waiting on the condition variable, on exit the mutex is taken
      again.*/
-  ctp->p_u.wtobjp = cp;
-  queue_prio_insert(ctp, &cp->c_queue);
+  currtp->u.wtobjp = cp;
+  ch_sch_prio_insert(&cp->queue, &currtp->hdr.queue);
   chSchGoSleepS(CH_STATE_WTCOND);
-  msg = ctp->p_u.rdymsg;
+  msg = currtp->u.rdymsg;
   chMtxLockS(mp);
 
   return msg;
@@ -239,7 +237,7 @@ msg_t chCondWaitS(condition_variable_t *cp) {
  *          mutex, the mutex ownership is lost.
  *
  * @param[in] cp        pointer to the @p condition_variable_t structure
- * @param[in] time      the number of ticks before the operation timeouts, the
+ * @param[in] timeout   the number of ticks before the operation timeouts, the
  *                      special values are handled as follow:
  *                      - @a TIME_INFINITE no timeout.
  *                      - @a TIME_IMMEDIATE this value is not allowed.
@@ -255,11 +253,11 @@ msg_t chCondWaitS(condition_variable_t *cp) {
  *
  * @api
  */
-msg_t chCondWaitTimeout(condition_variable_t *cp, systime_t time) {
+msg_t chCondWaitTimeout(condition_variable_t *cp, sysinterval_t timeout) {
   msg_t msg;
 
   chSysLock();
-  msg = chCondWaitTimeoutS(cp, time);
+  msg = chCondWaitTimeoutS(cp, timeout);
   chSysUnlock();
 
   return msg;
@@ -277,7 +275,7 @@ msg_t chCondWaitTimeout(condition_variable_t *cp, systime_t time) {
  *          mutex, the mutex ownership is lost.
  *
  * @param[in] cp        pointer to the @p condition_variable_t structure
- * @param[in] time      the number of ticks before the operation timeouts, the
+ * @param[in] timeout   the number of ticks before the operation timeouts, the
  *                      special values are handled as follow:
  *                      - @a TIME_INFINITE no timeout.
  *                      - @a TIME_IMMEDIATE this value is not allowed.
@@ -293,23 +291,23 @@ msg_t chCondWaitTimeout(condition_variable_t *cp, systime_t time) {
  *
  * @sclass
  */
-msg_t chCondWaitTimeoutS(condition_variable_t *cp, systime_t time) {
-  mutex_t *mp;
+msg_t chCondWaitTimeoutS(condition_variable_t *cp, sysinterval_t timeout) {
+  thread_t *currtp = chThdGetSelfX();
+  mutex_t *mp = chMtxGetNextMutexX();
   msg_t msg;
 
   chDbgCheckClassS();
-  chDbgCheck((cp != NULL) && (time != TIME_IMMEDIATE));
-  chDbgAssert(currp->p_mtxlist != NULL, "not owning a mutex");
+  chDbgCheck((cp != NULL) && (timeout != TIME_IMMEDIATE));
+  chDbgAssert(mp != NULL, "not owning a mutex");
 
-  /* Getting "current" mutex and releasing it.*/
-  mp = chMtxGetNextMutexS();
+  /* Releasing "current" mutex.*/
   chMtxUnlockS(mp);
 
   /* Start waiting on the condition variable, on exit the mutex is taken
      again.*/
-  currp->p_u.wtobjp = cp;
-  queue_prio_insert(currp, &cp->c_queue);
-  msg = chSchGoSleepTimeoutS(CH_STATE_WTCOND, time);
+  currtp->u.wtobjp = cp;
+  ch_sch_prio_insert(&cp->queue, &currtp->hdr.queue);
+  msg = chSchGoSleepTimeoutS(CH_STATE_WTCOND, timeout);
   if (msg != MSG_TIMEOUT) {
     chMtxLockS(mp);
   }

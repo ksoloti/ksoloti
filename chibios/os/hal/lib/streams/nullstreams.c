@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
  * @file    nullstreams.c
  * @brief   Null streams code.
  *
- * @addtogroup null_streams
+ * @addtogroup HAL_NULL_STREAMS
+ * @details A null streams.
  * @{
  */
 
@@ -73,7 +74,16 @@ static msg_t get(void *ip) {
   return 4;
 }
 
-static const struct NullStreamVMT vmt = {writes, reads, put, get};
+static msg_t unget(void* ip, uint8_t b)
+{
+
+  (void)ip;
+  (void)b;
+
+  return MSG_OK;
+}
+
+static const struct NullStreamVMT vmt = {(size_t)0, writes, reads, put, get, unget};
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */

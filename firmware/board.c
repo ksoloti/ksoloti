@@ -21,6 +21,85 @@
 #include "exceptions.h"
 
 #if HAL_USE_PAL || defined(__DOXYGEN__)
+
+#define AHB1_EN_MASK    STM32_GPIO_EN_MASK
+#define AHB1_LPEN_MASK  AHB1_EN_MASK
+ 
+ /**
+ * @brief   GPIO port setup info.
+ */
+typedef struct {
+    /** Initial value for MODER register.*/
+    uint32_t              moder;
+    /** Initial value for OTYPER register.*/
+    uint32_t              otyper;
+    /** Initial value for OSPEEDR register.*/
+    uint32_t              ospeedr;
+    /** Initial value for PUPDR register.*/
+    uint32_t              pupdr;
+    /** Initial value for ODR register.*/
+    uint32_t              odr;
+    /** Initial value for AFRL register.*/
+    uint32_t              afrl;
+    /** Initial value for AFRH register.*/
+    uint32_t              afrh;
+} stm32_gpio_setup_t;
+
+/**
+ * @brief   STM32 GPIO static initializer.
+ * @details An instance of this structure must be passed to @p palInit() at
+ *          system startup time in order to initialize the digital I/O
+ *          subsystem. This represents only the initial setup, specific pads
+ *          or whole ports can be reprogrammed at later time.
+ */
+typedef struct {
+#if STM32_HAS_GPIOA || defined(__DOXYGEN__)
+    /** @brief Port A setup data.*/
+    stm32_gpio_setup_t    PAData;
+#endif
+#if STM32_HAS_GPIOB || defined(__DOXYGEN__)
+    /** @brief Port B setup data.*/
+    stm32_gpio_setup_t    PBData;
+#endif
+#if STM32_HAS_GPIOC || defined(__DOXYGEN__)
+    /** @brief Port C setup data.*/
+    stm32_gpio_setup_t    PCData;
+#endif
+#if STM32_HAS_GPIOD || defined(__DOXYGEN__)
+    /** @brief Port D setup data.*/
+    stm32_gpio_setup_t    PDData;
+#endif
+#if STM32_HAS_GPIOE || defined(__DOXYGEN__)
+    /** @brief Port E setup data.*/
+    stm32_gpio_setup_t    PEData;
+#endif
+#if STM32_HAS_GPIOF || defined(__DOXYGEN__)
+    /** @brief Port F setup data.*/
+    stm32_gpio_setup_t    PFData;
+#endif
+#if STM32_HAS_GPIOG || defined(__DOXYGEN__)
+    /** @brief Port G setup data.*/
+    stm32_gpio_setup_t    PGData;
+#endif
+#if STM32_HAS_GPIOH || defined(__DOXYGEN__)
+    /** @brief Port H setup data.*/
+    stm32_gpio_setup_t    PHData;
+#endif
+#if STM32_HAS_GPIOI || defined(__DOXYGEN__)
+    /** @brief Port I setup data.*/
+    stm32_gpio_setup_t    PIData;
+#endif
+#if STM32_HAS_GPIOJ || defined(__DOXYGEN__)
+    /** @brief Port I setup data.*/
+    stm32_gpio_setup_t    PJData;
+#endif
+#if STM32_HAS_GPIOK || defined(__DOXYGEN__)
+    /** @brief Port I setup data.*/
+    stm32_gpio_setup_t    PKData;
+#endif
+} PALConfig;
+
+
 /**
  * @brief   PAL setup.
  * @details Digital I/O ports static configuration as defined in @p board.h.

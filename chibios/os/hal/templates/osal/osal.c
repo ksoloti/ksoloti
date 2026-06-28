@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -146,11 +146,10 @@ systime_t osalOsGetSystemTimeX(void) {
  *                      - @a TIME_INFINITE is allowed but interpreted as a
  *                        normal time specification.
  *                      - @a TIME_IMMEDIATE this value is not allowed.
- *                      .
  *
  * @sclass
  */
-void osalThreadSleepS(systime_t time) {
+void osalThreadSleepS(sysinterval_t time) {
 
   (void)time;
 }
@@ -163,11 +162,10 @@ void osalThreadSleepS(systime_t time) {
  *                      - @a TIME_INFINITE is allowed but interpreted as a
  *                        normal time specification.
  *                      - @a TIME_IMMEDIATE this value is not allowed.
- *                      .
  *
  * @api
  */
-void osalThreadSleep(systime_t time) {
+void osalThreadSleep(sysinterval_t time) {
 
   (void)time;
 }
@@ -202,13 +200,12 @@ msg_t osalThreadSuspendS(thread_reference_t *trp) {
  *                      - @a TIME_IMMEDIATE the thread is not enqueued and
  *                        the function returns @p MSG_TIMEOUT as if a timeout
  *                        occurred.
- *                      .
  * @return              The wake up message.
  * @retval MSG_TIMEOUT  if the operation timed out.
  *
  * @sclass
  */
-msg_t osalThreadSuspendTimeoutS(thread_reference_t *trp, systime_t timeout) {
+msg_t osalThreadSuspendTimeoutS(thread_reference_t *trp, sysinterval_t timeout) {
 
   osalDbgCheck(trp != NULL);
 
@@ -264,7 +261,6 @@ void osalThreadResumeS(thread_reference_t *trp, msg_t msg) {
  *                      - @a TIME_IMMEDIATE the thread is not enqueued and
  *                        the function returns @p MSG_TIMEOUT as if a timeout
  *                        occurred.
- *                      .
  * @return              The message from @p osalQueueWakeupOneI() or
  *                      @p osalQueueWakeupAllI() functions.
  * @retval MSG_TIMEOUT  if the thread has not been dequeued within the
@@ -274,7 +270,7 @@ void osalThreadResumeS(thread_reference_t *trp, msg_t msg) {
  *
  * @sclass
  */
-msg_t osalThreadEnqueueTimeoutS(threads_queue_t *tqp, systime_t timeout) {
+msg_t osalThreadEnqueueTimeoutS(threads_queue_t *tqp, sysinterval_t timeout) {
 
   osalDbgCheck(tqp != NULL);
 

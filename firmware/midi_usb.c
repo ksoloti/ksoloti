@@ -87,46 +87,54 @@ uint8_t mduTransmitBuffer[MIDI_USB_BUFFERS_SIZE];
 
 static size_t write(void *ip, const uint8_t *bp, size_t n) {
 
-  return chOQWriteTimeout(&((MidiUSBDriver *)ip)->oqueue, bp, n, TIME_INFINITE);
+  return oqWriteTimeout(&((MidiUSBDriver *)ip)->oqueue, bp, n, TIME_INFINITE);
 }
 
 static size_t read(void *ip, uint8_t *bp, size_t n) {
 
-  return chIQReadTimeout(&((MidiUSBDriver *)ip)->iqueue, bp, n, TIME_INFINITE);
+  return iqReadTimeout(&((MidiUSBDriver *)ip)->iqueue, bp, n, TIME_INFINITE);
 }
 
 static msg_t put(void *ip, uint8_t b) {
 
-  return chOQPutTimeout(&((MidiUSBDriver *)ip)->oqueue, b, TIME_INFINITE);
+  return oqPutTimeout(&((MidiUSBDriver *)ip)->oqueue, b, TIME_INFINITE);
 }
 
 static msg_t get(void *ip) {
 
-  return chIQGetTimeout(&((MidiUSBDriver *)ip)->iqueue, TIME_INFINITE);
+  return iqGetTimeout(&((MidiUSBDriver *)ip)->iqueue, TIME_INFINITE);
 }
 
 static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
 
-  return chOQPutTimeout(&((MidiUSBDriver *)ip)->oqueue, b, timeout);
+  return oqPutTimeout(&((MidiUSBDriver *)ip)->oqueue, b, timeout);
 }
 
 static msg_t gett(void *ip, systime_t timeout) {
 
-  return chIQGetTimeout(&((MidiUSBDriver *)ip)->iqueue, timeout);
+  return iqGetTimeout(&((MidiUSBDriver *)ip)->iqueue, timeout);
 }
 
 static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
 
-  return chOQWriteTimeout(&((MidiUSBDriver *)ip)->oqueue, bp, n, time);
+  return oqWriteTimeout(&((MidiUSBDriver *)ip)->oqueue, bp, n, time);
 }
 
 static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
 
-  return chIQReadTimeout(&((MidiUSBDriver *)ip)->iqueue, bp, n, time);
+  return iqReadTimeout(&((MidiUSBDriver *)ip)->iqueue, bp, n, time);
 }
 
-static const struct MidiUSBDriverVMT vmt = {write, read, put, get, putt, gett,
-                                            writet, readt};
+static const struct MidiUSBDriverVMT vmt = {
+  .write  = (size_t (*)(void *, const uint8_t *, size_t))write,
+  .read   = (size_t (*)(void *, uint8_t *, size_t))read,
+  .put    = (msg_t (*)(void *, uint8_t))put,
+  .get    = (msg_t (*)(void *))get,
+  .putt   = (msg_t (*)(void *, uint8_t, sysinterval_t))putt,
+  .gett   = (msg_t (*)(void *, sysinterval_t))gett,
+  .writet = (size_t (*)(void *, const uint8_t *, size_t, sysinterval_t))writet,
+  .readt  = (size_t (*)(void *, uint8_t *, size_t, sysinterval_t))readt
+};
 
 
 void mduInitiateReceiveI(MidiUSBDriver *mdup, size_t uCount)
@@ -143,13 +151,13 @@ void mduInitiateTransmitI(MidiUSBDriver *mdup, size_t uCount)
   USBDriver *usbp = mdup->config->usbp;
 
   // we need to copy from queue to buffer
-  size_t uQueueCount = chOQGetFullI(&mdup->oqueue);
+  size_t uQueueCount = oqGetFullI(&mdup->oqueue);
   size_t uTransmitCount = MIN(uCount, MIN(uQueueCount, MIDI_USB_BUFFERS_SIZE));
 
   size_t u;
   for(u = 0; u < uTransmitCount; u++)
   {
-    mduTransmitBuffer[u] = chOQGetI(&mdup->oqueue);
+    mduTransmitBuffer[u] = oqGetI(&mdup->oqueue);
   }
 
   size_t uRequestCount = MIN(uTransmitCount, MIDI_USB_BUFFERS_SIZE);
@@ -233,8 +241,8 @@ void mduObjectInit(MidiUSBDriver *mdup) {
   mdup->vmt = &vmt;
   chEvtInit(&mdup->event);
   mdup->state = MDU_STOP;
-  chIQInit(&mdup->iqueue, mdup->ib, MIDI_USB_BUFFERS_SIZE, inotify, mdup);
-  chOQInit(&mdup->oqueue, mdup->ob, MIDI_USB_BUFFERS_SIZE, onotify, mdup);
+  iqInit(&mdup->iqueue, mdup->ib, MIDI_USB_BUFFERS_SIZE, inotify, mdup);
+  oqInit(&mdup->oqueue, mdup->ob, MIDI_USB_BUFFERS_SIZE, onotify, mdup);
 }
 
 /**
@@ -289,8 +297,8 @@ void mduStop(MidiUSBDriver *mdup) {
 
   /* Queues reset in order to signal the driver stop to the application.*/
   chnAddFlagsI(mdup, CHN_DISCONNECTED);
-  chIQResetI(&mdup->iqueue);
-  chOQResetI(&mdup->oqueue);
+  iqResetI(&mdup->iqueue);
+  oqResetI(&mdup->oqueue);
   chSchRescheduleS();
 
   chSysUnlock()
@@ -308,8 +316,8 @@ void mduStop(MidiUSBDriver *mdup) {
 void mduConfigureHookI(MidiUSBDriver *mdup) {
   USBDriver *usbp = mdup->config->usbp;
 
-  chIQResetI(&mdup->iqueue);
-  chOQResetI(&mdup->oqueue);
+  iqResetI(&mdup->iqueue);
+  oqResetI(&mdup->oqueue);
   chnAddFlagsI(mdup, CHN_CONNECTED);
 
   /* Starts the first OUT transaction immediately.*/
@@ -362,7 +370,7 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   __attribute__((unused)) uint32_t uTransmittedCount = pEpState->txcnt;
 
   mduAddLog(blEndTransmit, uTransmittedCount);
-  if ((n = chOQGetFullI(&mdup->oqueue)) > 0) {
+  if ((n = oqGetFullI(&mdup->oqueue)) > 0) {
     /* The endpoint cannot be busy, we are in the context of the callback,
      so it is safe to transmit without a check.*/
     //chSysUnlockFromIsr()
@@ -426,13 +434,13 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
   mduAddLog(blEndReceive, uReceivedCount);
 
   maxsize = usbp->epc[ep]->out_maxsize;
-  uQueueRemainingSize = chIQGetEmptyI(&mdup->iqueue);
+  uQueueRemainingSize = iqGetEmptyI(&mdup->iqueue);
 
   size_t uSizeToCopy = MIN(uQueueRemainingSize, uReceivedCount);
   size_t u;
   for(u = 0; u < uSizeToCopy; u++)
   {
-    chIQPutI(&mdup->iqueue, mduReceiveBuffer[u]);
+    iqPutI(&mdup->iqueue, mduReceiveBuffer[u]);
   }  
 
   uQueueRemainingSize-= uSizeToCopy;

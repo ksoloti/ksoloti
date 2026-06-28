@@ -48,6 +48,9 @@ ifeq ($(USE_OPT),)
     -mword-relocations
 endif
 
+# Force RAM restriction regardless of prior variable states
+USE_OPT += -DCRT1_AREAS_NUMBER=0
+
 ifneq ($(FWOPTIONDEF),)
   USE_OPT := $(USE_OPT) -D$(FWOPTIONDEF)
 endif
@@ -69,6 +72,11 @@ endif
 # Enable this if you want the linker to remove unused code and data
 ifeq ($(USE_LINK_GC),)
   USE_LINK_GC = no
+endif
+
+# Linker extra options here.
+ifeq ($(USE_LDOPT),)
+  USE_LDOPT = 
 endif
 
 ifeq ($(USE_LTO),)
@@ -99,9 +107,26 @@ endif
 # Architecture or project specific options
 #
 
+# Stack size to be allocated to the Cortex-M process stack. This stack is
+# the stack used by the main() thread.
+ifeq ($(USE_PROCESS_STACKSIZE),)
+  USE_PROCESS_STACKSIZE = 0x400
+endif
+
+# Stack size to the allocated to the Cortex-M main/exceptions stack. This
+# stack is used for processing interrupts and exceptions.
+ifeq ($(USE_EXCEPTIONS_STACKSIZE),)
+  USE_EXCEPTIONS_STACKSIZE = 0x400
+endif
+
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
   USE_FPU = hard
+endif
+
+# FPU-related options.
+ifeq ($(USE_FPU_OPT),)
+  USE_FPU_OPT = -mfloat-abi=$(USE_FPU) -mfpu=fpv4-sp-d16
 endif
 
 #Axoloti optional modules, here we define defaults if none supplied
@@ -148,21 +173,27 @@ HOME     = $(subst $(SPACE),\ ,${axoloti_home})
 FIRMWARE = $(subst $(SPACE),\ ,${axoloti_firmware})
 
 CHIBIOS             = ${HOME}/chibios
+CONFDIR             := .
 CMSIS               = ${HOME}/CMSIS
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 
 include board.mk
 
+# Licensing files.
+include $(CHIBIOS)/os/license/license.mk
 # Startup files.
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt/osal.mk
+include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+# Other files (optional).
+include $(CHIBIOS)/os/hal/lib/streams/streams.mk
+include $(CHIBIOS)/os/various/shell/shell.mk
 # FAT stuff
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
@@ -170,18 +201,16 @@ include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 override BIN = $(CP) -O binary --gap-fill 0xff
 override HEX = $(CP) -O ihex --gap-fill 0xff
 
-
-
 # Define linker script file here
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
 LDSCRIPT = STM32F427xG_ksoloti.ld
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
 endif
+
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = ${FIRMWARE}/exceptions.c \
-  $(STARTUPSRC) \
   $(PORTSRC) \
   $(KERNSRC) \
   $(HALSRC) \
@@ -190,7 +219,14 @@ CSRC = ${FIRMWARE}/exceptions.c \
   $(FATFSSRC) \
   $(OSALSRC) \
   $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
-  $(CHIBIOS)/os/various/memstreams.c \
+  $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
+  ${CHIBIOS}/os/common/abstractions/cmsis_os/cmsis_os.c \
+  ${CHIBIOS}/os/common/startup/ARMCMx/compilers/GCC/crt1.c \
+  ${CHIBIOS}/os/oslib/src/chmempools.c \
+  ${CHIBIOS}/os/oslib/src/chmemheaps.c \
+  ${CHIBIOS}/os/oslib/src/chmemcore.c \
+  ${CHIBIOS}/os/rt/src/chcond.c \
+  ${CHIBIOS}/os/rt/src/chmboxes.c \
   ${FIRMWARE}/codec.c \
   ${FIRMWARE}/i2scodec.c \
   ${FIRMWARE}/axoloti_filters.c \
@@ -391,15 +427,18 @@ TCPPSRC =
 
 # List ASM source files here
 ASMSRC = \
-  $(STARTUPASM) \
-  $(PORTASM) \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal2.s
+
+# List ASM with Preprocessor source files here (.S files)
+ASMXSRC = \
+  $(STARTUPASM) \
+  $(PORTASM)
 
 INCDIR = \
   ${CMSIS}/Core/Include \
   ${CMSIS}/DSP/Include \
   $(STARTUPINC) \
-  $(PORTINC) $(KERNINC) $(TESTINC) \
+  $(PORTINC) $(KERNINC) $(CONFDIR) $(ALLINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
   $(FATFSINC) \
   $(OSALINC) \
@@ -413,7 +452,8 @@ INCDIR = \
   ${MUTABLE_INSTRUMENTS}/rings \
   ${MUTABLE_INSTRUMENTS}/elements \
   ${MUTABLE_INSTRUMENTS}/stmlib \
-	$(CHIBIOS)/os/hal/lib/streams
+	$(CHIBIOS)/os/hal/lib/streams \
+  ${CHIBIOS}/os/common/abstractions/cmsis_os
 
 #
 # Project, sources and paths
@@ -500,7 +540,6 @@ UDEFS = \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
-  -D__FPU_PRESENT \
   -DANALYSE_USB_AUDIO=0
 
 # Define ASM defines here
@@ -523,3 +562,13 @@ ULIBS = -lm
 # include $(RULESPATH)/rules.mk
 
 include ./rules.mk
+
+# Provide dummy references for the crt1.c hooks that crt0_v7m.S calls
+# override LDFLAGS += -Wl,--defsym=__cpu_init=0
+# override LDFLAGS += -Wl,--defsym=__init_ram_areas=0
+# override LDFLAGS += -Wl,--defsym=__late_init=0
+# override LDFLAGS += -Wl,--defsym=__default_exit=0
+
+#
+# Common rules
+##############################################################################

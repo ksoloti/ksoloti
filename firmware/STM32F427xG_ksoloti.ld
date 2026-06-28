@@ -72,17 +72,21 @@ SECTIONS
     constructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__init_array_start = .);
+        PROVIDE(__init_array_base__ = .);
         KEEP(*(SORT(.init_array.*)))
         KEEP(*(.init_array))
         PROVIDE(__init_array_end = .);
+        PROVIDE(__init_array_end__ = .);
     } > FLASH
 
     destructors : ALIGN(4) SUBALIGN(4)
     {
         PROVIDE(__fini_array_start = .);
+        PROVIDE(__fini_array_base__ = .);
         KEEP(*(.fini_array))
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
+        PROVIDE(__fini_array_end__ = .);
     } > FLASH
 
     .text : ALIGN(16) SUBALIGN(16)
@@ -147,10 +151,14 @@ SECTIONS
         __main_thread_stack_end__ = .;
     } > CCMRAMEND
 
+    PROVIDE(__core_init = __ram_end__);
+
     .data :
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
+        __textdata_base__ = LOADADDR(.data);
+        __data_base__ = .;
         _textdata_start = LOADADDR(.data);
         _data_start = .;
         *(.data)
@@ -161,7 +169,18 @@ SECTIONS
         . = ALIGN(4);
         PROVIDE(_edata = .);
         _data_end = .;
+        __data_end__ = .;
     } > SRAM1 AT > FLASH
+
+    .fram_text :
+    {
+        . = ALIGN(4);
+        PROVIDE(_fram_text = .);
+        _fram_text_start_flash = LOADADDR(.fram_text);
+        _fram_text_start = .;
+        *(.framtext)
+        _fram_text_end = .;
+    } > SRAM3 AT > FLASH
 
     .flashend :
     {
@@ -174,12 +193,14 @@ SECTIONS
     {
         . = ALIGN(4);
         PROVIDE(_bss_start = .);
+        __bss_base__ = .;
         *(.bss)
         . = ALIGN(4);
         *(.bss.*)
         . = ALIGN(4);
         *(COMMON)
         . = ALIGN(4);
+        __bss_end__ = .;        
         PROVIDE(_bss_end = .);
     } > SRAM1
 
@@ -213,3 +234,20 @@ _end = .;
 
 __heap_base__ = _end;
 __heap_end__  = __ram_end__;
+
+/* Match up ChibiOS multi-RAM layout expectations with actual memory boundaries */
+__ram0_free__      = __bss_end__;
+__ram0_end__       = __ram_end__;
+__ram0_init__      = __textdata_base__;
+__ram0_clear__     = __bss_base__;
+__ram0_noinit__    = __ram_end__;
+__ram0_init_text__ = __textdata_base__;
+
+/* Provide safe NULL/empty defaults for upper slots so the linker ceases fire */
+__ram1_init__ = 0; __ram1_clear__ = 0; __ram1_noinit__ = 0; __ram1_init_text__ = 0;
+__ram2_init__ = 0; __ram2_clear__ = 0; __ram2_noinit__ = 0; __ram2_init_text__ = 0;
+__ram3_init__ = 0; __ram3_clear__ = 0; __ram3_noinit__ = 0; __ram3_init_text__ = 0;
+__ram4_init__ = 0; __ram4_clear__ = 0; __ram4_noinit__ = 0; __ram4_init_text__ = 0;
+__ram5_init__ = 0; __ram5_clear__ = 0; __ram5_noinit__ = 0; __ram5_init_text__ = 0;
+__ram6_init__ = 0; __ram6_clear__ = 0; __ram6_noinit__ = 0; __ram6_init_text__ = 0;
+__ram7_init__ = 0; __ram7_clear__ = 0; __ram7_noinit__ = 0; __ram7_init_text__ = 0;

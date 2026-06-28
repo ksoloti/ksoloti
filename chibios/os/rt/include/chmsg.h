@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,15 +17,15 @@
 */
 
 /**
- * @file    chmsg.h
+ * @file    rt/include/chmsg.h
  * @brief   Messages macros and structures.
  *
  * @addtogroup messages
  * @{
  */
 
-#ifndef _CHMSG_H_
-#define _CHMSG_H_
+#ifndef CHMSG_H
+#define CHMSG_H
 
 #if (CH_CFG_USE_MESSAGES == TRUE) || defined(__DOXYGEN__)
 
@@ -50,6 +49,12 @@
 /* Module macros.                                                            */
 /*===========================================================================*/
 
+#if CH_CFG_USE_MESSAGES_PRIORITY == TRUE
+#define __ch_msg_insert(qp, tp) ch_sch_prio_insert(qp, &tp->hdr.queue)
+#else
+#define __ch_msg_insert(qp, tp) ch_queue_insert(qp, &tp->hdr.queue)
+#endif
+
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
@@ -58,7 +63,9 @@
 extern "C" {
 #endif
   msg_t chMsgSend(thread_t *tp, msg_t msg);
-  thread_t * chMsgWait(void);
+  thread_t *chMsgWaitS(void);
+  thread_t *chMsgWaitTimeoutS(sysinterval_t timeout);
+  thread_t *chMsgPollS(void);
   void chMsgRelease(thread_t *tp, msg_t msg);
 #ifdef __cplusplus
 }
@@ -67,6 +74,91 @@ extern "C" {
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
+
+/**
+ * @brief   Suspends the thread and waits for an incoming message.
+ * @post    After receiving a message the function @p chMsgGet() must be
+ *          called in order to retrieve the message and then @p chMsgRelease()
+ *          must be invoked in order to acknowledge the reception and send
+ *          the answer.
+ * @note    If the message is a pointer then you can assume that the data
+ *          pointed by the message is stable until you invoke @p chMsgRelease()
+ *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
+ *
+ * @return              A pointer to the thread carrying the message.
+ *
+ * @api
+ */
+static inline thread_t *chMsgWait(void) {
+  thread_t *tp;
+
+  chSysLock();
+  tp = chMsgWaitS();
+  chSysUnlock();
+
+  return tp;
+}
+
+/**
+ * @brief   Suspends the thread and waits for an incoming message or a
+ *          timeout to occur.
+ * @post    After receiving a message the function @p chMsgGet() must be
+ *          called in order to retrieve the message and then @p chMsgRelease()
+ *          must be invoked in order to acknowledge the reception and send
+ *          the answer.
+ * @note    If the message is a pointer then you can assume that the data
+ *          pointed by the message is stable until you invoke @p chMsgRelease()
+ *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
+ *
+ * @param[in] timeout   the number of ticks before the operation timeouts,
+ *                      the following special values are handled:
+ *                      - @a TIME_INFINITE no timeout.
+ *                      - @a TIME_IMMEDIATE this value is not allowed.
+ * @return              A pointer to the thread carrying the message.
+ * @retval NULL         if a timeout occurred.
+ *
+ * @api
+ */
+static inline thread_t *chMsgWaitTimeout(sysinterval_t timeout) {
+  thread_t *tp;
+
+  chSysLock();
+  tp = chMsgWaitTimeoutS(timeout);
+  chSysUnlock();
+
+  return tp;
+}
+
+/**
+ * @brief   Poll to check for an incoming message.
+ * @post    If a message is available the function @p chMsgGet() must be
+ *          called in order to retrieve the message and then @p chMsgRelease()
+ *          must be invoked in order to acknowledge the reception and send
+ *          the answer.
+ * @note    If the message is a pointer then you can assume that the data
+ *          pointed by the message is stable until you invoke @p chMsgRelease()
+ *          because the sending thread is suspended until then.
+ * @note    The reference counter of the sender thread is not increased, the
+ *          returned pointer is a temporary reference.
+ *
+ * @return              A pointer to the thread carrying the message.
+ * @retval  NULL        if no incoming message waiting.
+ *
+ * @api
+ */
+static inline thread_t *chMsgPoll(void) {
+  thread_t *tp;
+
+  chSysLock();
+  tp = chMsgPollS();
+  chSysUnlock();
+
+  return tp;
+}
 
 /**
  * @brief   Evaluates to @p true if the thread has pending messages.
@@ -80,7 +172,7 @@ static inline bool chMsgIsPendingI(thread_t *tp) {
 
   chDbgCheckClassI();
 
-  return (bool)(tp->p_msgqueue.p_next != (thread_t *)&tp->p_msgqueue);
+  return (bool)(tp->msgqueue.next != &tp->msgqueue);
 }
 
 /**
@@ -95,7 +187,9 @@ static inline bool chMsgIsPendingI(thread_t *tp) {
  */
 static inline msg_t chMsgGet(thread_t *tp) {
 
-  return tp->p_msg;
+  chDbgAssert(tp->state == CH_STATE_SNDMSG, "invalid state");
+
+  return tp->sentmsg;
 }
 
 /**
@@ -117,6 +211,6 @@ static inline void chMsgReleaseS(thread_t *tp, msg_t msg) {
 
 #endif /* CH_CFG_USE_MESSAGES == TRUE */
 
-#endif /* _CHMSG_H_ */
+#endif /* CHMSG_H */
 
 /** @} */

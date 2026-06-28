@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -76,20 +76,18 @@ void hal_lld_init(void) {
  */
 void _sim_check_for_interrupts(void) {
   LARGE_INTEGER n;
+  bool int_occurred = false;
 
 #if HAL_USE_SERIAL
-  if (sd_lld_interrupt_pending()) {
-    _dbg_check_lock();
-    if (chSchIsPreemptionRequired())
-      chSchDoReschedule();
-    _dbg_check_unlock();
-    return;
+  while (sd_lld_interrupt_pending()) {
+    int_occurred = true;
   }
 #endif
 
   /* Interrupt Timer simulation (10ms interval).*/
   QueryPerformanceCounter(&n);
   if (n.QuadPart > nextcnt.QuadPart) {
+    int_occurred = true;
     nextcnt.QuadPart += slice.QuadPart;
 
     CH_IRQ_PROLOGUE();
@@ -99,11 +97,13 @@ void _sim_check_for_interrupts(void) {
     chSysUnlockFromISR();
 
     CH_IRQ_EPILOGUE();
+  }
 
-    _dbg_check_lock();
+  if (int_occurred) {
+    __dbg_check_lock();
     if (chSchIsPreemptionRequired())
-      chSchDoReschedule();
-    _dbg_check_unlock();
+      chSchDoPreemption();
+    __dbg_check_unlock();
   }
 }
 

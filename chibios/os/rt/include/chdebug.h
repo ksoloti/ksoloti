@@ -1,12 +1,11 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio.
+    ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio.
 
     This file is part of ChibiOS.
 
     ChibiOS is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation version 3 of the License.
 
     ChibiOS is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,15 +17,15 @@
 */
 
 /**
- * @file    chdebug.h
- * @brief   Debug macros and structures.
+ * @file    rt/include/chdebug.h
+ * @brief   Debug support macros and structures.
  *
- * @addtogroup debug
+ * @addtogroup checks_assertions
  * @{
  */
 
-#ifndef _CHDEBUG_H_
-#define _CHDEBUG_H_
+#ifndef CHDEBUG_H
+#define CHDEBUG_H
 
 /*===========================================================================*/
 /* Module constants.                                                         */
@@ -41,28 +40,10 @@
  * @{
  */
 /**
- * @brief   Trace buffer entries.
- */
-#ifndef CH_DBG_TRACE_BUFFER_SIZE
-#define CH_DBG_TRACE_BUFFER_SIZE            64
-#endif
-
-/**
  * @brief   Fill value for thread stack area in debug mode.
  */
-#ifndef CH_DBG_STACK_FILL_VALUE
+#if !defined(CH_DBG_STACK_FILL_VALUE) || defined(__DOXYGEN__)
 #define CH_DBG_STACK_FILL_VALUE             0x55
-#endif
-
-/**
- * @brief   Fill value for thread area in debug mode.
- * @note    The chosen default value is 0xFF in order to make evident which
- *          thread fields were not initialized when inspecting the memory with
- *          a debugger. A uninitialized field is not an error in itself but it
- *          better to know it.
- */
-#ifndef CH_DBG_THREAD_FILL_VALUE
-#define CH_DBG_THREAD_FILL_VALUE            0xFF
 #endif
 /** @} */
 
@@ -74,79 +55,48 @@
 /* Module data structures and types.                                         */
 /*===========================================================================*/
 
-#if (CH_DBG_ENABLE_TRACE == TRUE) || defined(__DOXYGEN__)
 /**
- * @brief   Trace buffer record.
+ * @brief   System debug data structure.
  */
-typedef struct {
+typedef struct ch_system_debug {
   /**
-   * @brief   Time of the switch event.
+   * @brief   Pointer to the panic message.
+   * @details This pointer is meant to be accessed through the debugger, it is
+   *          written once and then the system is halted.
+   * @note    Accesses to this pointer must never be optimized out so the
+   *          field itself is declared volatile.
    */
-  systime_t             se_time;
+  const char            * volatile panic_msg;
+#if (CH_DBG_SYSTEM_STATE_CHECK == TRUE) || defined(__DOXYGEN__)
   /**
-   * @brief   Switched in thread.
+   * @brief   ISR nesting level.
    */
-  thread_t              *se_tp;
+  cnt_t                 isr_cnt;
   /**
-   * @brief   Object where going to sleep.
+   * @brief   Lock nesting level.
    */
-  void                  *se_wtobjp;
-  /**
-   * @brief   Switched out thread state.
-   */
-  uint8_t               se_state;
-} ch_swc_event_t;
-
-/**
- * @brief   Trace buffer header.
- */
-typedef struct {
-  /**
-   * @brief   Trace buffer size (entries).
-   */
-  unsigned              tb_size;
-  /**
-   * @brief   Pointer to the buffer front.
-   */
-  ch_swc_event_t        *tb_ptr;
-  /**
-   * @brief   Ring buffer.
-   */
-  ch_swc_event_t        tb_buffer[CH_DBG_TRACE_BUFFER_SIZE];
-} ch_trace_buffer_t;
-#endif /* CH_DBG_ENABLE_TRACE */
+  cnt_t                 lock_cnt;
+#endif
+} system_debug_t;
 
 /*===========================================================================*/
 /* Module macros.                                                            */
 /*===========================================================================*/
 
-#if CH_DBG_SYSTEM_STATE_CHECK == TRUE
-#define _dbg_enter_lock() (ch.dbg.lock_cnt = (cnt_t)1)
-#define _dbg_leave_lock() (ch.dbg.lock_cnt = (cnt_t)0)
-#endif
-
 /* When the state checker feature is disabled then the following functions
    are replaced by an empty macro.*/
 #if CH_DBG_SYSTEM_STATE_CHECK == FALSE
-#define _dbg_enter_lock()
-#define _dbg_leave_lock()
-#define _dbg_check_disable()
-#define _dbg_check_suspend()
-#define _dbg_check_enable()
-#define _dbg_check_lock()
-#define _dbg_check_unlock()
-#define _dbg_check_lock_from_isr()
-#define _dbg_check_unlock_from_isr()
-#define _dbg_check_enter_isr()
-#define _dbg_check_leave_isr()
+#define __dbg_check_disable()
+#define __dbg_check_suspend()
+#define __dbg_check_enable()
+#define __dbg_check_lock()
+#define __dbg_check_unlock()
+#define __dbg_check_lock_from_isr()
+#define __dbg_check_unlock_from_isr()
+#define __dbg_check_enter_isr()
+#define __dbg_check_leave_isr()
 #define chDbgCheckClassI()
 #define chDbgCheckClassS()
-#endif
-
-/* When the trace feature is disabled this function is replaced by an empty
-   macro.*/
-#if CH_DBG_ENABLE_TRACE == FALSE
-#define _dbg_trace(otp)
 #endif
 
 /**
@@ -167,7 +117,7 @@ typedef struct {
 #define chDbgCheck(c) do {                                                  \
   /*lint -save -e506 -e774 [2.1, 14.3] Can be a constant by design.*/       \
   if (CH_DBG_ENABLE_CHECKS != FALSE) {                                      \
-    if (!(c)) {                                                             \
+    if (unlikely(!(c))) {                                                   \
   /*lint -restore*/                                                         \
       chSysHalt(__func__);                                                  \
     }                                                                       \
@@ -193,7 +143,7 @@ typedef struct {
 #define chDbgAssert(c, r) do {                                              \
   /*lint -save -e506 -e774 [2.1, 14.3] Can be a constant by design.*/       \
   if (CH_DBG_ENABLE_ASSERTS != FALSE) {                                     \
-    if (!(c)) {                                                             \
+    if (unlikely(!(c))) {                                                   \
   /*lint -restore*/                                                         \
       chSysHalt(__func__);                                                  \
     }                                                                       \
@@ -210,21 +160,17 @@ typedef struct {
 extern "C" {
 #endif
 #if CH_DBG_SYSTEM_STATE_CHECK == TRUE
-  void _dbg_check_disable(void);
-  void _dbg_check_suspend(void);
-  void _dbg_check_enable(void);
-  void _dbg_check_lock(void);
-  void _dbg_check_unlock(void);
-  void _dbg_check_lock_from_isr(void);
-  void _dbg_check_unlock_from_isr(void);
-  void _dbg_check_enter_isr(void);
-  void _dbg_check_leave_isr(void);
+  void __dbg_check_disable(void);
+  void __dbg_check_suspend(void);
+  void __dbg_check_enable(void);
+  void __dbg_check_lock(void);
+  void __dbg_check_unlock(void);
+  void __dbg_check_lock_from_isr(void);
+  void __dbg_check_unlock_from_isr(void);
+  void __dbg_check_enter_isr(void);
+  void __dbg_check_leave_isr(void);
   void chDbgCheckClassI(void);
   void chDbgCheckClassS(void);
-#endif
-#if (CH_DBG_ENABLE_TRACE == TRUE) || defined(__DOXYGEN__)
-  void _dbg_trace_init(void);
-  void _dbg_trace(thread_t *otp);
 #endif
 #ifdef __cplusplus
 }
@@ -234,6 +180,25 @@ extern "C" {
 /* Module inline functions.                                                  */
 /*===========================================================================*/
 
-#endif /* _CHDEBUG_H_ */
+/**
+ * @brief   Debug support initialization.
+ * @note    Internal use only.
+ *
+ * @param[out] sdp      pointer to the @p system_debug_t structure
+ *
+ * @notapi
+ */
+static inline void __dbg_object_init(system_debug_t *sdp) {
+
+  sdp->panic_msg = NULL;
+
+#if CH_DBG_SYSTEM_STATE_CHECK == TRUE
+  /* The initial state is assumed to be within a critical zone.*/
+  sdp->isr_cnt  = (cnt_t)0;
+  sdp->lock_cnt = (cnt_t)1;
+#endif
+}
+
+#endif /* CHDEBUG_H */
 
 /** @} */

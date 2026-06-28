@@ -13,14 +13,17 @@
 #define chSysUnlockFromIsr 	chSysUnlockFromISR
 #define chEvtInit chEvtObjectInit
 #define chQGetLink qGetLink
-#define chIQInit iqObjectInit
-#define chOQInit oqObjectInit
+#define iqInit iqObjectInit
+#define oqInit oqObjectInit
 
 #define SCB_FPCCR                     *((uint32_t *)0xE000EF34U)
 
 #define hal_lld_get_counter_value port_rt_get_counter_value
 
 #define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))
+#define RTT2MS(ticks) ((ticks) / (STM32_SYSCLK / 1000UL))
+#define US2RTT(usec) (((STM32_SYSCLK + 999999UL) / 1000000UL) * (usec))
+#define MS2RTT(msec) (((STM32_SYSCLK + 999UL) / 1000UL) * (msec))
 
 
 // V16 here down
@@ -46,5 +49,8 @@
 
 // V18 here down
 
-// #define MS2ST TIME_MS2I
+#define MS2ST TIME_MS2I
 
+
+// 20.3 notes.
+// 1. external pump - looks like this is not needed nymore as chibios is now not using a thread for this.
