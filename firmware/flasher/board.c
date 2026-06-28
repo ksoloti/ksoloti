@@ -3,8 +3,6 @@
 #include "stm32_rcc.h"
 #include <string.h>
 #include "stm32_otg.h"
-
-#if HAL_USE_PAL || defined(__DOXYGEN__)
 /**
  * @brief   PAL setup.
  * @details Digital I/O ports static configuration as defined in @p board.h.
@@ -108,7 +106,6 @@ const PALConfig pal_default_config = {
      VAL_GPIOH_ODR, VAL_GPIOH_AFRL, VAL_GPIOH_AFRH},
     {VAL_GPIOI_MODER, VAL_GPIOI_OTYPER, VAL_GPIOI_OSPEEDR, VAL_GPIOI_PUPDR,
      VAL_GPIOI_ODR, VAL_GPIOI_AFRL, VAL_GPIOI_AFRH}};
-#endif /* HAL_USE_PAL */
 
 
 static void initgpio(stm32_gpio_t *gpiop, const stm32_gpio_setup_t *config) {
