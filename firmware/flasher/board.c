@@ -16,20 +16,20 @@
  * @brief   GPIO port setup info.
  */
 typedef struct {
-    /** Initial value for MODER register.*/
-    uint32_t              moder;
-    /** Initial value for OTYPER register.*/
-    uint32_t              otyper;
-    /** Initial value for OSPEEDR register.*/
-    uint32_t              ospeedr;
-    /** Initial value for PUPDR register.*/
-    uint32_t              pupdr;
-    /** Initial value for ODR register.*/
-    uint32_t              odr;
-    /** Initial value for AFRL register.*/
-    uint32_t              afrl;
-    /** Initial value for AFRH register.*/
-    uint32_t              afrh;
+  /** Initial value for MODER register.*/
+  uint32_t              moder;
+  /** Initial value for OTYPER register.*/
+  uint32_t              otyper;
+  /** Initial value for OSPEEDR register.*/
+  uint32_t              ospeedr;
+  /** Initial value for PUPDR register.*/
+  uint32_t              pupdr;
+  /** Initial value for ODR register.*/
+  uint32_t              odr;
+  /** Initial value for AFRL register.*/
+  uint32_t              afrl;
+  /** Initial value for AFRH register.*/
+  uint32_t              afrh;
 } stm32_gpio_setup_t;
 
 /**
@@ -41,140 +41,140 @@ typedef struct {
  */
 typedef struct {
 #if STM32_HAS_GPIOA || defined(__DOXYGEN__)
-    /** @brief Port A setup data.*/
-    stm32_gpio_setup_t    PAData;
+  /** @brief Port A setup data.*/
+  stm32_gpio_setup_t    PAData;
 #endif
 #if STM32_HAS_GPIOB || defined(__DOXYGEN__)
-    /** @brief Port B setup data.*/
-    stm32_gpio_setup_t    PBData;
+  /** @brief Port B setup data.*/
+  stm32_gpio_setup_t    PBData;
 #endif
 #if STM32_HAS_GPIOC || defined(__DOXYGEN__)
-    /** @brief Port C setup data.*/
-    stm32_gpio_setup_t    PCData;
+  /** @brief Port C setup data.*/
+  stm32_gpio_setup_t    PCData;
 #endif
 #if STM32_HAS_GPIOD || defined(__DOXYGEN__)
-    /** @brief Port D setup data.*/
-    stm32_gpio_setup_t    PDData;
+  /** @brief Port D setup data.*/
+  stm32_gpio_setup_t    PDData;
 #endif
 #if STM32_HAS_GPIOE || defined(__DOXYGEN__)
-    /** @brief Port E setup data.*/
-    stm32_gpio_setup_t    PEData;
+  /** @brief Port E setup data.*/
+  stm32_gpio_setup_t    PEData;
 #endif
 #if STM32_HAS_GPIOF || defined(__DOXYGEN__)
-    /** @brief Port F setup data.*/
-    stm32_gpio_setup_t    PFData;
+  /** @brief Port F setup data.*/
+  stm32_gpio_setup_t    PFData;
 #endif
 #if STM32_HAS_GPIOG || defined(__DOXYGEN__)
-    /** @brief Port G setup data.*/
-    stm32_gpio_setup_t    PGData;
+  /** @brief Port G setup data.*/
+  stm32_gpio_setup_t    PGData;
 #endif
 #if STM32_HAS_GPIOH || defined(__DOXYGEN__)
-    /** @brief Port H setup data.*/
-    stm32_gpio_setup_t    PHData;
+  /** @brief Port H setup data.*/
+  stm32_gpio_setup_t    PHData;
 #endif
 #if STM32_HAS_GPIOI || defined(__DOXYGEN__)
-    /** @brief Port I setup data.*/
-    stm32_gpio_setup_t    PIData;
+  /** @brief Port I setup data.*/
+  stm32_gpio_setup_t    PIData;
 #endif
 #if STM32_HAS_GPIOJ || defined(__DOXYGEN__)
-    /** @brief Port I setup data.*/
-    stm32_gpio_setup_t    PJData;
+  /** @brief Port I setup data.*/
+  stm32_gpio_setup_t    PJData;
 #endif
 #if STM32_HAS_GPIOK || defined(__DOXYGEN__)
-    /** @brief Port I setup data.*/
-    stm32_gpio_setup_t    PKData;
+  /** @brief Port I setup data.*/
+  stm32_gpio_setup_t    PKData;
 #endif
 } PALConfig;
 
 
 const PALConfig pal_default_config = {
-    {VAL_GPIOA_MODER, VAL_GPIOA_OTYPER, VAL_GPIOA_OSPEEDR, VAL_GPIOA_PUPDR,
-     VAL_GPIOA_ODR, VAL_GPIOA_AFRL, VAL_GPIOA_AFRH},
-    {VAL_GPIOB_MODER, VAL_GPIOB_OTYPER, VAL_GPIOB_OSPEEDR, VAL_GPIOB_PUPDR,
-     VAL_GPIOB_ODR, VAL_GPIOB_AFRL, VAL_GPIOB_AFRH},
-    {VAL_GPIOC_MODER, VAL_GPIOC_OTYPER, VAL_GPIOC_OSPEEDR, VAL_GPIOC_PUPDR,
-     VAL_GPIOC_ODR, VAL_GPIOC_AFRL, VAL_GPIOC_AFRH},
-    {VAL_GPIOD_MODER, VAL_GPIOD_OTYPER, VAL_GPIOD_OSPEEDR, VAL_GPIOD_PUPDR,
-     VAL_GPIOD_ODR, VAL_GPIOD_AFRL, VAL_GPIOD_AFRH},
-    {VAL_GPIOE_MODER, VAL_GPIOE_OTYPER, VAL_GPIOE_OSPEEDR, VAL_GPIOE_PUPDR,
-     VAL_GPIOE_ODR, VAL_GPIOE_AFRL, VAL_GPIOE_AFRH},
-    {VAL_GPIOF_MODER, VAL_GPIOF_OTYPER, VAL_GPIOF_OSPEEDR, VAL_GPIOF_PUPDR,
-     VAL_GPIOF_ODR, VAL_GPIOF_AFRL, VAL_GPIOF_AFRH},
-    {VAL_GPIOG_MODER, VAL_GPIOG_OTYPER, VAL_GPIOG_OSPEEDR, VAL_GPIOG_PUPDR,
-     VAL_GPIOG_ODR, VAL_GPIOG_AFRL, VAL_GPIOG_AFRH},
-    {VAL_GPIOH_MODER, VAL_GPIOH_OTYPER, VAL_GPIOH_OSPEEDR, VAL_GPIOH_PUPDR,
-     VAL_GPIOH_ODR, VAL_GPIOH_AFRL, VAL_GPIOH_AFRH},
-    {VAL_GPIOI_MODER, VAL_GPIOI_OTYPER, VAL_GPIOI_OSPEEDR, VAL_GPIOI_PUPDR,
-     VAL_GPIOI_ODR, VAL_GPIOI_AFRL, VAL_GPIOI_AFRH}};
+  {VAL_GPIOA_MODER, VAL_GPIOA_OTYPER, VAL_GPIOA_OSPEEDR, VAL_GPIOA_PUPDR,
+    VAL_GPIOA_ODR, VAL_GPIOA_AFRL, VAL_GPIOA_AFRH},
+  {VAL_GPIOB_MODER, VAL_GPIOB_OTYPER, VAL_GPIOB_OSPEEDR, VAL_GPIOB_PUPDR,
+    VAL_GPIOB_ODR, VAL_GPIOB_AFRL, VAL_GPIOB_AFRH},
+  {VAL_GPIOC_MODER, VAL_GPIOC_OTYPER, VAL_GPIOC_OSPEEDR, VAL_GPIOC_PUPDR,
+    VAL_GPIOC_ODR, VAL_GPIOC_AFRL, VAL_GPIOC_AFRH},
+  {VAL_GPIOD_MODER, VAL_GPIOD_OTYPER, VAL_GPIOD_OSPEEDR, VAL_GPIOD_PUPDR,
+    VAL_GPIOD_ODR, VAL_GPIOD_AFRL, VAL_GPIOD_AFRH},
+  {VAL_GPIOE_MODER, VAL_GPIOE_OTYPER, VAL_GPIOE_OSPEEDR, VAL_GPIOE_PUPDR,
+    VAL_GPIOE_ODR, VAL_GPIOE_AFRL, VAL_GPIOE_AFRH},
+  {VAL_GPIOF_MODER, VAL_GPIOF_OTYPER, VAL_GPIOF_OSPEEDR, VAL_GPIOF_PUPDR,
+    VAL_GPIOF_ODR, VAL_GPIOF_AFRL, VAL_GPIOF_AFRH},
+  {VAL_GPIOG_MODER, VAL_GPIOG_OTYPER, VAL_GPIOG_OSPEEDR, VAL_GPIOG_PUPDR,
+    VAL_GPIOG_ODR, VAL_GPIOG_AFRL, VAL_GPIOG_AFRH},
+  {VAL_GPIOH_MODER, VAL_GPIOH_OTYPER, VAL_GPIOH_OSPEEDR, VAL_GPIOH_PUPDR,
+    VAL_GPIOH_ODR, VAL_GPIOH_AFRL, VAL_GPIOH_AFRH},
+  {VAL_GPIOI_MODER, VAL_GPIOI_OTYPER, VAL_GPIOI_OSPEEDR, VAL_GPIOI_PUPDR,
+    VAL_GPIOI_ODR, VAL_GPIOI_AFRL, VAL_GPIOI_AFRH}};
 
 
 static void initgpio(stm32_gpio_t *gpiop, const stm32_gpio_setup_t *config) {
-    gpiop->OTYPER  = config->otyper;
-    gpiop->OSPEEDR = config->ospeedr;
-    gpiop->PUPDR   = config->pupdr;
-    gpiop->ODR     = config->odr;
-    gpiop->AFRL    = config->afrl;
-    gpiop->AFRH    = config->afrh;
-    gpiop->MODER   = config->moder;
+  gpiop->OTYPER  = config->otyper;
+  gpiop->OSPEEDR = config->ospeedr;
+  gpiop->PUPDR   = config->pupdr;
+  gpiop->ODR     = config->odr;
+  gpiop->AFRL    = config->afrl;
+  gpiop->AFRH    = config->afrh;
+  gpiop->MODER   = config->moder;
 }
 
 
 void stm32_gpio_init(void) {
-    const PALConfig *config = &pal_default_config;
+  const PALConfig *config = &pal_default_config;
 
-    /*
-     * Enables the GPIO related clocks.
-     */
+  /*
+   * Enables the GPIO related clocks.
+   */
 #if defined(STM32L0XX)
-    RCC->IOPENR |= AHB_EN_MASK;
-    RCC->IOPSMENR |= AHB_LPEN_MASK;
+  RCC->IOPENR |= AHB_EN_MASK;
+  RCC->IOPSMENR |= AHB_LPEN_MASK;
 #elif defined(STM32L1XX)
-    rccEnableAHB(AHB_EN_MASK, TRUE);
-    RCC->AHBLPENR |= AHB_LPEN_MASK;
+  rccEnableAHB(AHB_EN_MASK, TRUE);
+  RCC->AHBLPENR |= AHB_LPEN_MASK;
 #elif defined(STM32F0XX)
-    rccEnableAHB(AHB_EN_MASK, TRUE);
+  rccEnableAHB(AHB_EN_MASK, TRUE);
 #elif defined(STM32F3XX) || defined(STM32F37X)
-    rccEnableAHB(AHB_EN_MASK, TRUE);
+  rccEnableAHB(AHB_EN_MASK, TRUE);
 #elif defined(STM32F2XX) || defined(STM32F4XX) || defined(STM32F7XX)
-    RCC->AHB1ENR   |= AHB1_EN_MASK;
-    RCC->AHB1LPENR |= AHB1_LPEN_MASK;
+  RCC->AHB1ENR   |= AHB1_EN_MASK;
+  RCC->AHB1LPENR |= AHB1_LPEN_MASK;
 #endif
 
-    /*
-     * Initial GPIO setup.
-     */
+  /*
+   * Initial GPIO setup.
+   */
 #if STM32_HAS_GPIOA
-    initgpio(GPIOA, &config->PAData);
+  initgpio(GPIOA, &config->PAData);
 #endif
 #if STM32_HAS_GPIOB
-    initgpio(GPIOB, &config->PBData);
+  initgpio(GPIOB, &config->PBData);
 #endif
 #if STM32_HAS_GPIOC
-    initgpio(GPIOC, &config->PCData);
+  initgpio(GPIOC, &config->PCData);
 #endif
 #if STM32_HAS_GPIOD
-    initgpio(GPIOD, &config->PDData);
+  initgpio(GPIOD, &config->PDData);
 #endif
 #if STM32_HAS_GPIOE
-    initgpio(GPIOE, &config->PEData);
+  initgpio(GPIOE, &config->PEData);
 #endif
 #if STM32_HAS_GPIOF
-    initgpio(GPIOF, &config->PFData);
+  initgpio(GPIOF, &config->PFData);
 #endif
 #if STM32_HAS_GPIOG
-    initgpio(GPIOG, &config->PGData);
+  initgpio(GPIOG, &config->PGData);
 #endif
 #if STM32_HAS_GPIOH
-    initgpio(GPIOH, &config->PHData);
+  initgpio(GPIOH, &config->PHData);
 #endif
 #if STM32_HAS_GPIOI
-    initgpio(GPIOI, &config->PIData);
+  initgpio(GPIOI, &config->PIData);
 #endif
 #if STM32_HAS_GPIOJ
-    initgpio(GPIOJ, &config->PJData);
+  initgpio(GPIOJ, &config->PJData);
 #endif
 #if STM32_HAS_GPIOK
-    initgpio(GPIOK, &config->PKData);
+  initgpio(GPIOK, &config->PKData);
 #endif
 }
 
@@ -185,25 +185,22 @@ void stm32_gpio_init(void) {
  */
 void __early_init(void)
 {
-    /* Reset of all peripherals.*/
-    rccResetAHB1(~0);
-    rccResetAHB2(~0);
+  /* Reset of all peripherals.*/
+  rccResetAHB1(~0);
+  rccResetAHB2(~0);
     rccResetAPB1(~0x10000000); // RCC_APB1RSTR_PWRRST
-    NVIC->ICER[0] = 0xFFFFFFFF;
-    NVIC->ICER[1] = 0xFFFFFFFF;
-    NVIC->ICER[2] = 0xFFFFFFFF;
-    NVIC->ICER[3] = 0xFFFFFFFF;
-    NVIC->ICER[4] = 0xFFFFFFFF;
-    NVIC->ICER[5] = 0xFFFFFFFF;
-    NVIC->ICER[6] = 0xFFFFFFFF;
-    NVIC->ICER[7] = 0xFFFFFFFF;
-    rccResetAPB2(~0);
-    OTG_HS->GINTMSK = 0;       // disable OTG_HS interrupts!
-    extern uint32_t _vectors[0x200];  // copy vector table. Trick compiler into believing us it is 0x200 ints long.
-    memcpy((char *)0x20000000, (const char *)&_vectors, 0x200);
-    SYSCFG->MEMRMP |= 0x03;    // remap SRAM1 to 0x00000000
-    stm32_clock_init();
-    stm32_gpio_init();
+  NVIC->ICER[0] = 0xFFFFFFFF;
+  NVIC->ICER[1] = 0xFFFFFFFF;
+  NVIC->ICER[2] = 0xFFFFFFFF;
+  NVIC->ICER[3] = 0xFFFFFFFF;
+  NVIC->ICER[4] = 0xFFFFFFFF;
+  NVIC->ICER[5] = 0xFFFFFFFF;
+  NVIC->ICER[6] = 0xFFFFFFFF;
+  NVIC->ICER[7] = 0xFFFFFFFF;
+  rccResetAPB2(~0);
+  OTG_HS->GINTMSK = 0;       // disable OTG_HS interrupts!
+  stm32_clock_init();
+  stm32_gpio_init();
 }
 
 #if HAL_USE_SDC || defined(__DOXYGEN__)
