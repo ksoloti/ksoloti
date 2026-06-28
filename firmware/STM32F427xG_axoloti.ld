@@ -159,16 +159,6 @@ SECTIONS
         __data_end__ = .;
     } > SRAM1 AT > FLASH
 
-    .fram_text :
-    {
-        . = ALIGN(4);
-        PROVIDE(_fram_text = .);
-        _fram_text_start_flash = LOADADDR(.fram_text);
-        _fram_text_start = .;
-        *(.framtext)
-        _fram_text_end = .;
-    } > SRAM3 AT > FLASH
-
     .flashend :
     {
         . = ALIGN(4);
