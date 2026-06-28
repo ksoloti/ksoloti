@@ -19,13 +19,18 @@
 #include "ch.h"
 #include "hal.h"
 #include "exceptions.h"
+#include "hal_pal_lld.h"
+#include "boot_options.h"
 
-#if HAL_USE_PAL || defined(__DOXYGEN__)
 
 #define AHB1_EN_MASK    STM32_GPIO_EN_MASK
 #define AHB1_LPEN_MASK  AHB1_EN_MASK
- 
- /**
+
+// GPIO J and K not used
+#undef STM32_HAS_GPIOJ
+#undef STM32_HAS_GPIOK
+
+/**
  * @brief   GPIO port setup info.
  */
 typedef struct {
@@ -124,17 +129,100 @@ const PALConfig pal_default_config = {
      VAL_GPIOH_ODR, VAL_GPIOH_AFRL, VAL_GPIOH_AFRH},
     {VAL_GPIOI_MODER, VAL_GPIOI_OTYPER, VAL_GPIOI_OSPEEDR, VAL_GPIOI_PUPDR,
      VAL_GPIOI_ODR, VAL_GPIOI_AFRL, VAL_GPIOI_AFRH}};
+
+
+static void initgpio(stm32_gpio_t *gpiop, const stm32_gpio_setup_t *config)
+{
+    gpiop->OTYPER  = config->otyper;
+    gpiop->OSPEEDR = config->ospeedr;
+    gpiop->PUPDR   = config->pupdr;
+    gpiop->ODR     = config->odr;
+    gpiop->AFRL    = config->afrl;
+    gpiop->AFRH    = config->afrh;
+    gpiop->MODER   = config->moder;
+}
+
+
+void stm32_gpio_init(void)
+{
+    const PALConfig *config = &pal_default_config;
+
+    /*
+     * Enables the GPIO related clocks.
+     */
+    RCC->AHB1ENR   |= AHB1_EN_MASK;
+    RCC->AHB1LPENR |= AHB1_LPEN_MASK;
+
+    /*
+     * Initial GPIO setup.
+     */
+#if STM32_HAS_GPIOA
+    initgpio(GPIOA, &config->PAData);
 #endif
+#if STM32_HAS_GPIOB
+    initgpio(GPIOB, &config->PBData);
+#endif
+#if STM32_HAS_GPIOC
+    initgpio(GPIOC, &config->PCData);
+#endif
+#if STM32_HAS_GPIOD
+    initgpio(GPIOD, &config->PDData);
+#endif
+#if STM32_HAS_GPIOE
+    initgpio(GPIOE, &config->PEData);
+#endif
+#if STM32_HAS_GPIOF
+    initgpio(GPIOF, &config->PFData);
+#endif
+#if STM32_HAS_GPIOG
+    initgpio(GPIOG, &config->PGData);
+#endif
+#if STM32_HAS_GPIOH
+    initgpio(GPIOH, &config->PHData);
+#endif
+#if STM32_HAS_GPIOI
+    initgpio(GPIOI, &config->PIData);
+#endif
+#if STM32_HAS_GPIOJ
+    initgpio(GPIOJ, &config->PJData);
+#endif
+#if STM32_HAS_GPIOK
+    initgpio(GPIOK, &config->PKData);
+#endif
+}
 
 /**
  * @brief   Early initialization code.
  * @details This initialization must be performed just after stack setup
  *          and before any other initialization.
  */
-void __early_init(void)
+
+void __dfu_check(void)
 {
+    //BootLoaderInit();
     exception_check_DFU();
-    stm32_clock_init();
+}
+
+void __early_init(void) {
+  //exception_check_DFU();
+
+  /* Reset of all peripherals.*/
+  rccResetAHB1(~0);
+  rccResetAHB2(~0);
+  rccResetAPB1(~0x10000000); // RCC_APB1RSTR_PWRRST
+  NVIC->ICER[0] = 0xFFFFFFFF;
+  NVIC->ICER[1] = 0xFFFFFFFF;
+  NVIC->ICER[2] = 0xFFFFFFFF;
+  NVIC->ICER[3] = 0xFFFFFFFF;
+  NVIC->ICER[4] = 0xFFFFFFFF;
+  NVIC->ICER[5] = 0xFFFFFFFF;
+  NVIC->ICER[6] = 0xFFFFFFFF;
+  NVIC->ICER[7] = 0xFFFFFFFF;
+  rccResetAPB2(~0);
+  OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
+
+  stm32_gpio_init();
+  stm32_clock_init();
 }
 
 void __late_init(void)
