@@ -48,9 +48,6 @@ ifeq ($(USE_OPT),)
     -mword-relocations
 endif
 
-# Force RAM restriction regardless of prior variable states
-USE_OPT += -DCRT1_AREAS_NUMBER=0
-
 ifneq ($(FWOPTIONDEF),)
   USE_OPT := $(USE_OPT) -D$(FWOPTIONDEF)
 endif
@@ -536,6 +533,7 @@ UDEFS = \
   -D$(BOARDDEF) \
   -DARM_MATH_CM4 \
   -DCORTEX_USE_FPU=TRUE \
+  -DCRT0_AREAS_NUMBER=0 \
   -DCRT1_AREAS_NUMBER=0 \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \

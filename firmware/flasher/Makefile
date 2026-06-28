@@ -28,10 +28,6 @@ ifeq ($(USE_OPT),)
     -pipe 
 endif 
 
-# Force RAM restriction regardless of prior variable states
-USE_OPT += -DCRT1_AREAS_NUMBER=0
-
-
 # C specific options here (added to USE_OPT).
 ifeq ($(USE_COPT),)
   USE_COPT = 
@@ -303,6 +299,7 @@ DLIBS =
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
     -DARM_MATH_CM4 \
+    -DCRT0_AREAS_NUMBER=0 \
     -DCRT1_AREAS_NUMBER=0 
 
 # Define ASM defines here
