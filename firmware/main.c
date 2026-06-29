@@ -66,9 +66,6 @@ extern void i2s_init(void);
 
 
 int main(void) {
-    halInit();
-    chSysInit();
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
     /* Copy vector table to SRAM1! */
@@ -83,6 +80,8 @@ int main(void) {
     /* Remap SRAM1 to 0x00000000 */
     SYSCFG->MEMRMP |= 0x03;
 
+    halInit();
+    chSysInit();
     AnalyserSetup();
     
 #ifdef FW_SPILINK

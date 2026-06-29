@@ -91,8 +91,8 @@ void DisplayAbortErr(int err)
 
 int main(void)
 {
+    watchdog_feed();
     halInit();
-    chSysInit();
     __disable_irq();
 
     /* Float USB inputs, hope the host notices detach... */
@@ -104,6 +104,7 @@ int main(void)
     palSetPad(LED1_PORT, LED1_PIN);
     palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 
+    chSysInit();
     watchdog_feed();
     configSDRAM();
 
