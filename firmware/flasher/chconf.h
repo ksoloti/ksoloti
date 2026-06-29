@@ -560,7 +560,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_SYSTEM_STATE_CHECK) || defined(__DOXYGEN__)
-#define CH_DBG_SYSTEM_STATE_CHECK       TRUE
+#define CH_DBG_SYSTEM_STATE_CHECK       FALSE
 #endif
 
 /**
@@ -583,7 +583,7 @@
  * @note    The default is @p FALSE.
  */
 #if !defined(CH_DBG_ENABLE_ASSERTS) || defined(__DOXYGEN__)
-#define CH_DBG_ENABLE_ASSERTS           TRUE
+#define CH_DBG_ENABLE_ASSERTS           FALSE
 #endif
 
 /**
