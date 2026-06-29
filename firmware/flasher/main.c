@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -91,8 +91,9 @@ void DisplayAbortErr(int err)
 
 int main(void)
 {
-    watchdog_feed();
     halInit();
+    __disable_irq();
+    chSysInit();
 
     /* Float USB inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
@@ -103,7 +104,6 @@ int main(void)
     palSetPad(LED1_PORT, LED1_PIN);
     palSetPadMode(LED2_PORT, LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 
-    chSysInit();
     watchdog_feed();
     configSDRAM();
 

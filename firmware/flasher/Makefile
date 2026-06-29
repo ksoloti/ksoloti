@@ -37,7 +37,9 @@ endif
 ifeq ($(USE_CPPOPT),)
   USE_CPPOPT = \
     -fno-rtti \
-    -fno-threadsafe-statics
+    -fno-threadsafe-statics \
+    -fno-use-cxa-atexit \
+    -std=c++11
 endif
 
 # Enable this if you want the linker to remove unused code and data
@@ -143,8 +145,6 @@ include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
 # Other files (optional).
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/shell/shell.mk
-# FAT stuff
-include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
 # get the same binary as openOCD flashes from elf
 override BIN = $(CP) -O binary --gap-fill 0xff
@@ -160,9 +160,16 @@ CSRC = $(PORTSRC) \
       $(HALSRC) \
       $(PLATFORMSRC) \
       $(BOARDSRC) \
-      $(CHIBIOS)/os/various/shell/shell.c \
+      $(OSALSRC) \
       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
+      ${CHIBIOS}/os/common/abstractions/cmsis_os/cmsis_os.c \
+      ${CHIBIOS}/os/common/startup/ARMCMx/compilers/GCC/crt1.c \
+      ${CHIBIOS}/os/oslib/src/chmempools.c \
+      ${CHIBIOS}/os/oslib/src/chmemheaps.c \
+      ${CHIBIOS}/os/oslib/src/chmemcore.c \
+      ${CHIBIOS}/os/rt/src/chcond.c \
+      ${CHIBIOS}/os/rt/src/chmboxes.c \
       ../axoloti_board.c \
       ../sdram.c \
       ../crc32.c \
@@ -207,9 +214,10 @@ ASMXSRC = \
 INCDIR = ../ \
   $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
+  $(STARTUPINC) \
   $(PORTINC) $(KERNINC) $(CONFDIR) $(ALLINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-  $(FATFSINC) $(OSALINC) \
+  $(OSALINC) \
   $(CHIBIOS) \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC \
@@ -217,6 +225,7 @@ INCDIR = ../ \
   $(CHIBIOS)/os/ext/CMSIS/include \
   $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
   $(CHIBIOS)/os/hal/lib/streams \
+  ${CHIBIOS}/os/common/abstractions/cmsis_os \
   ../STM32F4xx_HAL_Driver/Inc
 
 #
@@ -299,8 +308,12 @@ DLIBS =
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
     -DARM_MATH_CM4 \
+    -DCORTEX_USE_FPU=TRUE \
     -DCRT0_AREAS_NUMBER=0 \
-    -DCRT1_AREAS_NUMBER=0 
+    -DCRT1_AREAS_NUMBER=0 \
+    -DTHUMB \
+    -DTHUMB_NO_INTERWORKING \
+    -DTHUMB_PRESENT
 
 # Define ASM defines here
 UADEFS =
@@ -312,7 +325,7 @@ UINCDIR =
 ULIBDIR = .
 
 # List all user libraries here
-ULIBS =
+ULIBS = -lm
 
 
 #
@@ -323,12 +336,6 @@ ULIBS =
 # include $(RULESPATH)/rules.mk
 
 include ../rules.mk
-
-# Provide dummy references for the crt1.c hooks that crt0_v7m.S calls
-override LDFLAGS += -Wl,--defsym=__cpu_init=0
-override LDFLAGS += -Wl,--defsym=__init_ram_areas=0
-override LDFLAGS += -Wl,--defsym=__late_init=0
-override LDFLAGS += -Wl,--defsym=__default_exit=0
 
 #
 # Common rules
