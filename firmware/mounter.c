@@ -260,8 +260,8 @@ static void usbEvent(USBDriver *usbp, usbevent_t event) {
 }
 
 static const SDCConfig sdcConfig = {
-  (sdcbusmode_t) NULL,
-  SDC_MODE_4BIT
+    SDC_MODE_4BIT,
+    0
 };
 
 /* Configuration of the USB driver */
