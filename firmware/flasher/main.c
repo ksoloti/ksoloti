@@ -92,8 +92,8 @@ void DisplayAbortErr(int err)
 int main(void)
 {
     halInit();
-    __disable_irq();
     chSysInit();
+    __disable_irq();
 
     /* Float USB inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
