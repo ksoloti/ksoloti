@@ -80,10 +80,7 @@ void DisplayAbortErr(int err)
     int i = 10;
     while (i--)
     {
-        palWritePad(LED2_PORT, LED2_PIN, 1);
-        chThdSleepMilliseconds(1000);
-        palWritePad(LED2_PORT, LED2_PIN, 0);
-        chThdSleepMilliseconds(1000);
+        palTogglePad(LED2_PORT, LED2_PIN);
     }
 
     NVIC_SystemReset();
@@ -93,7 +90,7 @@ int main(void)
 {
     watchdog_feed();
     halInit();
-    __disable_irq();
+    // __disable_irq();
 
     /* Float USB inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);
@@ -172,9 +169,7 @@ int main(void)
     {
         flash_Erase_sector(i);
 
-        palWritePad(LED2_PORT, LED2_PIN, 1);
-        chThdSleepMilliseconds(100);
-        palWritePad(LED2_PORT, LED2_PIN, 0);
+        palTogglePad(LED2_PORT, LED2_PIN);
 
         DBGPRINTCHAR('f');
         DBGPRINTHEX(i);
@@ -217,9 +212,7 @@ int main(void)
 
         if ((i & 0xFFF) == 0)
         {
-            palWritePad(LED2_PORT, LED2_PIN, 1);
-            chThdSleepMilliseconds(100);
-            palWritePad(LED2_PORT, LED2_PIN, 0);
+            palTogglePad(LED2_PORT, LED2_PIN);
 
             DBGPRINTCHAR('j');
             DBGPRINTHEX(destptr);
@@ -256,7 +249,6 @@ int main(void)
     DBGPRINTCHAR('\r');
     DBGPRINTCHAR('\n');
 
-    chThdSleepMilliseconds(1000);
     NVIC_SystemReset();
 
     return 0;
