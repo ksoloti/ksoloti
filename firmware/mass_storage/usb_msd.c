@@ -190,7 +190,7 @@ bool_t msdRequestsHook(USBDriver *usbp) {
                 return FALSE;
             }
 
-            static uint8_t len_buf[1] = {0};
+            static uint8_t len_buf[4] __attribute__((aligned(4))) = {0};
             /* stall to indicate that we don't support LUN */
             usbSetupTransfer(usbp, len_buf, 1, NULL);
             return TRUE;
@@ -209,9 +209,9 @@ bool_t msdRequestsHook(USBDriver *usbp) {
 static void msd_wait_for_isr(USBMassStorageDriver *msdp) {
 
     /* sleep until it completes */
-    chSysLock();
+    // chSysLock();
     chBSemWaitS(&msdp->bsem);
-    chSysUnlock();
+    // chSysUnlock();
 }
 
 /**
@@ -231,18 +231,18 @@ static void msd_handle_end_point_notification(USBDriver *usbp, usbep_t ep) {
  * @brief Starts sending data
  */
 static void msd_start_transmit(USBMassStorageDriver *msdp, const uint8_t* buffer, size_t size) {
-    chSysLock();
+    // chSysLock();
     usbStartTransmitI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
-    chSysUnlock();
+    // chSysUnlock();
 }
 
 /**
  * @brief Starts receiving data
  */
 static void msd_start_receive(USBMassStorageDriver *msdp, uint8_t* buffer, size_t size) {
-    chSysLock();
+    // chSysLock();
     usbStartReceiveI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
-    chSysUnlock();
+    // chSysUnlock();
 }
 
 /**
@@ -617,10 +617,10 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
         (cbw->scsi_cmd_len > 16)) {
 
         /* stall both IN and OUT endpoints */
-        chSysLock();
+        // chSysLock();
         usbStallReceiveI(msdp->config->usbp, msdp->config->bulk_ep);
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        chSysUnlock();
+        // chSysUnlock();
 
         /* don't wait for ISR */
         return FALSE;
@@ -694,9 +694,9 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
                            SCSI_ASENSEQ_NO_QUALIFIER);
 
         /* stall IN endpoint */
-        chSysLock();
+        // chSysLock();
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        chSysUnlock();
+        // chSysUnlock();
 
         return FALSE;
     }
@@ -720,10 +720,10 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
 
     if (!msdp->result && cbw->data_len) {
         /* still bytes left to send, this is too early to send CSW? */
-        chSysLock();
+        // chSysLock();
         usbStallReceiveI(msdp->config->usbp, msdp->config->bulk_ep);
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        chSysUnlock();
+        // chSysUnlock();
 
         /*return FALSE;*/
     }
