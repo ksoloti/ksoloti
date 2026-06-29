@@ -250,6 +250,11 @@ static void usbEvent(USBDriver *usbp, usbevent_t event) {
             break;
 
         case USB_EVENT_RESET:
+            osalSysLockFromISR();
+            UMSD1.state = MSD_IDLE;             /* Any loss of connection drops state back to IDLE */
+            osalSysUnlockFromISR();
+            break;
+        
         case USB_EVENT_ADDRESS:
         case USB_EVENT_SUSPEND:
         case USB_EVENT_WAKEUP:
