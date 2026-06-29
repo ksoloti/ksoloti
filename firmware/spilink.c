@@ -57,26 +57,33 @@ bool_t spilink_master_active = 0;
 
 /* SPI configuration (10.5 MHz, CPHA=0, CPOL=0, 16 bit). */
 static const SPIDBConfig spidbcfg_master = {
-    { 
-        NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
-        SPI_CR1_DFF /* 16-bit frame */
-        | SPI_CR1_BR_0 /* 10.5 MHz */
-        // | SPI_CR1_CPOL /* CPOL=1 */
-        // | SPI_CR1_CPHA /* CPHA=1 */
+    .spiconfig = {
+        .data_cb  = NULL,
+        .error_cb = NULL,
+        .ssport   = SPILINK_NSS_PORT,
+        .sspad    = SPILINK_NSS_PIN,
+        .cr1      = SPI_CR1_DFF /* 16-bit frame */
+                    | SPI_CR1_BR_0, /* 10.5 MHz */
+        .cr2      = 0
     },
-    (void *)&spilink_rx, (void *)&spilink_tx,
-    sizeof(spilink_data_t) / 2
+    .rxbuf = (void *)&spilink_rx, 
+    .txbuf = (void *)&spilink_tx,
+    .size  = sizeof(spilink_data_t) / 2
 };
 
 static const SPIDBConfig spidbcfg_slave = {
-    {
-        NULL, SPILINK_NSS_PORT, SPILINK_NSS_PIN,
-        SPI_CR1_DFF /* 16-bit frame */
-        // | SPI_CR1_CPOL /* CPOL=1 */
-        // | SPI_CR1_CPHA /* CPHA=1 */
+    .spiconfig = {
+        .slave    = true,
+        .data_cb  = NULL,
+        .error_cb = NULL,
+        .ssport   = SPILINK_NSS_PORT,
+        .sspad    = SPILINK_NSS_PIN,
+        .cr1      = SPI_CR1_DFF, /* 16-bit frame */
+        .cr2      = 0
     },
-    (void *)&spilink_rx, (void *)&spilink_tx,
-    sizeof(spilink_data_t) / 2
+    .rxbuf = (void *)&spilink_rx, 
+    .txbuf = (void *)&spilink_tx,
+    .size  = sizeof(spilink_data_t) / 2
 };
 
 static WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".sram2")));
