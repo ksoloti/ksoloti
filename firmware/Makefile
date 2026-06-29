@@ -561,12 +561,6 @@ ULIBS = -lm
 
 include ./rules.mk
 
-# Provide dummy references for the crt1.c hooks that crt0_v7m.S calls
-# override LDFLAGS += -Wl,--defsym=__cpu_init=0
-# override LDFLAGS += -Wl,--defsym=__init_ram_areas=0
-# override LDFLAGS += -Wl,--defsym=__late_init=0
-# override LDFLAGS += -Wl,--defsym=__default_exit=0
-
 #
 # Common rules
 ##############################################################################
