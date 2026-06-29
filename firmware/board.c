@@ -221,8 +221,8 @@ void __early_init(void) {
   rccResetAPB2(~0);
   OTG_HS->GINTMSK = 0; // disable OTG_HS interrupts!
 
-  stm32_gpio_init();
   stm32_clock_init();
+  stm32_gpio_init();
 }
 
 void __late_init(void)
