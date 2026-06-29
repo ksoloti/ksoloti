@@ -199,6 +199,7 @@ void stm32_gpio_init(void)
 void __early_init(void)
 {
     exception_check_DFU();
+    CheckForReset();
     stm32_clock_init();
     stm32_gpio_init();
 }
