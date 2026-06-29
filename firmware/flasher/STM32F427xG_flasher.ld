@@ -125,22 +125,6 @@ SECTIONS
 
     PROVIDE(__core_init = __ram_end__);
 
-    .data :
-    {
-        . = ALIGN(4);
-        PROVIDE(_data = .);
-	    _textdata_start = LOADADDR(.data);
-        _data_start = .;
-        *(.data)
-        . = ALIGN(4);
-        *(.data.*)
-        . = ALIGN(4);
-        *(.ramtext)
-        . = ALIGN(4);
-        PROVIDE(_edata = .);
-	    _data_end = .;
-    } > SRAM
-
     .bss :
     {
         . = ALIGN(4);
