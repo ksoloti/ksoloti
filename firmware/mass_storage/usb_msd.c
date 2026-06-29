@@ -209,9 +209,9 @@ bool_t msdRequestsHook(USBDriver *usbp) {
 static void msd_wait_for_isr(USBMassStorageDriver *msdp) {
 
     /* sleep until it completes */
-    // chSysLock();
+    osalSysLockFromISR();
     chBSemWaitS(&msdp->bsem);
-    // chSysUnlock();
+    osalSysUnlockFromISR();
 }
 
 /**
@@ -222,27 +222,27 @@ static void msd_handle_end_point_notification(USBDriver *usbp, usbep_t ep) {
     (void)usbp;
     (void)ep;
 
-    chSysLockFromIsr();
+    osalSysLockFromISR();
     chBSemSignalI(&((USBMassStorageDriver *)usbp->in_params[ep])->bsem);
-    chSysUnlockFromIsr();
+    osalSysUnlockFromISR();
 }
 
 /**
  * @brief Starts sending data
  */
 static void msd_start_transmit(USBMassStorageDriver *msdp, const uint8_t* buffer, size_t size) {
-    // chSysLock();
+    osalSysLockFromISR();
     usbStartTransmitI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
-    // chSysUnlock();
+    osalSysUnlockFromISR();
 }
 
 /**
  * @brief Starts receiving data
  */
 static void msd_start_receive(USBMassStorageDriver *msdp, uint8_t* buffer, size_t size) {
-    // chSysLock();
+    osalSysLockFromISR();
     usbStartReceiveI(msdp->config->usbp, msdp->config->bulk_ep, buffer, size);
-    // chSysUnlock();
+    osalSysUnlockFromISR();
 }
 
 /**
@@ -418,7 +418,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp, uint8_t*
                 msd_start_receive(msdp, buff[current_buf_idx], next_chunk_blocks * MMCSD_BLOCK_SIZE);
             }
 
-            chThdSleepMicroseconds(5); /* Yields a slight speed increase: typically 210 kB/s VS 175 kb/s */
+            osalThreadSleepMicroseconds(5); /* Yields a slight speed increase: typically 210 kB/s VS 175 kb/s */
 
             /* now write the block to the block device */
             if (blkWrite(msdp->config->bbdp, rw_block_address, buffer_to_process, blocks_to_write) == CH_FAILED) {
@@ -475,7 +475,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp, uint8_t*
             /* transmit the block */
             msd_start_transmit(msdp, buff[i % 2], msdp->block_dev_info.blk_size);
 
-            chThdSleepMicroseconds(10); /* Required for stability. Possibly waiting for cache/prefetch...*/
+            osalThreadSleepMicroseconds(10); /* Required for stability. Possibly waiting for cache/prefetch...*/
 
             if (i < (total - 1)) {
                 /* there is at least one more block to be read from device */
@@ -617,10 +617,10 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
         (cbw->scsi_cmd_len > 16)) {
 
         /* stall both IN and OUT endpoints */
-        // chSysLock();
+        osalSysLockFromISR();
         usbStallReceiveI(msdp->config->usbp, msdp->config->bulk_ep);
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        // chSysUnlock();
+        osalSysUnlockFromISR();
 
         /* don't wait for ISR */
         return FALSE;
@@ -694,9 +694,9 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
                            SCSI_ASENSEQ_NO_QUALIFIER);
 
         /* stall IN endpoint */
-        // chSysLock();
+        osalSysLockFromISR();
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        // chSysUnlock();
+        osalSysUnlockFromISR();
 
         return FALSE;
     }
@@ -720,10 +720,10 @@ bool_t msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
 
     if (!msdp->result && cbw->data_len) {
         /* still bytes left to send, this is too early to send CSW? */
-        // chSysLock();
+        osalSysLockFromISR();
         usbStallReceiveI(msdp->config->usbp, msdp->config->bulk_ep);
         usbStallTransmitI(msdp->config->usbp, msdp->config->bulk_ep);
-        // chSysUnlock();
+        osalSysUnlockFromISR();
 
         /*return FALSE;*/
     }
@@ -850,7 +850,7 @@ int msdStart(USBMassStorageDriver *msdp, const USBMassStorageConfig *config) {
     /* make sure block device is working */
     i = 0;
     while (blkGetDriverState(config->bbdp) != BLK_READY) {
-        chThdSleepMilliseconds(50);
+        osalThreadSleepMilliseconds(50);
         i++;
         if (i>100) {
             return -1;

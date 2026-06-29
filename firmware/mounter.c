@@ -243,10 +243,10 @@ USBMassStorageDriver UMSD1;
 static void usbEvent(USBDriver *usbp, usbevent_t event) {
     switch (event) {
         case USB_EVENT_CONFIGURED:
-            chSysLockFromIsr();
+            osalSysLockFromISR();
             // usbInitEndpointI(usbp, USB_MS_DATA_EP, &ep_data_config);
             msdConfigureHookI(&UMSD1);
-            chSysUnlockFromIsr();
+            osalSysUnlockFromISR();
             break;
 
         case USB_EVENT_RESET:
@@ -385,8 +385,9 @@ int mounter(void) {
 
     /* start the USB driver */
     usbDisconnectBus(&USBD1);
-    chThdSleepMilliseconds(1000);
+    chThdSleepMilliseconds(500);
     usbStart(&USBD1, &usbConfig);
+    chThdSleepMilliseconds(100);
     usbConnectBus(&USBD1);
 
     while (1) {
