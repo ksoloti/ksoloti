@@ -77,9 +77,11 @@ void DisplayAbortErr(int err)
     /* blink red slowly, green off */
     palWritePad(LED1_PORT, LED1_PIN, 0);
 
-    int i = 10;
+    volatile int i = 100000000;
     while (i--)
     {
+        /* Poor man's PWM: both LEDs will light up half-bright to show something went wrong */
+        palTogglePad(LED1_PORT, LED1_PIN);
         palTogglePad(LED2_PORT, LED2_PIN);
     }
 
