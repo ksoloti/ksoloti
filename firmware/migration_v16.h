@@ -16,8 +16,6 @@
 #define iqInit iqObjectInit
 #define oqInit oqObjectInit
 
-#define SCB_FPCCR                     *((uint32_t *)0xE000EF34U)
-
 #define hal_lld_get_counter_value port_rt_get_counter_value
 
 #define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))

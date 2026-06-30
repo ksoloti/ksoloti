@@ -87,7 +87,7 @@ void BootLoaderInit() {
     psp = 0;
     asm volatile ("cpsie   i");
     asm volatile ("msr     PSP, %0" : : "r" (psp));
-    SCB_FPCCR = 0;
+    FPU->FPCCR = 0;
     asm volatile ("LDR     R0, =0x40023844 ;");
     // RCC_APB2ENR (+0x18)
     asm volatile ("LDR     R1, =0x4000     ;");
