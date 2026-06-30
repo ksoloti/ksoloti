@@ -458,7 +458,7 @@ static int StartPatch1(void) {
                     report_fatfs_error(err, index_fn);
                 }
 
-                err = f_read(&f, (uint8_t*) PATCHMAINLOC, 0xE000, (void*) &bytes_read);
+                err = f_read(&f, (uint8_t*) PATCHMAINLOC, PATCHFLASHSIZE, (void*) &bytes_read);
                 if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                     continue;
