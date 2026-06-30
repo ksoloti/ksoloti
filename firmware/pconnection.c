@@ -68,7 +68,7 @@ uint8_t LogBufferUsed = 0;
 
 connectionflags_t connectionFlags;
 
-static WORKING_AREA(waThreadUSBDMidi, 256);
+static THD_WORKING_AREA(waThreadUSBDMidi, 256);
 
 
 #define PC_DBG_COUNT (0)

@@ -67,7 +67,7 @@ uint8_t MidiCurData;
 uint8_t MidiNumData;
 uint8_t MidiInChannel;
 
-static WORKING_AREA(waThreadMidi, 256) __attribute__((section (".ccmramend")));
+static THD_WORKING_AREA(waThreadMidi, 256) __attribute__((section (".ccmramend")));
 
 
 /* MIDI IN */

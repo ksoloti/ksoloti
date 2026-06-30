@@ -86,7 +86,7 @@ static const SPIDBConfig spidbcfg_slave = {
     .size  = sizeof(spilink_data_t) / 2
 };
 
-static WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".sram2")));
+static THD_WORKING_AREA(waThreadSpilink, 256); // __attribute__ ((section (".sram2")));
 
 
 __attribute__((noreturn)) static msg_t ThreadSpilinkSlave(void *arg)
