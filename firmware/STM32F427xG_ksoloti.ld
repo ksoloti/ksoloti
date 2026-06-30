@@ -24,19 +24,6 @@
 __main_stack_size__     = 0x400;
 __process_stack_size__  = 0x400;
 
-/*
-TODO look at these
-MEMORY
-{
-    FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 896k
-    SRAM1      : ORIGIN = 0x20000200, LENGTH = 67k
-    SRAM2      : ORIGIN = 0x2001E000, LENGTH = 0x00002000
-    SRAM3      : ORIGIN = 0x20020000, LENGTH = 0x00010000
-    CCMRAMEND  : ORIGIN = 0x1000C000, LENGTH = 16k
-    SDRAM      : ORIGIN = 0xC0000000, LENGTH = 0x002000000
-}
-*/ 
-
 MEMORY
 {
     FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 896k       /* 896 kB (minus last 128 kB for patch storage) */
