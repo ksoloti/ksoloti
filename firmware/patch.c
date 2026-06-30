@@ -333,7 +333,7 @@ static int StartPatch1(void) {
 #if USE_NONTHREADED_FIFO_PUMP                
             fifoTicksUsed = 0;
 #endif
-            tStart = hal_lld_get_counter_value();
+            tStart = port_rt_get_counter_value();
             watchdog_feed();
 
             if (patchStatus == RUNNING) {
@@ -363,7 +363,7 @@ static int StartPatch1(void) {
             }
 
             adc_convert();
-            uint32_t tEnd = hal_lld_get_counter_value();
+            uint32_t tEnd = port_rt_get_counter_value();
             uint32_t tTaken;
             if (tEnd < tStart) {
                 tTaken = ((uint32_t) 0xFFFFFFFF - tStart) + tEnd;

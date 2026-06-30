@@ -36,7 +36,7 @@ uint32_t spidb_interrupt_timestamp;
 
 static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
     SPIDriver *spip = dat;
-    spidb_interrupt_timestamp = hal_lld_get_counter_value();
+    spidb_interrupt_timestamp = port_rt_get_counter_value();
 
     if (flags & STM32_DMA_ISR_TCIF) {
         chSysLockFromISR();
@@ -184,7 +184,7 @@ static void dma_spidb_master_interrupt(void* dat, uint32_t flags) {
 #endif
     /* assume it is a transfer ready interrupt */
     SPIDriver *spip = dat;
-    spidb_interrupt_timestamp = hal_lld_get_counter_value();
+    spidb_interrupt_timestamp = port_rt_get_counter_value();
 
     dmaStreamDisable(spip->dmarx);
     dmaStreamDisable(spip->dmatx);

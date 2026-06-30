@@ -230,7 +230,7 @@ static void ADAU_I2C_Init(void) {
 
 
 uint32_t HAL_GetTick(void) {
-    return hal_lld_get_counter_value();
+    return port_rt_get_counter_value();
 }
 
 
@@ -306,7 +306,7 @@ static void dma_sai_a_interrupt_spilink_master(void* dat, uint32_t flags) {
     (void) flags;
 
     chSysLockFromISR();
-    codec_interrupt_timestamp = hal_lld_get_counter_value();
+    codec_interrupt_timestamp = port_rt_get_counter_value();
     spilink_master_process();
     chSysUnlockFromISR();
 
@@ -324,7 +324,7 @@ static void dma_sai_a_interrupt_spilink_slave(void* dat, uint32_t flags) {
     (void) dat;
     (void) flags;
 
-    codec_interrupt_timestamp = hal_lld_get_counter_value();
+    codec_interrupt_timestamp = port_rt_get_counter_value();
     spilink_slave_process();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
@@ -341,7 +341,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
     chSysLockFromISR();
     (void)dat;
     (void)flags;
-    codec_interrupt_timestamp = hal_lld_get_counter_value();
+    codec_interrupt_timestamp = port_rt_get_counter_value();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
 

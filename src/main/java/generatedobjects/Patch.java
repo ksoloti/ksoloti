@@ -330,7 +330,7 @@ public class Patch extends gentools {
     static AxoObject CreateCyclecounter() {
         AxoObject o = new AxoObject("cyclecounter", "Outputs the cpu clock cycle counter, a 32bit integer incrementing on every clock cycle. Useful for benchmarking objects.");
         o.outlets.add(new OutletInt32("t", "cpu time in ticks"));
-        o.sKRateCode = "outlet_t = hal_lld_get_counter_value();\n";
+        o.sKRateCode = "outlet_t = port_rt_get_counter_value();\n";
         return o;
     }
 }

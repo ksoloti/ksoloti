@@ -68,7 +68,7 @@ static void dma_i2s_tx_interrupt(void* dat, uint32_t flags) {
     (void) flags;
 
     if ((i2s_tx_dma)->stream->CR & STM32_DMA_CR_CT) {
-        i2s_tc_interrupt_timestamp = hal_lld_get_counter_value();
+        i2s_tc_interrupt_timestamp = port_rt_get_counter_value();
 
 #ifdef I2S_DEBUG
         palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
