@@ -71,8 +71,8 @@ static void tmrfunc(struct ch_virtual_timer* vt, void* p) {
 
 /* Polling monitor start */
 static void tmr_init(void* p) {
-    chEvtInit(&inserted_event);
-    chEvtInit(&removed_event);
+    chEvtObjectInit(&inserted_event);
+    chEvtObjectInit(&removed_event);
     chSysLock();
     cnt = POLLING_INTERVAL;
     chVTSetI(&tmr, MS2ST(POLLING_DELAY), tmrfunc, p);

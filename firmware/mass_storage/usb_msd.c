@@ -799,8 +799,8 @@ void msdInit(USBMassStorageDriver *msdp) {
     msdp->state = MSD_IDLE;
 
     /* initialize the driver events */
-    chEvtInit(&msdp->evt_connected);
-    chEvtInit(&msdp->evt_ejected);
+    chEvtObjectInit(&msdp->evt_connected);
+    chEvtObjectInit(&msdp->evt_ejected);
 
     /* initialise the binary semaphore as taken */
     chBSemObjectInit(&msdp->bsem, TRUE);

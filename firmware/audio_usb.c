@@ -356,7 +356,7 @@ void __attribute__((optimize("-O0"))) aduObjectInit(AudioUSBDriver *adup)
   }
 
   adup->vmt = NULL; // none at the moment
-  chEvtInit(&adup->event);
+  chEvtObjectInit(&adup->event);
   adup->state = ADU_STOP;
 }
 

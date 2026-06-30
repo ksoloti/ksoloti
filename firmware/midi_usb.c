@@ -239,7 +239,7 @@ void mduInit(void) {
 void mduObjectInit(MidiUSBDriver *mdup) {
 
   mdup->vmt = &vmt;
-  chEvtInit(&mdup->event);
+  chEvtObjectInit(&mdup->event);
   mdup->state = MDU_STOP;
   iqInit(&mdup->iqueue, mdup->ib, MIDI_USB_BUFFERS_SIZE, inotify, mdup);
   oqInit(&mdup->oqueue, mdup->ob, MIDI_USB_BUFFERS_SIZE, onotify, mdup);
