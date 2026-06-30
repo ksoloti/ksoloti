@@ -39,7 +39,7 @@ uint32_t fbuff[256] __attribute__((section (".sram2"))); /* Generic large buffer
 
 static virtual_timer_t tmr; /* Card monitor timer */
 static unsigned cnt; /* Debounce counter */
-static EventSource inserted_event, removed_event; /* Card event sources */
+static event_source_t inserted_event, removed_event; /* Card event sources */
 
 #if 1
 
