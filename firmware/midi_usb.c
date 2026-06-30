@@ -342,7 +342,7 @@ void mduConfigureHookI(MidiUSBDriver *mdup) {
  * @retval TRUE         Message handled internally.
  * @retval FALSE        Message not handled.
  */
-bool_t mduRequestsHook(USBDriver *usbp) {
+bool mduRequestsHook(USBDriver *usbp) {
 
   (void)usbp;
   return FALSE;

@@ -1124,7 +1124,7 @@ extern "C" {
   void   aduStart(AudioUSBDriver *adup, const AudioUSBConfig *config);
   void   aduStop(AudioUSBDriver *adup);
   void   aduConfigureHookI(AudioUSBDriver *adup);
-  bool_t aduRequestsHook(USBDriver *usbp);
+  bool   aduRequestsHook(USBDriver *usbp);
   void   aduDataReceived(USBDriver *usbp, usbep_t ep);
   void   aduSofHookI(AudioUSBDriver *adup);
 

@@ -362,7 +362,7 @@ void bduConfigureHookI(BulkUSBDriver *bdup) {
  * @retval TRUE         Message handled internally.
  * @retval FALSE        Message not handled.
  */
-bool_t bduRequestsHook(USBDriver *usbp) {
+bool bduRequestsHook(USBDriver *usbp) {
 
   (void)usbp;
   return FALSE;

@@ -167,7 +167,7 @@ extern "C" {
   void mduStart(MidiUSBDriver *mdup, const MidiUSBConfig *config);
   void mduStop(MidiUSBDriver *mdup);
   void mduConfigureHookI(MidiUSBDriver *bdup);
-  bool_t mduRequestsHook(USBDriver *usbp);
+  bool mduRequestsHook(USBDriver *usbp);
   void mduDataTransmitted(USBDriver *usbp, usbep_t ep);
   void mduDataReceived(USBDriver *usbp, usbep_t ep);
 

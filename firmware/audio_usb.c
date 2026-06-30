@@ -448,7 +448,7 @@ void __attribute__((optimize("-O0"))) aduConfigureHookI(AudioUSBDriver *adup)
  * @retval TRUE         Message handled internally.
  * @retval FALSE        Message not handled.
  */
-bool_t __attribute__((optimize("-O0"))) aduRequestsHook(USBDriver *usbp) {
+bool __attribute__((optimize("-O0"))) aduRequestsHook(USBDriver *usbp) {
 
   (void)usbp;
   return FALSE;

@@ -31,7 +31,7 @@ extern int32_t rbuf[DOUBLE_BUFSIZE];
 extern int32_t rbuf2[DOUBLE_BUFSIZE];
 
 
-void codec_init(bool_t isMaster);
+void codec_init(bool isMaster);
 
 void codec_clearbuffer(void);
 

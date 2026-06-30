@@ -377,7 +377,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 #endif /* FW_SPILINK */
 
 
-void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
+void codec_ADAU1961_hw_init(uint16_t samplerate, bool isMaster) {
 
     ADAU_I2C_Init();
     chThdSleepMilliseconds(5);
@@ -572,7 +572,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool_t isMaster) {
 }
 
 
-void codec_ADAU1961_SAI_init(uint16_t samplerate, bool_t isMaster) {
+void codec_ADAU1961_SAI_init(uint16_t samplerate, bool isMaster) {
 
 
 #ifdef FW_SPILINK

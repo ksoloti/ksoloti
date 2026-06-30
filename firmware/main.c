@@ -131,7 +131,7 @@ int main(void) {
     configSDRAM();
     // memTest();
 
-    bool_t is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
+    bool is_master = palReadPad(SPILINK_JUMPER_PORT, SPILINK_JUMPER_PIN);
 
     codec_init(is_master);
 

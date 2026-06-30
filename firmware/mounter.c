@@ -278,7 +278,7 @@ static const USBConfig usbConfig = {
 };
 
 /* Turns on a LED when there is I/O activity on the USB port */
-static void usbActivity(bool_t active) {
+static void usbActivity(bool active) {
     if (active) {
         palSetPad(LED1_PORT, LED1_PIN);
     }

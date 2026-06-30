@@ -38,7 +38,7 @@ int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
 int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
 #endif
 
-void codec_init(bool_t isMaster) {
+void codec_init(bool isMaster) {
     codec_ADAU1961_SAI_init(SAMPLERATE, isMaster);
 }
 

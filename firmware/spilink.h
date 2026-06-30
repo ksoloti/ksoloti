@@ -53,7 +53,7 @@ typedef struct {
     uint32_t footer;
 } spilink_data_t;
 
-void spilink_init(bool_t isMaster);
+void spilink_init(bool isMaster);
 void spilink_clear_audio_tx(void);
 
 extern Thread *pThreadSpilink;
@@ -66,8 +66,8 @@ extern spilink_data_t spilink_tx[2];
 
 extern uint32_t frameno;
 
-extern bool_t spilink_master_active;
-extern bool_t spilink_toggle;
+extern bool spilink_master_active;
+extern bool spilink_toggle;
 
 // extern int spilink_update_index;
 // extern int lcd_update_index;

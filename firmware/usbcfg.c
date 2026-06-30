@@ -794,7 +794,7 @@ static const uint8_t msdescriptor2[] = {
 };
 #endif
 
-static bool_t specialRequestsHook(USBDriver *usbp) {
+static bool specialRequestsHook(USBDriver *usbp) {
   if (
       (usbp->setup[0] == 0xC0) &&
       (usbp->setup[1] == 0x14) &&

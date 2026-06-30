@@ -28,7 +28,7 @@
 
 #ifdef FW_SPILINK
 
-bool_t spilink_toggle;
+bool spilink_toggle;
 Thread *pThreadSpilink = 0;
 
 spilink_data_t spilink_tx[2] __attribute__ ((section (".sram2")));
@@ -51,7 +51,7 @@ extern void detect_MCO(void);
 
 #define SPILINKD SPID3
 
-bool_t spilink_master_active = 0;
+bool spilink_master_active = 0;
 // int spilink_update_index;
 // int lcd_update_index;
 
@@ -163,7 +163,7 @@ void spilink_clear_audio_tx(void) {
 }
 
 
-void spilink_init(bool_t isMaster) {
+void spilink_init(bool isMaster) {
     if (isMaster)
         palSetPadMode(SPILINK_NSS_PORT, SPILINK_NSS_PIN, PAL_MODE_OUTPUT_PUSHPULL); /* master NSS */
     else

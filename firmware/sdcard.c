@@ -33,7 +33,7 @@
 static const char* sram3_suffix = "_sram3";
 
 FATFS SDC_FS; /* FS object */
-bool_t fs_ready = FALSE; /* FS mounted and ready */
+bool fs_ready = FALSE; /* FS mounted and ready */
 
 uint32_t fbuff[256] __attribute__((section (".sram2"))); /* Generic large buffer */
 
