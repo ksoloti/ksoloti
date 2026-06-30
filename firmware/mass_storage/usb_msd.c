@@ -75,20 +75,20 @@
 /**
  * @brief Response to a READ_CAPACITY_10 SCSI command
  */
-PACK_STRUCT_BEGIN typedef struct {
+typedef struct {
     uint32_t last_block_addr;
     uint32_t block_size;
-} PACK_STRUCT_STRUCT msd_scsi_read_capacity_10_response_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_scsi_read_capacity_10_response_t;
 
 /**
  * @brief Response to a READ_FORMAT_CAPACITIES SCSI command
  */
-PACK_STRUCT_BEGIN typedef struct {
+typedef struct {
     uint8_t reserved[3];
     uint8_t capacity_list_length;
     uint32_t block_count;
     uint32_t desc_and_block_length;
-} PACK_STRUCT_STRUCT msd_scsi_read_format_capacities_response_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_scsi_read_format_capacities_response_t;
 
 /**
  * @brief Byte-swap a 32 bits unsigned integer

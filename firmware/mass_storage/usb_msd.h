@@ -13,7 +13,7 @@
 /**
  * @brief Command Block Wrapper structure
  */
-PACK_STRUCT_BEGIN typedef struct {
+typedef struct {
 	uint32_t signature;
 	uint32_t tag;
 	uint32_t data_len;
@@ -21,29 +21,29 @@ PACK_STRUCT_BEGIN typedef struct {
 	uint8_t lun;
 	uint8_t scsi_cmd_len;
 	uint8_t scsi_cmd_data[16];
-} PACK_STRUCT_STRUCT msd_cbw_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_cbw_t;
 
 /**
  * @brief Command Status Wrapper structure
  */
-PACK_STRUCT_BEGIN typedef struct {
+typedef struct {
 	uint32_t signature;
 	uint32_t tag;
 	uint32_t data_residue;
 	uint8_t status;
-} PACK_STRUCT_STRUCT msd_csw_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_csw_t;
 
 /**
  * @brief Structure holding sense data (status/error information)
  */
-PACK_STRUCT_BEGIN typedef struct {
+typedef struct {
 		uint8_t byte[18];
-} PACK_STRUCT_STRUCT msd_scsi_sense_response_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_scsi_sense_response_t;
 
 /**
  * @brief structure holding the data to reply to an INQUIRY SCSI command
  */
-PACK_STRUCT_BEGIN typedef struct
+typedef struct
 {
     uint8_t peripheral;
     uint8_t removable;
@@ -56,7 +56,7 @@ PACK_STRUCT_BEGIN typedef struct
     uint8_t vendor_id[8];
     uint8_t product_id[16];
     uint8_t product_rev[4];
-} PACK_STRUCT_STRUCT msd_scsi_inquiry_response_t PACK_STRUCT_END;
+} __attribute__((packed)) msd_scsi_inquiry_response_t;
 
 /**
  * @brief Possible states for the USB mass storage driver
