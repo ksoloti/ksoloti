@@ -170,7 +170,7 @@ void mduInitiateTransmitI(MidiUSBDriver *mdup, size_t uCount)
  */
 static void inotify(io_queue_t *qp) {
   size_t n, maxsize;
-  MidiUSBDriver *mdup = chQGetLink(qp);
+  MidiUSBDriver *mdup = qGetLink(qp);
 
   /* If the USB driver is not in the appropriate state then transactions
    must not be started.*/
@@ -195,7 +195,7 @@ static void inotify(io_queue_t *qp) {
  */
 static void onotify(io_queue_t *qp) {
   size_t n;
-  MidiUSBDriver *mdup = chQGetLink(qp);
+  MidiUSBDriver *mdup = qGetLink(qp);
 
   /* If the USB driver is not in the appropriate state then transactions
    must not be started.*/

@@ -189,7 +189,7 @@ void bduInitiateTransmitI(BulkUSBDriver *bdup, size_t uCount)
  */
 static void inotify(io_queue_t *qp) {
   size_t n, maxsize;
-  BulkUSBDriver *bdup = chQGetLink(qp);
+  BulkUSBDriver *bdup = qGetLink(qp);
 
   /* If the USB driver is not in the appropriate state then transactions
      must not be started.*/
@@ -214,7 +214,7 @@ static void inotify(io_queue_t *qp) {
  */
 static void onotify(io_queue_t *qp) {
   volatile size_t n;
-  BulkUSBDriver *bdup = chQGetLink(qp);
+  BulkUSBDriver *bdup = qGetLink(qp);
 
   bduAddLog(blNotifyCalled, oqGetFullI(&bdup->oqueue));
 
