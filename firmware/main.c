@@ -178,7 +178,7 @@ int main(void) {
     //TestMemset();
 
 #if FW_USBAUDIO
-    EventListener audioEventListener;
+    event_listener_t audioEventListener;
     chEvtRegisterMask(&ADU1.event, &audioEventListener, AUDIO_EVENT);
 
     while (1) 

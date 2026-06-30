@@ -383,8 +383,8 @@ int mounter(void) {
     }
 
     /* watch the mass storage events */
-    EventListener connected;
-    EventListener ejected;
+    event_listener_t connected;
+    event_listener_t ejected;
     chEvtRegisterMask(&UMSD1.evt_connected, &connected, EVENT_MASK(1));
     chEvtRegisterMask(&UMSD1.evt_ejected, &ejected, EVENT_MASK(2));
 
