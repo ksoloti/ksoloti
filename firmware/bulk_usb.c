@@ -268,8 +268,8 @@ void bduObjectInit(BulkUSBDriver *bdup) {
   bdup->vmt = &vmt;
   chEvtObjectInit(&bdup->event);
   bdup->state = BDU_STOP;
-  iqInit(&bdup->iqueue, bdup->ib, BULK_USB_BUFFERS_SIZE, inotify, bdup);
-  oqInit(&bdup->oqueue, bdup->ob, BULK_USB_BUFFERS_SIZE, onotify, bdup);
+  iqObjectInit(&bdup->iqueue, bdup->ib, BULK_USB_BUFFERS_SIZE, inotify, bdup);
+  oqObjectInit(&bdup->oqueue, bdup->ob, BULK_USB_BUFFERS_SIZE, onotify, bdup);
 }
 
 /**
