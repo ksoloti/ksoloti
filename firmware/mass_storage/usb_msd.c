@@ -760,7 +760,7 @@ static msg_t mass_storage_thread(void *arg) {
     /* wait for the usb to be initialised */
     msd_wait_for_isr(msdp);
 
-    while (!chThdShouldTerminate()) {
+    while (!chThdShouldTerminateX()) {
         wait_for_isr = FALSE;
 
         /* wait on data depending on the current state */

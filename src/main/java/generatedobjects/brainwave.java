@@ -242,7 +242,7 @@ public class brainwave extends gentools {
                 + "\n"
                 + "msg_t ThreadX2(){\n"
                 + "  setup();\n"
-                + "  while(!chThdShouldTerminate()){\n"
+                + "  while(!chThdShouldTerminateX()){\n"
                 + "     loop();\n"
                 + "     chThdYield();\n"
                 + "  }\n"

@@ -103,7 +103,7 @@ public class Script extends gentools {
                 + "%script%\n"
                 + "msg_t ThreadX2(){\n"
                 + "  setup();\n"
-                + "  while(!chThdShouldTerminate()){\n"
+                + "  while(!chThdShouldTerminateX()){\n"
                 + "     loop();\n"
                 + "     chThdSleepMilliseconds(1);\n"
                 + "  }\n"
