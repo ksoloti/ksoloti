@@ -170,7 +170,7 @@ public class USBBulkConnection extends Connection {
         FILEINFO_DATA,      /* file listing entry, variable length filename */
         MEMREAD,            /* one-time programmable bytes */
         MEMREAD_1WORD,      /* one-time programmable bytes */
-        FWVERSION,          /* responds with own firmware version, 1.1.0.0 (though not used for anything?) */
+        FWVERSION,          /* responds with own firmware version, see axoloti_defines.h (though not used for anything?) */
         COMMANDRESULT_PCKT  /* New Response Packet: ['A', 'x', 'o', 'R', command_byte, status_byte] */
     };
 

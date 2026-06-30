@@ -52,8 +52,9 @@ typedef int32_t int32buffer[BUFSIZE];
 
 /* Firmware version 1.0.0.4 - Ksoloti v0.4+ */
 /* Firmware version 1.1.0.0 - Ksoloti Patcher 1.1.0 */
+/* Firmware version 1.2.0.0 - Ksoloti Patcher 1.2.0 */
 #define FWVERSION1 1
-#define FWVERSION2 1
+#define FWVERSION2 2
 #define FWVERSION3 0
 #define FWVERSION4 0
 
