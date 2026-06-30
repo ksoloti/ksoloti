@@ -112,9 +112,9 @@ typedef struct {
   /* Driver state.*/                                                        \
   mdustate_t                state;                                          \
   /* Input queue.*/                                                         \
-  InputQueue                iqueue;                                         \
+  io_queue_t                iqueue;                                         \
   /* Output queue.*/                                                        \
-  OutputQueue               oqueue;                                         \
+  io_queue_t               oqueue;                                         \
   /* Input buffer.*/                                                        \
   uint8_t                   ib[MIDI_USB_BUFFERS_SIZE];                    \
   /* Output buffer.*/                                                       \

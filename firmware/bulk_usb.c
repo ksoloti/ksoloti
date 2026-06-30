@@ -187,7 +187,7 @@ void bduInitiateTransmitI(BulkUSBDriver *bdup, size_t uCount)
 /**
  * @brief   Notification of data removed from the input queue.
  */
-static void inotify(GenericQueue *qp) {
+static void inotify(io_queue_t *qp) {
   size_t n, maxsize;
   BulkUSBDriver *bdup = chQGetLink(qp);
 
@@ -212,7 +212,7 @@ static void inotify(GenericQueue *qp) {
 /**
  * @brief   Notification of data inserted into the output queue.
  */
-static void onotify(GenericQueue *qp) {
+static void onotify(io_queue_t *qp) {
   volatile size_t n;
   BulkUSBDriver *bdup = chQGetLink(qp);
 
