@@ -46,7 +46,7 @@ static event_source_t inserted_event, removed_event; /* Card event sources */
 /* Insertion monitor timer callback function */
 static void tmrfunc(struct ch_virtual_timer* vt, void* p) {
     BaseBlockDevice* bbdp = p;
-    chSysLockFromIsr();
+    chSysLockFromISR();
 
     if (cnt > 0) {
         if (blkIsInserted(bbdp)) {
@@ -65,7 +65,7 @@ static void tmrfunc(struct ch_virtual_timer* vt, void* p) {
         }
     }
     chVTSetI(&tmr, MS2ST(POLLING_DELAY), tmrfunc, bbdp);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 }
 
 

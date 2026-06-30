@@ -87,9 +87,9 @@ static void __attribute__((optimize("-O0"))) aduSetSampleRate(USBDriver *usbp)
     aduState.currentSampleRate =  uSampleRate;
 
   // notify
-  chSysLockFromIsr();
+  chSysLockFromISR();
   chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_FORMAT);
-  chSysUnlockFromIsr();
+  chSysUnlockFromISR();
 
 }
 
@@ -130,9 +130,9 @@ static bool __attribute__((optimize("-O0"))) aduHandleVolumeRequest(USBDriver *u
       bResult = true;
 
       // notify
-      chSysLockFromIsr();
+      chSysLockFromISR();
       chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_MUTE);
-      chSysUnlockFromIsr();
+      chSysUnlockFromISR();
     }
   }
   else if (UAC2_ENTITY_SPK_FEATURE_UNIT && request->bControlSelector == AUDIO_FU_CTRL_VOLUME)
@@ -175,9 +175,9 @@ static bool __attribute__((optimize("-O0"))) aduHandleVolumeRequest(USBDriver *u
           bResult = true;
 
           // notify
-          chSysLockFromIsr();
+          chSysLockFromISR();
           chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_VOLUME);
-          chSysUnlockFromIsr();
+          chSysUnlockFromISR();
 
           break;
         }
@@ -484,9 +484,9 @@ static void __attribute__((optimize("-O0"))) aduResetBuffers(void)
   AddOverunLog(ltResetForSync___);
 
   // notify
-  //chSysLockFromIsr();
+  //chSysLockFromISR();
   //chEvtBroadcastFlags(&ADU1.event, AUDIO_EVENT_SYNCING);
-  //chSysUnlockFromIsr();
+  //chSysUnlockFromISR();
   
 }
 
@@ -513,10 +513,10 @@ static void __attribute__((optimize("-O0"))) aduEnableInput(USBDriver *usbp, boo
     // if(!aduState.isInputActive)
     //   memset(aduTxRingBuffer, 0, sizeof(aduTxRingBuffer));
 
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_INPUT);
     aduEnable(usbp);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
   }
 
   if (!bEnable) {
@@ -530,10 +530,10 @@ static void __attribute__((optimize("-O0"))) aduEnableOutput(USBDriver *usbp, bo
   if(bEnable != aduState.isOutputActive)
   {
     aduState.isOutputActive = bEnable;
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_OUTPUT);
     aduEnable(usbp);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
   }
 
   if (!bEnable) {
@@ -1435,9 +1435,9 @@ void aduDataTransmitted(USBDriver *usbp, usbep_t ep)
 
   if(aduIsUsbOutputEnabled())
   {
-    chSysLockFromIsr();
+    chSysLockFromISR();
     aduInitiateTransmitI(usbp);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
   }
   else
     aduResetBuffers();
@@ -1481,7 +1481,7 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
 
   AddOverunLog(ltBeforeRXAdjust_);
 
-  //chSysLockFromIsr();
+  //chSysLockFromISR();
 
 #if ADU_TRANSFER_LOG_SIZE
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
@@ -1511,9 +1511,9 @@ void aduDataReceived(USBDriver *usbp, usbep_t ep)
 
   if(aduIsUsbOutputEnabled())
   {
-    chSysLockFromIsr();
+    chSysLockFromISR();
     aduInitiateReceiveI(usbp);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
   }
   else
     aduResetBuffers();

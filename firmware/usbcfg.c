@@ -616,7 +616,7 @@ static void usb_event(USBDriver *usbp, usbevent_t event) {
 
   switch (event) {
   case USB_EVENT_CONFIGURED:
-    chSysLockFromIsr();
+    chSysLockFromISR();
 
     /* Enables the endpoints specified into the configuration.
        Note, this callback is invoked from an ISR so I-Class functions
@@ -636,54 +636,54 @@ static void usb_event(USBDriver *usbp, usbevent_t event) {
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_CONFIGURED);
 #endif
 
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
     return;
   case USB_EVENT_SUSPEND:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_SUSPEND);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   case USB_EVENT_WAKEUP:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_WAKEUP);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   case USB_EVENT_STALLED:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_STALLED);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   case USB_EVENT_RESET:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_RESET);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   case USB_EVENT_ADDRESS:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_USB_ENABLE);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   case USB_EVENT_UNCONFIGURED:
 #if FW_USBAUDIO    
     // Notify USB state changes for AUDIO
-    chSysLockFromIsr();
+    chSysLockFromISR();
     chEvtBroadcastFlagsI(&ADU1.event, AUDIO_EVENT_UNCONFIGURED);
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
     return;
   }

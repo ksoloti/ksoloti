@@ -39,7 +39,7 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
     spidb_interrupt_timestamp = hal_lld_get_counter_value();
 
     if (flags & STM32_DMA_ISR_TCIF) {
-        chSysLockFromIsr();
+        chSysLockFromISR();
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
         palSetPadMode(GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL);
@@ -52,10 +52,10 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
         palClearPad(GPIOA, 1);
 #endif
 
-        chSysUnlockFromIsr();
+        chSysUnlockFromISR();
     }
     else if (flags & STM32_DMA_ISR_HTIF) {
-        chSysLockFromIsr();
+        chSysLockFromISR();
 
 #ifdef DEBUG_SPIDB_INT_ON_GPIO
         palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL);
@@ -68,7 +68,7 @@ static void dma_spidb_slave_interrupt(void* dat, uint32_t flags) {
         palClearPad(GPIOA, 2);
 #endif
 
-        chSysUnlockFromIsr();
+        chSysUnlockFromISR();
     }
     else if (flags & STM32_DMA_ISR_TEIF) {
 //        chSysHalt("spidb:TEIF");

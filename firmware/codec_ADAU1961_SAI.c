@@ -305,10 +305,10 @@ static void dma_sai_a_interrupt_spilink_master(void* dat, uint32_t flags) {
     (void) dat;
     (void) flags;
 
-    chSysLockFromIsr();
+    chSysLockFromISR();
     codec_interrupt_timestamp = hal_lld_get_counter_value();
     spilink_master_process();
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 
     if ((sai_a_dma)->stream->CR & STM32_DMA_CR_CT) {
         computebufI(rbuf2, buf);
@@ -338,7 +338,7 @@ static void dma_sai_a_interrupt_spilink_slave(void* dat, uint32_t flags) {
 #else
 static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
 
-    chSysLockFromIsr();
+    chSysLockFromISR();
     (void)dat;
     (void)flags;
     codec_interrupt_timestamp = hal_lld_get_counter_value();
@@ -372,7 +372,7 @@ static void dma_sai_a_interrupt(void* dat, uint32_t flags) {
     palClearPad(GPIOA, 0);
 #endif
 
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 }
 #endif /* FW_SPILINK */
 

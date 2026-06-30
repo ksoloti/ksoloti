@@ -363,7 +363,7 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   if (mdup == NULL)
     return;
 
-  chSysLockFromIsr();
+  chSysLockFromISR();
   chnAddFlagsI(mdup, CHN_OUTPUT_EMPTY);
 
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
@@ -373,14 +373,14 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   if ((n = oqGetFullI(&mdup->oqueue)) > 0) {
     /* The endpoint cannot be busy, we are in the context of the callback,
      so it is safe to transmit without a check.*/
-    //chSysUnlockFromIsr()
+    //chSysUnlockFromISR()
     //;
 
     //CH16 usbPrepareQueuedTransmit(usbp, ep, &mdup->oqueue, n);
 	if(n) // do we need blocks of 4
 	    mduInitiateTransmitI(mdup, n);
 
-    //chSysLockFromIsr()
+    //chSysLockFromISR()
     //;
     //CH16 usbStartTransmitI(usbp, ep);
   }
@@ -390,18 +390,18 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
      size. Otherwise the recipient may expect more data coming soon and
      not return buffered data to app. See section 5.8.3 Bulk Transfer
      Packet Size Constraints of the USB Specification document.*/
-    //chSysUnlockFromIsr()
+    //chSysUnlockFromISR()
     //;
 
     //CH16 usbPrepareQueuedTransmit(usbp, ep, &mdup->oqueue, 0);
     mduInitiateTransmitI(mdup, 0);
 
-    //chSysLockFromIsr()
+    //chSysLockFromISR()
     //;
     //CH16 usbStartTransmitI(usbp, ep);
   }
 
-  chSysUnlockFromIsr()
+  chSysUnlockFromISR()
   ;
 }
 
@@ -426,7 +426,7 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
   
-  chSysLockFromIsr()
+  chSysLockFromISR()
   ;
 
   chnAddFlagsI(mdup, CHN_INPUT_AVAILABLE);
@@ -451,7 +451,7 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
   if(uQueueRemainingSize!=0)
     mduInitiateReceiveI(mdup, uQueueRemainingSize);
 
-  chSysUnlockFromIsr()
+  chSysUnlockFromISR()
   ;
 }
 

@@ -386,7 +386,7 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   if (bdup == NULL)
     return;
 
-  chSysLockFromIsr();
+  chSysLockFromISR();
   chnAddFlagsI(bdup, CHN_OUTPUT_EMPTY);
 
   USBInEndpointState *pEpState = usbp->epc[ep]->in_state;
@@ -397,7 +397,7 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
   if ((n = oqGetFullI(&bdup->oqueue)) > 0) {
     /* The endpoint cannot be busy, we are in the context of the callback,
        so it is safe to transmit without a check.*/
-    //chSysUnlockFromIsr();
+    //chSysUnlockFromISR();
 
     //CH16 usbPrepareQueuedTransmit(usbp, ep, &bdup->oqueue, n);
     if(n)
@@ -405,7 +405,7 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
       bduAddLog(blFromUSBInt, n);
       bduInitiateTransmitI(bdup, n);
     }
-    //chSysLockFromIsr();
+    //chSysLockFromISR();
     //CH16 usbStartTransmitI(usbp, ep);
   }
   else if ((usbp->epc[ep]->in_state->txsize > 0) &&
@@ -415,17 +415,17 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
        size. Otherwise the recipient may expect more data coming soon and
        not return buffered data to app. See section 5.8.3 Bulk Transfer
        Packet Size Constraints of the USB Specification document.*/
-    //chSysUnlockFromIsr();
+    //chSysUnlockFromISR();
 
     //CH16 usbPrepareQueuedTransmit(usbp, ep, &bdup->oqueue, 0);
     bduAddLog(blFromUSBInt, 0);
     bduInitiateTransmitI(bdup, 0);
 
-    //chSysLockFromIsr();
+    //chSysLockFromISR();
     //CH16 usbStartTransmitI(usbp, ep);
   }
 
-  chSysUnlockFromIsr();
+  chSysUnlockFromISR();
 #endif  
 }
 
@@ -448,7 +448,7 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
 
-  chSysLockFromIsr()
+  chSysLockFromISR()
   ;
 
   chnAddFlagsI(bdup, CHN_INPUT_AVAILABLE);
@@ -475,7 +475,7 @@ void bduDataReceived(USBDriver *usbp, usbep_t ep) {
   if(uQueueRemainingSize!=0)
     bduInitiateReceiveI(bdup, uQueueRemainingSize);
 
-  chSysUnlockFromIsr()
+  chSysUnlockFromISR()
   ;
 
 }

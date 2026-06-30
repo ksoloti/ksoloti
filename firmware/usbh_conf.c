@@ -646,9 +646,9 @@ void fakefree(void * p){
 //STM32_OTG2_HANDLER
 CH_IRQ_HANDLER(Vector174) {
   CH_IRQ_PROLOGUE();
-  chSysLockFromIsr();
+  chSysLockFromISR();
   HAL_HCD_IRQHandler(&hHCD);
-  chSysUnlockFromIsr();
+  chSysUnlockFromISR();
 #if (DEBUG_ON_GPIO)
   HAL_GPIO_WritePin((GPIO_TypeDef *) GPIOA, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_RESET);
 #endif
