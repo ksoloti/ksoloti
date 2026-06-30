@@ -45,7 +45,7 @@ typedef enum {
 extern uint32_t spidb_interrupt_timestamp;
 
 void spidbMasterStart(SPIDriver *spip, const SPIDBConfig *config);
-void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread);
+void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, thread_t * thread);
 void spidbSlaveResync(SPIDriver *spip);
 void spidbStop(SPIDriver *spip);
 

@@ -122,7 +122,7 @@ typedef struct {
 typedef struct {
     const USBMassStorageConfig* config;
 	binary_semaphore_t bsem;
-    Thread* thread;
+    thread_t* thread;
 	EventSource evt_connected, evt_ejected;
 	BlockDeviceInfo block_dev_info;
 	msd_state_t state;

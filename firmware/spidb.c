@@ -126,7 +126,7 @@ void spidbSlaveResync(SPIDriver *spip) {
  * @param[in] config    pointer to the @p SPIDBConfig configuration
  *
  */
-void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, Thread * thread) {
+void spidbSlaveStart(SPIDriver *spip, const SPIDBConfig *config, thread_t * thread) {
     spiStart(spip, &config->spiconfig);
 
     spip->sync_transfer = thread;

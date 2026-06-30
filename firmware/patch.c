@@ -102,7 +102,7 @@ static int32_t* i2s_outbuf;
 
 static int16_t nThreadsBeforePatch;
 static WORKING_AREA(waThreadDSP, 7300) __attribute__ ((section (".ccmramend")));
-static Thread* pThreadDSP = 0;
+static thread_t* pThreadDSP = 0;
 
 // Default valued for safety preset `Normal`
 uint16_t uPatchUIMidiCost  = DSP_UI_MIDI_COST;
@@ -157,7 +157,7 @@ static moving_average_data dsptimeSmoothing;
 static int16_t GetNumberOfThreads(void) {
 #if CH_CFG_USE_REGISTRY == TRUE
     int16_t i = 1;
-    Thread* thd1 = chRegFirstThread();
+    thread_t* thd1 = chRegFirstThread();
 
     while (thd1) {
         i++;
@@ -173,7 +173,7 @@ static int16_t GetNumberOfThreads(void) {
 void ReportThreadStacks(void) {
 #if CH_CFG_USE_REGISTRY == TRUE && CH_DBG_FILL_THREADS == TRUE && CH_DBG_ENABLE_STACK_CHECK == TRUE
 
-    Thread* thd = chRegFirstThread(); // Start with the first thread (often main/idle)
+    thread_t* thd = chRegFirstThread(); // Start with the first thread (often main/idle)
 
     LogTextMessage("Thread stacks:");
     while (thd) {

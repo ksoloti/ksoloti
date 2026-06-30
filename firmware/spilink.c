@@ -29,7 +29,7 @@
 #ifdef FW_SPILINK
 
 bool spilink_toggle;
-Thread *pThreadSpilink = 0;
+thread_t *pThreadSpilink = 0;
 
 spilink_data_t spilink_tx[2] __attribute__ ((section (".sram2")));
 spilink_data_t spilink_rx[2] __attribute__ ((section (".sram2")));
@@ -196,7 +196,7 @@ void spilink_init(bool isMaster) {
     }
     else {
         /* Synced */
-        Thread *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
+        thread_t *_pThreadSpilink = chThdCreateStatic(waThreadSpilink,
             sizeof(waThreadSpilink), SPILINK_PRIO, (void*) ThreadSpilinkSlave, NULL);
 
         spidbSlaveStart(&SPILINKD, &spidbcfg_slave, _pThreadSpilink);
