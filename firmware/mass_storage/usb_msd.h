@@ -8,7 +8,6 @@
 
 #include "ch.h"
 #include "hal.h"
-#include "migration_v16.h"
 
 /**
  * @brief Command Block Wrapper structure

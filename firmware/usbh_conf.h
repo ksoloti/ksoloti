@@ -45,7 +45,6 @@
 #include "ch.h"
 #include "cmsis_os.h"
 #include "chprintf.h"
-#include "migration_v16.h"
 #include "mcuconf.h"
 
 /* Includes ------------------------------------------------------------------*/
