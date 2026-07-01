@@ -52,3 +52,6 @@
 
 // 20.3 notes.
 // 1. external pump - looks like this is not needed nymore as chibios is now not using a thread for this.
+
+// 21.11 notes
+// NONE so far
