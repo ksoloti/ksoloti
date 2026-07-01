@@ -26,6 +26,10 @@ Ksoloti Core boards and related kits are available at:
 [Alt Circuits (US)](https://altcircuits.com/)
 
 
+[SchneidersLaden (EU)](https://schneidersladen.de/en/ksoloti-core-v0.7)
+
+
+
 More info:
 
 
