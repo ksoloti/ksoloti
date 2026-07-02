@@ -653,9 +653,7 @@ void computebufI(int32_t* inp, int32_t* outp) {
     }
 #endif
 
-    chSysLockFromISR();
     chEvtSignalI(pThreadDSP, (eventmask_t)EVENT_START_DSP_CYCLE);
-    chSysUnlockFromISR();
 }
 
 #ifdef FW_I2SCODEC
