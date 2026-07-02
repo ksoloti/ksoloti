@@ -184,15 +184,15 @@ void ReportThreadStacks(void) {
         }
 
         // Get the stack limit (lowest address of the stack)
-        char* stack_limit = (char*)thd->p_stklimit;
+        char* stack_limit = (char*)thd->wabase;
 
-        // Using p_ctx.r13 as the current stack pointer.
+        // Get the current stack pointer.
         // This is effectively where the stack was when the thread was last suspended.
-        char* current_sp = (char*)thd->p_ctx.r13; // SP!
+        char* current_sp = (char*)thd->ctx.sp;
 
         // Safety check: Make sure current_sp is within the expected range
         if (current_sp == NULL || current_sp < stack_limit) {
-            // This thread might not be fully active or p_ctx isn't usable yet
+            // This thread might not be fully active or thd->ctx isn't usable yet
             thd = chRegNextThread(thd);
             continue;
         }
