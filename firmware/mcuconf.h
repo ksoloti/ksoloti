@@ -361,11 +361,11 @@
 #define PATCH_DSP_PRIO                      HIGHPRIO-1   /* HIGHPRIO-1 */
 #define SPILINK_PRIO                        HIGHPRIO-1   /* HIGHPRIO-1 */
 #define UI_USB_PRIO                         HIGHPRIO-2   /* NORMALPRIO */
-#define MIDI_USB_PRIO                       HIGHPRIO-2   /* NORMALPRIO*/
-#define USB_HOST_CONF_PRIO                  NORMALPRIO   /* HIGHPRIO-2 */
+#define MIDI_USB_PRIO                       HIGHPRIO-2   /* NORMALPRIO */
+#define USB_HOST_CONF_PRIO                  osPriorityNormal /* HIGHPRIO-2 (passed to osThreadCreate, which expects different prio format!) */
 #define PATCH_NORMAL_PRIO                   NORMALPRIO   /* N/A */
 #define SERIAL_MIDI_PRIO                    NORMALPRIO   /* NORMALPRIO */
-#define SYSMON_PRIO                         NORMALPRIO   /* NORMALPRIO*/
+#define SYSMON_PRIO                         NORMALPRIO   /* NORMALPRIO */
 
 /*
  * SDC settings.
