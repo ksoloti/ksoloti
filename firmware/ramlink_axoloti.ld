@@ -78,10 +78,13 @@ SECTIONS
         * (.sram2.*);
     } > SRAM2
 
-    .sram3 (NOLOAD) : ALIGN(4) SUBALIGN(4) 
+    .sram3 : ALIGN(4) SUBALIGN(4)
     {
-        * (.sram3);
-        * (.sram3.*);
+        . = ALIGN(4);
+        PROVIDE(_sram3_start = .);
+        KEEP(* (.sram3));
+        KEEP(* (.sram3.*));
+        PROVIDE(_sram3_end = .);
     } > SRAM3
 
     .sdram (NOLOAD) : ALIGN(4) SUBALIGN(4)
