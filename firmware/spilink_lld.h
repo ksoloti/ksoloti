@@ -24,6 +24,8 @@
 
 #ifdef FW_SPILINK
 
+static const spilink_channels_t mute_buffer = {0};
+
 
 __STATIC_INLINE void spilink_master_process(void) {
 
@@ -40,7 +42,7 @@ __STATIC_INLINE void spilink_master_process(void) {
                 spilink_rx_samples = &spilink_rx[0].audio_io;
             }
             else {
-                spilink_rx_samples = (spilink_channels_t *) 0x080F0000;
+                spilink_rx_samples = (spilink_channels_t *)&mute_buffer;
             }
             spilink_tx_samples = &spilink_tx[0].audio_io;
         }
@@ -52,7 +54,7 @@ __STATIC_INLINE void spilink_master_process(void) {
                 spilink_rx_samples = &spilink_rx[1].audio_io;
             }
             else {
-                spilink_rx_samples = (spilink_channels_t *) 0x080F0000;
+                spilink_rx_samples = (spilink_channels_t *)&mute_buffer;
             }
             spilink_tx_samples = &spilink_tx[1].audio_io;
         }
@@ -60,21 +62,16 @@ __STATIC_INLINE void spilink_master_process(void) {
 }
 
 
-__STATIC_INLINE void spilink_slave_process(void)
-{
+__STATIC_INLINE void spilink_slave_process(void) {
     // spilink_rx_samples = &spilink_rx[0].audio_io;
-
     spilink_data_t *r = &spilink_rx[spilink_toggle ? 0 : 1];
 
-    if ((r->header == SPILINK_HEADER) && (r->footer == SPILINK_FOOTER))
-	{
+    if ((r->header == SPILINK_HEADER) && (r->footer == SPILINK_FOOTER)) {
         spilink_rx_samples = &r->audio_io;
     }
-	else
-	{
-        //spilink_rx_samples = (spilink_channels_t *) 0x080F000;
+	else {
+        //spilink_rx_samples = (spilink_channels_t *)&mute_buffer;
     }
-
     spilink_tx_samples = &spilink_tx[spilink_toggle ? 0 : 1].audio_io;
 }
 
