@@ -106,7 +106,9 @@ static __attribute__ ((noinline)) void biquad_lp_coefs(
 //    int32_t alpha = sinW0>>8;
   float filter_a0 = (HALFQ31 + alpha);
   float filter_a0_inv = ((INT32_MAX >> 2) / filter_a0);
-  int32_t a0_inv_q31 = (int32_t)(INT32_MAX * filter_a0_inv);
+  float scaled_a0_inv = INT32_MAX * filter_a0_inv;
+  scaled_a0_inv += (scaled_a0_inv >= 0.0f) ? 0.5f : -0.5f;
+  int32_t a0_inv_q31 = __SSAT((int32_t)scaled_a0_inv, 32);
   coefs->cyn_1 = ___SMMUL((-cosW0), a0_inv_q31);
   coefs->cyn_2 = ___SMMUL((HALFQ31 - alpha), a0_inv_q31);
   coefs->cxn_0 = ___SMMUL(___SMMUL(HALFQ31 - (cosW0 >> 1), a0_inv_q31), q_inv);
@@ -141,7 +143,9 @@ static void __attribute__ ((noinline)) biquad_bp_coefs(biquad_coefficients *coef
 //    int32_t alpha = sinW0>>8;
   float filter_a0 = (HALFQ31 + alpha);
   float filter_a0_inv = ((INT32_MAX >> 2) / filter_a0);
-  int32_t a0_inv_q31 = (int32_t)(INT32_MAX * filter_a0_inv);
+  float scaled_a0_inv = INT32_MAX * filter_a0_inv;
+  scaled_a0_inv += (scaled_a0_inv >= 0.0f) ? 0.5f : -0.5f;
+  int32_t a0_inv_q31 = __SSAT((int32_t)scaled_a0_inv, 32);
   coefs->cyn_1 = ___SMMUL((-cosW0), a0_inv_q31);
   coefs->cyn_2 = ___SMMUL((HALFQ31 - alpha), a0_inv_q31);
   coefs->cxn_0 = ___SMMUL(alpha, a0_inv_q31);
@@ -161,7 +165,9 @@ static void __attribute__ ((noinline)) biquad_hp_coefs(biquad_coefficients *coef
 //    int32_t alpha = sinW0>>8;
   float filter_a0 = (HALFQ31 + alpha);
   float filter_a0_inv = ((INT32_MAX >> 2) / filter_a0);
-  int32_t a0_inv_q31 = (int32_t)(INT32_MAX * filter_a0_inv);
+  float scaled_a0_inv = INT32_MAX * filter_a0_inv;
+  scaled_a0_inv += (scaled_a0_inv >= 0.0f) ? 0.5f : -0.5f;
+  int32_t a0_inv_q31 = __SSAT((int32_t)scaled_a0_inv, 32);
   coefs->cyn_1 = ___SMMUL((-cosW0), a0_inv_q31);
   coefs->cyn_2 = ___SMMUL((HALFQ31 - alpha), a0_inv_q31);
   coefs->cxn_0 = ___SMMUL(___SMMUL(HALFQ31 + (cosW0 >> 1), a0_inv_q31), q_inv);

@@ -92,7 +92,9 @@ void f_filter_biquad_A(data_filter_biquad_A *v, const int32_t *sourcebuf,
   int32_t filter_y_n2 = v->filter_y_n2;
   float filter_a0 = (HALFQ31 + alpha);
   float filter_a0_inv = ((INT32_MAX >> 2) / filter_a0);
-  int32_t a0_inv_q31 = (int32_t)(INT32_MAX * filter_a0_inv);
+  float scaled_a0_inv = INT32_MAX * filter_a0_inv;
+  scaled_a0_inv += (scaled_a0_inv >= 0.0f) ? 0.5f : -0.5f;
+  int32_t a0_inv_q31 = __SSAT((int32_t)scaled_a0_inv, 32);
   int32_t filter_a1 = ___SMMUL(-(-cosW0), a0_inv_q31); // negated
   int32_t filter_a2 = ___SMMUL(-(HALFQ31 - alpha), a0_inv_q31); // negated
   int32_t filter_b0 = ___SMMUL(HALFQ31 - (cosW0 >> 1), a0_inv_q31);
