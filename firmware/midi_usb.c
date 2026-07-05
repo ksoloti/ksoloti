@@ -258,16 +258,14 @@ void mduStart(MidiUSBDriver *mdup, const MidiUSBConfig *config) {
 
   chDbgCheck(mdup != NULL);
 
-  chSysLock()
-  ;
+  chSysLock();
   chDbgAssert((mdup->state == MDU_STOP) || (mdup->state == MDU_READY),
               "mduStart(), #1 invalid state");
   usbp->in_params[config->bulk_in - 1] = mdup;
   usbp->out_params[config->bulk_out - 1] = mdup;
   mdup->config = config;
   mdup->state = MDU_READY;
-  chSysUnlock()
-  ;
+  chSysUnlock();
 }
 
 /**
@@ -284,8 +282,7 @@ void mduStop(MidiUSBDriver *mdup) {
 
   chDbgCheck(mdup != NULL);
 
-  chSysLock()
-  ;
+  chSysLock();
 
   chDbgAssert((mdup->state == MDU_STOP) || (mdup->state == MDU_READY),
               "mduStop(), #1 invalid state");
@@ -301,8 +298,7 @@ void mduStop(MidiUSBDriver *mdup) {
   oqResetI(&mdup->oqueue);
   chSchRescheduleS();
 
-  chSysUnlock()
-  ;
+  chSysUnlock();
 }
 
 
@@ -401,8 +397,7 @@ void mduDataTransmitted(USBDriver *usbp, usbep_t ep) {
     //CH16 usbStartTransmitI(usbp, ep);
   }
 
-  chSysUnlockFromISR()
-  ;
+  chSysUnlockFromISR();
 }
 
 /**
@@ -426,8 +421,7 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
   USBOutEndpointState *pEpState = usbp->epc[ep]->out_state;
   volatile uint32_t uReceivedCount = pEpState->rxcnt;
   
-  chSysLockFromISR()
-  ;
+  chSysLockFromISR();
 
   chnAddFlagsI(mdup, CHN_INPUT_AVAILABLE);
 
@@ -451,8 +445,7 @@ void mduDataReceived(USBDriver *usbp, usbep_t ep) {
   if(uQueueRemainingSize!=0)
     mduInitiateReceiveI(mdup, uQueueRemainingSize);
 
-  chSysUnlockFromISR()
-  ;
+  chSysUnlockFromISR();
 }
 
 // the Send etc, work for everything except Sysex

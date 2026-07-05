@@ -376,8 +376,7 @@ void dbg_set_i(int i) {
 
 static void terminator(void) {
 #ifdef INFINITE_LOOP_ON_FAULTS
-    for (;;) {}
-    ;
+    for (;;) {};
 #else
     /* Float usb inputs, hope the host notices detach... */
     palSetPadMode(GPIOA, 11, PAL_MODE_INPUT);

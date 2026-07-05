@@ -374,16 +374,14 @@ void __attribute__((optimize("-O0"))) aduStart(AudioUSBDriver *adup, const Audio
 
   chDbgCheck(adup != NULL);
 
-  chSysLock()
-  ;
+  chSysLock();
   chDbgAssert((adup->state == ADU_STOP) || (adup->state == ADU_READY),
               "aduStart(), #1 invalid state");
   usbp->in_params[config->iso_in - 1] = adup;
   usbp->out_params[config->iso_out - 1] = adup;
   adup->config = config;
   adup->state = ADU_READY;
-  chSysUnlock()
-  ;
+  chSysUnlock();
 
 }
 
@@ -402,8 +400,7 @@ void __attribute__((optimize("-O0"))) aduStop(AudioUSBDriver *adup)
 
   chDbgCheck(adup != NULL);
 
-  chSysLock()
-  ;
+  chSysLock();
 
   chDbgAssert((adup->state == ADU_STOP) || (adup->state == ADU_READY),
               "aduStop(), #1 invalid state");
@@ -417,8 +414,7 @@ void __attribute__((optimize("-O0"))) aduStop(AudioUSBDriver *adup)
   chnAddFlagsI(adup, CHN_DISCONNECTED);
   chSchRescheduleS();
 
-  chSysUnlock()
-  ;
+  chSysUnlock();
 }
  
 /**
