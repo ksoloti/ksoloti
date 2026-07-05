@@ -2,4 +2,4 @@
 BOARDSRC = board.c
 
 # Required include directories
-BOARDINC = ${CHIBIOS}/os/common/startup/ARMCMx/devices/STM32F4xx/ ${CHIBIOS}/os/common/ext/ARM/CMSIS/
+BOARDINC = ${CHIBIOS}/os/common/startup/ARMCMx/devices/STM32F4xx/

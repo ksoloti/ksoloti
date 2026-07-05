@@ -134,7 +134,8 @@ include $(CHIBIOS)/os/various/shell/shell.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 
 
-INCDIR = $(CMSIS)/Core/Include \
+INCDIR = \
+  $(CMSIS)/Core/Include \
   $(CMSIS)/DSP/Include \
   $(PORTINC) $(KERNINC) $(CONFDIR) $(ALLINC) $(TESTINC) \
   $(HALINC) $(PLATFORMINC) $(BOARDINC) \
@@ -144,8 +145,6 @@ INCDIR = $(CMSIS)/Core/Include \
   $(CHIBIOS)/os/license \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/startup/ARMCMx/devices/STM32F4xx \
-  $(CHIBIOS)/os/ext/CMSIS/include \
-  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
   $(CHIBIOS)/os/hal/lib/streams \
   ${CHIBIOS}/os/common/abstractions/cmsis_os \
   $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC \

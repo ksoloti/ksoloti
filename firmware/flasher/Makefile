@@ -222,8 +222,6 @@ INCDIR = ../ \
   $(CHIBIOS)/os/various \
   $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC \
   $(CHIBIOS)/os/common/startup/ARMCMx/devices/STM32F4xx \
-  $(CHIBIOS)/os/ext/CMSIS/include \
-  $(CHIBIOS)/os/ext/CMSIS/ST/STM32F4xx \
   $(CHIBIOS)/os/hal/lib/streams \
   ${CHIBIOS}/os/common/abstractions/cmsis_os \
   ../STM32F4xx_HAL_Driver/Inc
