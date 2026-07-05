@@ -126,19 +126,19 @@ static msg_t get(void *ip) {
     return iqGetTimeout(&((BulkUSBDriver *)ip)->iqueue, TIME_INFINITE);
 }
 
-static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
+static msg_t putt(void *ip, uint8_t b, sysinterval_t timeout) {
     return oqPutTimeout(&((BulkUSBDriver *)ip)->oqueue, b, timeout);
 }
 
-static msg_t gett(void *ip, systime_t timeout) {
+static msg_t gett(void *ip, sysinterval_t timeout) {
     return iqGetTimeout(&((BulkUSBDriver *)ip)->iqueue, timeout);
 }
 
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
+static size_t writet(void *ip, const uint8_t *bp, size_t n, sysinterval_t time) {
     return oqWriteTimeout(&((BulkUSBDriver *)ip)->oqueue, bp, n, time);
 }
 
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
+static size_t readt(void *ip, uint8_t *bp, size_t n, sysinterval_t time) {
     return iqReadTimeout(&((BulkUSBDriver *)ip)->iqueue, bp, n, time);
 }
 
