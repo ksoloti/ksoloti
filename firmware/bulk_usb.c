@@ -405,21 +405,16 @@ void bduDataTransmitted(USBDriver *usbp, usbep_t ep) {
         //CH16 usbStartTransmitI(usbp, ep);
     }
     else if ((usbp->epc[ep]->in_state->txsize > 0) &&
-             !(usbp->epc[ep]->in_state->txsize &
-             (usbp->epc[ep]->in_maxsize - 1))) {
+             !(usbp->epc[ep]->in_state->txsize & (usbp->epc[ep]->in_maxsize - 1))) {
         /* Transmit zero sized packet in case the last one has maximum allowed
          * size. Otherwise the recipient may expect more data coming soon and
          * not return buffered data to app. See section 5.8.3 Bulk Transfer
          * Packet Size Constraints of the USB Specification document.
          */
-        //chSysUnlockFromISR();
 
-        //CH16 usbPrepareQueuedTransmit(usbp, ep, &bdup->oqueue, 0);
         bduAddLog(blFromUSBInt, 0);
-        bduInitiateTransmitI(bdup, 0);
-
-        //chSysLockFromISR();
-        //CH16 usbStartTransmitI(usbp, ep);
+        /* Call the low-level driver directly to force a zero-packet out */
+        usbStartTransmitI(usbp, ep, bduTransmitBuffer, 0);
     }
 
     chSysUnlockFromISR();
