@@ -216,29 +216,6 @@
 #endif
 
 /**
- * @brief   Memory Pools Allocator APIs.
- * @details If enabled then the memory pools allocator APIs are included
- *          in the kernel.
- *
- * @note    The default is @p TRUE.
- */
-#if !defined(CH_CFG_USE_MEMPOOLS)
-#define CH_CFG_USE_MEMPOOLS                 TRUE
-#endif
-
-/**
- * @brief   Mailboxes APIs.
- * @details If enabled then the asynchronous messages (mailboxes) APIs are
- *          included in the kernel.
- *
- * @note    The default is @p TRUE.
- * @note    Requires @p CH_CFG_USE_SEMAPHORES.
- */
-#if !defined(CH_CFG_USE_MAILBOXES)
-#define CH_CFG_USE_MAILBOXES                TRUE
-#endif
-
-/**
  * @brief   System tick frequency.
  * @details Frequency of the system timer that drives the system ticks. This
  *          setting also defines the system tick time unit.
@@ -467,7 +444,7 @@
  * @note    Requires @p CH_CFG_USE_SEMAPHORES.
  */
 #if !defined(CH_CFG_USE_MAILBOXES) || defined(__DOXYGEN__)
-#define CH_CFG_USE_MAILBOXES                FALSE
+#define CH_CFG_USE_MAILBOXES                TRUE
 #endif
 
 /**
@@ -527,7 +504,7 @@
  * @note    The default is @p TRUE.
  */
 #if !defined(CH_CFG_USE_MEMPOOLS) || defined(__DOXYGEN__)
-#define CH_CFG_USE_MEMPOOLS                 FALSE
+#define CH_CFG_USE_MEMPOOLS                 TRUE
 #endif
 
 /**
