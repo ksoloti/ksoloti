@@ -34,8 +34,17 @@ public class SCmdCreateDirectory extends AbstractSCmd {
 
     private String dirname;
     private Calendar date;
+    private boolean verbose;
+
+    public SCmdCreateDirectory(String dirname, Calendar date, boolean verbose) {
+        this.verbose = verbose;
+        this.dirname = dirname;
+        this.date = date;
+        this.expectedAckCommandByte = 'k'; // Expecting AxoRk
+    }
 
     public SCmdCreateDirectory(String dirname, Calendar date) {
+        this.verbose = true;
         this.dirname = dirname;
         this.date = date;
         this.expectedAckCommandByte = 'k'; // Expecting AxoRk
@@ -58,7 +67,9 @@ public class SCmdCreateDirectory extends AbstractSCmd {
 
     @Override
     public SCmd Do(Connection connection) {
-        LOGGER.info(GetStartMessage());
+        if (this.verbose) {
+            LOGGER.info(GetStartMessage());
+        }
 
         connection.setCurrentExecutingCommand(this);
         int writeResult = connection.TransmitCreateDirectory(dirname, date);
@@ -95,7 +106,9 @@ public class SCmdCreateDirectory extends AbstractSCmd {
         finally {
             connection.clearIfCurrentExecutingCommand(this);
         }
-        LOGGER.info(GetDoneMessage());
+        if (this.verbose) {
+            LOGGER.info(GetDoneMessage());
+        }
         return this;
     }
 }
