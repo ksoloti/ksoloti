@@ -3216,7 +3216,24 @@ public class Patch {
 
             if (Preferences.getInstance().isBackupPatchesOnSDEnabled() && FileNamePath != null && !FileNamePath.isEmpty()) {
                 if (f.exists()) {
-                    String backupFilePath = dir + "/" + f.getName() + ".backup" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) + f.getName().substring(f.getName().lastIndexOf("."));
+
+                    String backupDirString = dir + "/backups";
+                    if (SDCardInfo.getInstance().find(backupDirString) == null) {
+                        try {
+                            CommandManager.getInstance().startLongOperation();
+                            SCmdCreateDirectory createDirCmd = new SCmdCreateDirectory(backupDirString, Calendar.getInstance(), false);
+                            createDirCmd.Do();
+                            CommandManager.getInstance().endLongOperation();
+                            if (!createDirCmd.waitForCompletion() || !createDirCmd.isSuccessful()) {
+                                return;
+                            }
+                        } catch (InterruptedException e) {
+                            LOGGER.log(Level.SEVERE, "Thread interrupted while creating directory.", e);
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+
+                    String backupFilePath = backupDirString + "/" + f.getName() + "." + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(ZonedDateTime.now()) + f.getName().substring(f.getName().lastIndexOf("."));
 
                     try {
                         CommandManager.getInstance().startLongOperation();
