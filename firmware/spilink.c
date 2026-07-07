@@ -134,8 +134,8 @@ __attribute__((noreturn)) static msg_t ThreadSpilinkSlave(void *arg)
             }
             /* else if (!(SAI1_Block_A->CR1 & SAI_xCR1_SAIEN)) {
                    chSysLock();
-                   SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
                    SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+                   SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
                    chSysUnlock();
             }*/
         }

@@ -504,8 +504,8 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool isMaster) {
         dmaStreamClearInterrupt(sai_a_dma);
         dmaStreamEnable(sai_a_dma);
 
-        SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
         SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+        SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
     }
 #endif
 
@@ -737,8 +737,8 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool isMaster) {
     dmaStreamEnable(sai_b_dma);
     dmaStreamEnable(sai_a_dma);
 
-    SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
     SAI1_Block_B->CR1 |= SAI_xCR1_SAIEN;
+    SAI1_Block_A->CR1 |= SAI_xCR1_SAIEN;
 
 #endif
 
