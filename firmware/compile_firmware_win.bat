@@ -14,8 +14,8 @@ set "PLATFORM_DIR=%PLATFORM_DIR:\=/%"
 
 set PATH=%PLATFORM_DIR%/bin;%PATH%
 
-set argCount = 0
-for %%x in (%*) do if not "%%~x" == "" set /a argCount += 1
+set argCount=0
+for %%x in (%*) do if not "%%~x" == "" set /a argCount+=1
 
 if %argCount% leq 2 (
 echo. & echo Building all firmware modes for the current board.
