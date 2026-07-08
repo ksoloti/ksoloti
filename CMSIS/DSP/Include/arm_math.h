@@ -277,6 +277,8 @@
 #ifndef _ARM_MATH_H
 #define _ARM_MATH_H
 
+// #define KSO_INCLUDE_LARGE_FFT_TABLES 1 /* Uncomment this to include the largest FFT tables (they were never used anywhere). Removing them reduces firmware size (flash) by around 200kB! */
+
 /* Compiler specific diagnostic adjustment */
 #if   defined ( __CC_ARM )
 
