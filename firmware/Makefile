@@ -225,11 +225,13 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${CHIBIOS}/os/rt/src/chcond.c \
   ${CHIBIOS}/os/rt/src/chmboxes.c \
   ${FIRMWARE}/codec.c \
+  ${FIRMWARE}/codec_ADAU1961_SAI.c \
   ${FIRMWARE}/i2scodec.c \
   ${FIRMWARE}/axoloti_filters.c \
   ${FIRMWARE}/axoloti_math.c \
   ${FIRMWARE}/axoloti_oscs.c \
   ${FIRMWARE}/axoloti_board.c \
+  ${FIRMWARE}/sdram.c \
   ${FIRMWARE}/midi.c \
   ${FIRMWARE}/ui.c \
   ${FIRMWARE}/usbcfg.c \
@@ -312,6 +314,7 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/spidb.c \
   ${FIRMWARE}/crc32.c \
   ${FIRMWARE}/watchdog.c \
+  ${FIRMWARE}/stm32f4xx_fmc.c \
   ${FIRMWARE}/sysmon.c \
   ${FIRMWARE}/axoloti_memory.c \
   ${FIRMWARE}/analyser.c \

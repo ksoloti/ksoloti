@@ -46,9 +46,6 @@
 #include "spilink.h"
 #endif
 
-#include "sdram.c"
-#include "stm32f4xx_fmc.c"
-
 #include "boot_options.h"
 #include "analyser.h"
 

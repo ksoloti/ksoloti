@@ -59,5 +59,3 @@ void codec_clearbuffer(void) {
 #endif
 
 }
-
-#include "codec_ADAU1961_SAI.c"
