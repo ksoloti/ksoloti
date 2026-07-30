@@ -35,7 +35,7 @@ static const char* sram3_suffix = "_sram3";
 FATFS SDC_FS; /* FS object */
 bool fs_ready = FALSE; /* FS mounted and ready */
 
-uint32_t fbuff[256] __attribute__((section (".sram2"))); /* Generic large buffer */
+uint32_t fbuff[256] SDCARD_DATA_SECTION; /* Generic large buffer */
 
 static virtual_timer_t tmr; /* Card monitor timer */
 static unsigned cnt; /* Debounce counter */

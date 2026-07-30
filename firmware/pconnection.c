@@ -78,7 +78,7 @@ typedef struct _PCDebug {
     int state;
 } PCDebug;
 
-PCDebug dbg_received[PC_DBG_COUNT] __attribute__((section (".sram3")));
+PCDebug dbg_received[PC_DBG_COUNT] DEBUG_DATA_SECTION;
 uint16_t uCount = 0;
 
 void AddPCDebug(uint8_t c, int state) {

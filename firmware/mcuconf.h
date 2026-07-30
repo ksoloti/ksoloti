@@ -54,7 +54,7 @@
 #define SPILINK_DMA_SECTION     __attribute__((section (".sram2")))
 #define MSD_DATA_SECTION        __attribute__((section (".sram2")))
 #define FAST_DATA_SECTION       __attribute__((section (".ccmramend")))
-#define SDCARD_DATA_SECTION     __attribute__((section (".sram3")))
+#define SDCARD_DATA_SECTION     __attribute__((section (".sram2")))
 #define FRAMTEXT_CODE_SECTION   __attribute__((section (".framtext"))) 
 
 /*

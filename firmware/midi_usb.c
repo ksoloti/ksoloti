@@ -44,7 +44,7 @@ typedef struct _DBGLOG
   uint16_t  uSize;
 } DBGLOG;
 
-DBGLOG mduLog[MDU_LOG_COUNT] __attribute__ ((section (".sram3")));
+DBGLOG mduLog[MDU_LOG_COUNT] DEBUG_DATA_SECTION;
 uint16_t umduLogCount = 0;
 
 void mduAddLog(BLType type, uint16_t uSize)

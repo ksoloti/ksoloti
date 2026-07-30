@@ -101,7 +101,7 @@ static int32_t* i2s_outbuf;
 
 
 static int16_t nThreadsBeforePatch;
-static THD_WORKING_AREA(waThreadDSP, 7300) __attribute__ ((section (".ccmramend")));
+static THD_WORKING_AREA(waThreadDSP, 7300) FAST_DATA_SECTION;
 static thread_t* pThreadDSP = 0;
 
 // Default valued for safety preset `Normal`

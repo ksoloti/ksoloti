@@ -747,7 +747,7 @@ static msg_t mass_storage_thread(void *arg) {
 
     USBMassStorageDriver *msdp = (USBMassStorageDriver *)arg;
 
-    static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE] __attribute__((section(".sram2")));
+    static uint8_t rw_buf[2][N_BLOCKS_PER_WRITE * MMCSD_BLOCK_SIZE] MSD_DATA_SECTION;
     static uint8_t* rw_buf_ptrs[2]; 
 
     rw_buf_ptrs[0] = rw_buf[0];

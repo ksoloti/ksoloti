@@ -26,16 +26,16 @@
 #endif
 #include "codec_ADAU1961.h"
 
-int32_t buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
-int32_t buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+int32_t buf[DOUBLE_BUFSIZE]   CODEC_DMA_SECTION;
+int32_t buf2[DOUBLE_BUFSIZE]  CODEC_DMA_SECTION;
+int32_t rbuf[DOUBLE_BUFSIZE]  CODEC_DMA_SECTION;
+int32_t rbuf2[DOUBLE_BUFSIZE] CODEC_DMA_SECTION;
 
 #ifdef FW_I2SCODEC
-int32_t i2s_buf[DOUBLE_BUFSIZE]   __attribute__ ((section (".sram2")));
-int32_t i2s_buf2[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf[DOUBLE_BUFSIZE]  __attribute__ ((section (".sram2")));
-int32_t i2s_rbuf2[DOUBLE_BUFSIZE] __attribute__ ((section (".sram2")));
+int32_t i2s_buf[DOUBLE_BUFSIZE]   CODEC_DMA_SECTION;
+int32_t i2s_buf2[DOUBLE_BUFSIZE]  CODEC_DMA_SECTION;
+int32_t i2s_rbuf[DOUBLE_BUFSIZE]  CODEC_DMA_SECTION;
+int32_t i2s_rbuf2[DOUBLE_BUFSIZE] CODEC_DMA_SECTION;
 #endif
 
 void codec_init(bool isMaster) {
