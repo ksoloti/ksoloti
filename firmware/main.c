@@ -76,6 +76,15 @@ int main(void) {
 #pragma GCC diagnostic pop
 
     halInit();
+
+    /* Check if firmware Flasher start is scheduled. */
+    CheckForFlasherBoot();
+
+    /* Clear patch RAM */
+    memset((char*) GetPatchMainLoc(), 0xFFFFFFFF, GetPatchFlashSize());
+    memset((char*) GetPatchMainLoc_SRAM2(), 0xFFFFFFFF, GetPatchFlashSize_SRAM2());
+    memset((char*) GetPatchMainLoc_SRAM3(), 0xFFFFFFFF, GetPatchFlashSize_SRAM3());
+
     chSysInit();
     AnalyserSetup();
     

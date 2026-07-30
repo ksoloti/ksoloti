@@ -577,7 +577,7 @@ static void ManipulateFile(void) {
 static FRESULT AppendFile(uint32_t length) {
     UINT bytes_written;
     
-    FRESULT op_result = f_write(&pFile, (char*) PATCHMAINLOC, length, &bytes_written);
+    FRESULT op_result = f_write(&pFile, (char*) GetPatchMainLoc(), length, &bytes_written);
     if (op_result == FR_OK && bytes_written != length) {
         op_result = FR_DISK_ERR;
     }
@@ -586,65 +586,9 @@ static FRESULT AppendFile(uint32_t length) {
 
 
 static uint8_t CopyPatchToFlash(void) {
-    flash_unlock();
-    flash_Erase_sector(10);
-    flash_Erase_sector(11);
-
-    int src_addr = PATCHMAINLOC;
-    int flash_addr = PATCHFLASHLOC;
-
-    int c;
-    for (c = 0; c < PATCHFLASHSIZE; c += 4) {
-        flash_ProgramWord(flash_addr, *(int32_t*) src_addr);
-        src_addr += 4;
-        flash_addr += 4;
-    }
-
-    /* Verify */
-    src_addr = PATCHMAINLOC;
-    flash_addr = PATCHFLASHLOC;
-
-    int err = 0;
-    for (c = 0; c < PATCHFLASHSIZE; c += 4) {
-        if (*(int32_t*) flash_addr != *(int32_t*) src_addr) {
-            err++;
-        }
-        src_addr += 4;
-        flash_addr += 4;
-    }
-
-    /* Check if patch includes SRAM3 code (64kB), if yes write it to second half of flash sector 10
-       It is up to the object code if and how this data can be used! (executable code, array data) */
-    if ((*(uint32_t*) PATCHMAINLOC_SRAM3 != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC_SRAM3 != 0)) {
-
-        src_addr = PATCHMAINLOC_SRAM3;
-        flash_addr = PATCHFLASHLOC_SRAM3;
-
-        for (c = 0; c < PATCHFLASHSIZE_SRAM3; c += 4) {
-            flash_ProgramWord(flash_addr, *(int32_t*) src_addr);
-            src_addr += 4;
-            flash_addr += 4;
-        }
-
-        /* Verify */
-        src_addr = PATCHMAINLOC_SRAM3;
-        flash_addr = PATCHFLASHLOC_SRAM3;
-
-        for (c = 0; c < PATCHFLASHSIZE_SRAM3; c += 4) {
-            if (*(int32_t*) flash_addr != *(int32_t*) src_addr) {
-                err++;
-            }
-            src_addr += 4;
-            flash_addr += 4;
-        }
-    }
-
-    flash_lock();
-
-    if (err) {
-        return FR_DISK_ERR; /* Flash verify failed */
-    }
-    return FR_OK;
+    uint8_t result = FR_DISK_ERR;
+    if (FlashPatch(0)) result = FR_OK;
+    return result;
 }
 
 
@@ -663,7 +607,7 @@ void ReplyFWVersion(void) {
     uint32_t fwid = GetFirmwareID();
     /* NOTE: Changed to send these two ints in LITTLE ENDIAN */
     uint32_to_le_bytes(fwid, &reply[8]);
-    uint32_to_le_bytes(PATCHMAINLOC, &reply[12]);
+    uint32_to_le_bytes(GetPatchMainLoc(), &reply[12]);
 
     streamWrite((BaseSequentialStream*) &BDU1, (const unsigned char*) (&reply[0]), 16);
 }
@@ -774,6 +718,14 @@ void PExReceiveByte(unsigned char c) {
                         state = 0; header = 0;
                         break;
                     }
+                    case 'H': { /* start internal Flasher */
+                        uint8_t res = StopPatch();
+                        if (res == FR_OK) {
+                            StartFlasher();
+                        }
+                        state = 0; header = 0;
+                        break;
+                    }
                     default:
                         state = 0; header = 0; /* Unknown Axo* header */
                 } /* End switch (c) */
@@ -824,7 +776,7 @@ void PExReceiveByte(unsigned char c) {
             case 4: offset = c; state++; break; /* Address byte 0 */
             case 5: offset |= (uint32_t)c <<  8; state++; break;
             case 6: offset |= (uint32_t)c << 16; state++; break;
-            case 7: offset |= (uint32_t)c << 24; state++; break;
+            case 7: offset |= (uint32_t)c << 24; state++; SetPatchOffset(offset); break;
             case 8: value = c; state++; break; /* Length byte 0 */
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;
@@ -991,7 +943,7 @@ void PExReceiveByte(unsigned char c) {
             case 6: value |= (int32_t)c << 16; state++; break;
             case 7: value |= (int32_t)c << 24; /* Chunk length */
                 length = (uint32_t)value; /* Store the length to be received */
-                write_position = PATCHMAINLOC; /* Set base address for data buffer */
+                write_position = GetPatchMainLoc(); /* Set base address for data buffer */
                 state = 8; /* Move on to data streaming state */
                 break;
             case 8: /* Data streaming state */

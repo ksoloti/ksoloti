@@ -18,7 +18,9 @@
  */
 
 #pragma once
+#include "mcuconf.h"
 
 void StartMounter(void);
 void CheckForMounterBoot(void);
+void FRAMTEXT_CODE_SECTION CheckForFlasherBoot(void);
 void CheckForReset(void);

@@ -789,13 +789,8 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
     void flashUsingSDRam(String fname_flasher, String pname) {
         updateLinkFirmwareID();
 
-        File f = new File(fname_flasher);
         File p = new File(pname);
 
-        if (!f.canRead()) {
-            LOGGER.log(Level.SEVERE, "Cannot read flasher, please compile firmware! (File: {0})", fname_flasher);
-            return;
-        }
 
         setCurrentLivePatch(null);
 
@@ -811,13 +806,6 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         return false;
                     }
 
-                    CommandManager.getInstance().startLongOperation();
-                    SCmdUploadPatch uploadPatchCmd = new SCmdUploadPatch(f);
-                    uploadPatchCmd.Do();
-                    CommandManager.getInstance().endLongOperation();
-                    if (!uploadPatchCmd.waitForCompletion() || !uploadPatchCmd.isSuccessful()) {
-                        return false;
-                    }
 
                     /* If code reaches here, success */
                     return true;
@@ -836,7 +824,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                     if (success) {
                         /* If code reaches here, the background process was successful */
                         CommandManager.getInstance().startLongOperation();
-                        SCmdStartFlasher startFlasherCmd = new SCmdStartFlasher();
+                        SCmdStartFlasher startFlasherCmd = new SCmdStartFlasher(true);
                         LOGGER.log(Level.INFO, startFlasherCmd.GetStartMessage());
                         startFlasherCmd.Do();
                         CommandManager.getInstance().endLongOperation();
@@ -844,6 +832,7 @@ public final class MainFrame extends javax.swing.JFrame implements ActionListene
                         /* Do not waitForCompletion or check isSuccessful here 
                            because MCU will have rebooted automatically by now,
                            which counts as success */
+                        USBBulkConnection.getInstance().disconnect();
                     }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.WARNING, "Firmware update process was interrupted: " + e.getMessage());

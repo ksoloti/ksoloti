@@ -191,6 +191,15 @@ void stm32_gpio_init(void)
 #endif
 }
 
+#define EARLY_FRAM_COPY 1
+
+#if EARLY_FRAM_COPY
+extern void *_fram_text;
+extern void *_fram_text_start_flash;
+extern void *_fram_text_start;
+extern void *_fram_text_end;
+#endif
+
 /**
  * @brief   Early initialization code.
  * @details This initialization must be performed just after stack setup
@@ -202,6 +211,20 @@ void __early_init(void)
     CheckForReset();
     stm32_clock_init();
     stm32_gpio_init();
+
+#if EARLY_FRAM_COPY
+    /* copy any fram code from flash to sram3 */
+    volatile uint32_t *pSrc = (uint32_t *)&_fram_text_start_flash;
+    volatile uint32_t *pDst = (uint32_t *)&_fram_text_start;
+    volatile uint32_t *pEnd = (uint32_t *)&_fram_text_end;
+
+    while (pDst < pEnd) {
+        *pDst = *pSrc;
+        pDst++;
+        pSrc++;
+    }
+    
+#endif
 }
 
 void __late_init(void)

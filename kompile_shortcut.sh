@@ -12,7 +12,7 @@ BUILD_USBAUDIO=1
 BUILD_I2SCODEC=1
 
 # usually no edits are necessary, can be turned off during development to save time
-BUILD_FLASHER=1
+BUILD_FLASHER=0
 
 
 platform='unknown'

@@ -79,7 +79,8 @@ public abstract class Connection {
     abstract public int TransmitGetFWVersion();
     abstract public int TransmitGetSpilinkSynced();
     abstract public int TransmitBringToDFU();
-    abstract public int TransmitStartMounter();        
+    abstract public int TransmitStartFlasher();
+    abstract public int TransmitStartMounter();
     
     abstract public boolean AppendToQueue(SCmd cmd);
     abstract public void ClearSync();

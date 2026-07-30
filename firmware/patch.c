@@ -56,6 +56,10 @@ enum DSPThreadSignal {
 
 patchMeta_t patchMeta;
 
+binHeader_type binHeader = {
+    btInvalid, 0, 0, 0
+};
+
 volatile patchStatus_t patchStatus;
 
 uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
@@ -74,6 +78,162 @@ static int32_t* outbuf;
 static int32_t i2s_inbuf[32];
 static int32_t* i2s_outbuf;
 #endif
+
+
+uint32_t GetPatchMainLoc(void) {
+    uint32_t loc = 0;
+
+    if (binHeader.type == btF4) {
+        loc = PATCHMAINLOC_F4;
+    }
+
+    return loc;
+}
+
+uint32_t GetPatchMainLoc_SRAM2(void) {
+    uint32_t loc = 0;
+
+    if (binHeader.type == btF4) {
+        loc = PATCHMAINLOC_F4_SRAM2;
+    }
+
+    return loc;
+}
+
+uint32_t GetPatchMainLoc_SRAM3(void) {
+    uint32_t loc = 0;
+
+    if (binHeader.type == btF4) {
+        loc = PATCHMAINLOC_F4_SRAM3;
+    }
+
+    return loc;
+}
+
+
+uint32_t GetPatchFlashLoc(void) {
+    uint32_t loc = PATCHFLASHLOC_F4;
+
+    return loc;
+}
+
+uint32_t GetPatchFlashCodeLoc(void) {
+    return GetPatchFlashLoc() + binHeader.headerSize;
+}
+
+uint32_t GetPatchFlashCodeLoc_SRAM3(void) {
+    uint32_t loc = PATCHFLASHLOC_F4_SRAM3;
+
+    return loc;
+}
+
+uint32_t GetPatchFlashSize(void) {
+    uint32_t size = 0;
+
+    if (binHeader.type == btF4) {
+        size = PATCHFLASHSIZE_F4;
+    }
+
+    return size;
+}
+
+uint32_t GetPatchFlashSize_SRAM2(void) {
+    uint32_t size = 0;
+
+    if (binHeader.type == btF4) {
+        size = PATCHFLASHSIZE_F4_SRAM2;
+    }
+
+    return size;
+}
+
+uint32_t GetPatchFlashSize_SRAM3(void) {
+    uint32_t size = 0;
+
+    if (binHeader.type == btF4) {
+        size = PATCHFLASHSIZE_F4_SRAM3;
+    }
+
+    return size;
+}
+
+uint32_t GetPatchHeaderLoc(void) {
+    return (uint32_t)&binHeader;
+}
+
+uint32_t GetPatchHeaderByteSize(void) {
+    return sizeof (binHeader_type);
+}
+
+uint32_t GetPatchBinSize(void) {
+    return binHeader.codeSize;
+}
+
+bool CheckPatchBinHeader(void) {
+    bool result = (binHeader.fwid == GetFirmwareID());
+    if (result) {
+        result = (binHeader.type == btF4); 
+        if (!result) {
+            LogTextMessage("Patch binary was made for different board model.");
+        }
+    }
+    else {
+        LogTextMessage("Patch binary was made for different firmware version.");
+    }
+
+    return result;
+}
+
+void SetPatchOffset(uint32_t uOffset) {
+    if (uOffset == PATCHMAINLOC_F4) {
+        binHeader.type = btF4;
+        binHeader.codeSize = PATCHFLASHSIZE_F4;
+        binHeader.fwid = GetFirmwareID();
+    }
+}
+
+void SetPatchHeaderFlashByteSize(uint32_t uSize) {
+    binHeader.headerSize = uSize;
+}
+
+uint32_t ValidPatchInFlash(void) {
+    uint32_t codeSize = 0;
+    binHeader_type *pHdr = (binHeader_type *)GetPatchFlashLoc();
+
+    if (pHdr->type == btF4) { /* Got correct binary, now check firmware */
+        if (pHdr->fwid == GetFirmwareID()) { /* Got correct firmware version */
+            codeSize = pHdr->codeSize;
+            LogTextMessage("Valid patch found in flash.");
+        }
+        else {
+            LogTextMessage("Patch found in flash is for different firmware version.");
+        }
+    } 
+
+    return codeSize;
+}
+
+bool CopyPatchInFlashToRam(void) {
+    uint32_t codeSize = ValidPatchInFlash();
+
+    if (codeSize) {
+        LogTextMessage("Loading patch from flash.");
+
+        /* Copy header */
+        memcpy((uint8_t*) GetPatchHeaderLoc(), (uint8_t*) GetPatchFlashLoc(), GetPatchHeaderByteSize());
+
+        /* Copy code */
+        memcpy((uint8_t*) GetPatchMainLoc(), (uint8_t*) GetPatchFlashCodeLoc(), codeSize);
+
+        /* Check if patch includes SRAM3 code in flash (64k, after main patch code), if yes load it */
+        if ((*(uint32_t*) GetPatchMainLoc_SRAM3() != 0xFFFFFFFF) && (*(uint32_t*) GetPatchMainLoc_SRAM3() != 0)) {
+            memcpy((uint8_t*) GetPatchMainLoc_SRAM3(), (uint8_t*) GetPatchFlashCodeLoc_SRAM3(), GetPatchFlashSize_SRAM3());
+        }
+    }
+
+    return codeSize;
+};
+
 
 #if FW_USBAUDIO
     #if USB_AUDIO_CHANNELS == 2
@@ -273,8 +433,10 @@ static int StartPatch1(void) {
 
     patchMeta.fptr_dsp_process = 0;
     nThreadsBeforePatch = GetNumberOfThreads();
-    patchMeta.fptr_patch_init = (fptr_patch_init_t)(PATCHMAINLOC + 1);
-    (patchMeta.fptr_patch_init)(GetFirmwareID());
+    patchMeta.fptr_patch_init = (fptr_patch_init_t)(GetPatchMainLoc() + 1);
+
+    uint32_t firmwareId = GetFirmwareID();
+    (patchMeta.fptr_patch_init)(firmwareId);
 
     if (patchMeta.fptr_dsp_process == 0) {
         report_patchLoadFail((const char*) &loadFName[0]);
@@ -430,15 +592,9 @@ static int StartPatch1(void) {
                 }
             }
             else if (loadPatchIndex == START_FLASH) {
-                /* Patch in flash sector 11 */
-                memcpy((uint8_t*) PATCHMAINLOC, (uint8_t*) PATCHFLASHLOC, PATCHFLASHSIZE);
-
-                /* Check if patch includes SRAM3 code (64kB) in second half of flash sector 10, if yes load it */
-                if ((*(uint32_t*) PATCHFLASHLOC_SRAM3 != 0xFFFFFFFF) && (*(uint32_t*) PATCHFLASHLOC_SRAM3 != 0)) {
-                    memcpy((uint8_t*) PATCHMAINLOC_SRAM3, (uint8_t*) PATCHFLASHLOC_SRAM3, PATCHFLASHSIZE_SRAM3);
-                }
-
-                if ((*(uint32_t*) PATCHMAINLOC != 0xFFFFFFFF) && (*(uint32_t*) PATCHMAINLOC != 0)) {
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wnonnull"  
+                if(CopyPatchInFlashToRam()) {
                     StartPatch1();
                 }
             }
@@ -458,7 +614,7 @@ static int StartPatch1(void) {
                     report_fatfs_error(err, index_fn);
                 }
 
-                err = f_read(&f, (uint8_t*) PATCHMAINLOC, PATCHFLASHSIZE, (void*) &bytes_read);
+                err = f_read(&f, (uint8_t*) GetPatchMainLoc(), GetPatchBinSize(), (void*) &bytes_read);
                 if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                     continue;
@@ -471,7 +627,7 @@ static int StartPatch1(void) {
                 }
 
                 char* t;
-                t = (char*) PATCHMAINLOC;
+                t = (char*) GetPatchMainLoc();
                 int32_t cindex = 0;
 
                 // LogTextMessage("load %d %d %x", index, bytes_read, t);

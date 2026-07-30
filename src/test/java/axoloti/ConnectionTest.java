@@ -222,6 +222,7 @@ public class ConnectionTest {
         @Override public int TransmitGetFWVersion() { return 0; }
         @Override public int TransmitGetSpilinkSynced() { return 0; }
         @Override public int TransmitBringToDFU() { return 0; }
+        @Override public int TransmitStartFlasher() { return 0; }
         @Override public int TransmitStartMounter() { return 0; }
         @Override public boolean AppendToQueue(SCmd cmd) { return false; }
         @Override public void ClearSync() {}

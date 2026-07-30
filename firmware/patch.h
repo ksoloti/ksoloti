@@ -30,7 +30,7 @@
 #include "crc32.h"
 #include "exceptions.h"
 #include "ff.h"
-#include "../chibios/os/hal/lib/streams/chprintf.h"
+#include "chprintf.h"
 
 typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
@@ -65,6 +65,19 @@ typedef struct {
   uint32_t npreset_entries;
   PresetParamChange_t* pPresets; // is a npreset array of npreset_entries of PresetParamChange_t
 } patchMeta_t;
+
+typedef enum {
+  btInvalid,
+  btF4,
+  btH7,
+} binType;
+
+typedef struct {
+  binType  type;
+  uint32_t fwid;  
+  uint32_t headerSize;
+  uint32_t codeSize;
+} binHeader_type;
 
 
 extern patchMeta_t patchMeta;
@@ -115,17 +128,38 @@ uint8_t StopPatch(void);
 
 void start_dsp_thread(void);
 
-#define PATCHMAINLOC          0x20011000 /* Area in SRAM1 */
-#define PATCHFLASHLOC         0x080E0000 /* Internal flash patch is located in sector 11 */
-#define PATCHFLASHSIZE        0x0000B000
+/* Ksoloti Core, Axoloti Core */
+#define PATCHMAINLOC_F4          0x20011000 /* Area in SRAM1 */
+#define PATCHFLASHLOC_F4         0x080E0000 /* Internal flash patch is located in sector 11 */
+#define PATCHFLASHSIZE_F4        0x0000B000 /* 44kB? */
 
-#define PATCHMAINLOC_SRAM2    0x2001C000 /* Area in SRAM2 */
-#define PATCHFLASHSIZE_SRAM2  0x00002000 /* Called "FLASH" for consistency, however never saved in flash */
+#define PATCHMAINLOC_F4_SRAM2    0x2001C000 /* Area in SRAM2 */
+#define PATCHFLASHSIZE_F4_SRAM2  0x00002000 /* 8kB. Called "FLASH" for consistency, however never saved in flash */
 
-#define PATCHMAINLOC_SRAM3    0x20020000 /* Area in SRAM3 */
-#define PATCHFLASHLOC_SRAM3   0x080D0000 /* Located in second half of sector 10 (64k of 128k) */
-#define PATCHFLASHSIZE_SRAM3  0x00010000
+#define PATCHMAINLOC_F4_SRAM3    0x20020000 /* Area in SRAM3 */
+#define PATCHFLASHLOC_F4_SRAM3   0x080D0000 /* Saved in second half of sector 10 (64k of 128k) */
+#define PATCHFLASHSIZE_F4_SRAM3  0x00010000 /* 64kB */
 
+
+extern uint32_t GetPatchMainLoc(void);
+extern uint32_t GetPatchMainLoc_SRAM2(void);
+extern uint32_t GetPatchMainLoc_SRAM3(void);
+extern uint32_t GetPatchFlashLoc(void);
+extern uint32_t GetPatchFlashCodeLoc(void);
+extern uint32_t GetPatchFlashCodeLoc_SRAM3(void);
+extern uint32_t GetPatchFlashSize(void);
+extern uint32_t GetPatchFlashSize_SRAM2(void);
+extern uint32_t GetPatchFlashSize_SRAM3(void);
+extern uint32_t GetPatchFlashSlots(void);
+extern uint32_t GetPatchHeaderLoc(void);
+extern uint32_t GetPatchHeaderByteSize(void);
+extern uint32_t GetPatchBinSize(void);
+
+extern bool     CheckPatchBinHeader(void);
+extern void     SetPatchOffset(uint32_t uOffset);
+extern void     SetPatchHeaderFlashByteSize(uint32_t uSize);
+
+void StartLoadPatchTread(void);
 void LoadPatch(const char* name);
 void LoadPatchStartSD(void);
 void LoadPatchStartFlash(void);

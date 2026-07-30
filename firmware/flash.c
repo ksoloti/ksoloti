@@ -16,76 +16,243 @@
  * You should have received a copy of the GNU General Public License along with
  * Axoloti. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "ch.h"
 #include "hal.h"
 #include "watchdog.h"
+#include "flash.h"
+#include "patch.h"
+#include "sdram.h"
 
+#define GREEN_LED(x)   palWritePad(LED1_PORT, LED1_PIN, x);
+#define RED_LED(x)     palWritePad(LED2_PORT, LED2_PIN, x);
+#define RED_LED_TOGGLE palTogglePad(LED2_PORT, LED2_PIN);
 
-static __attribute__ ((section (".ramtext"))) int flash_WaitForLastOperation(void) {
-    while (FLASH->SR & FLASH_SR_BSY) {
-#ifdef WATCHDOG_ENABLED
-        WWDG->CR = WWDG_CR_T;
-#else
-        __ASM volatile ("nop");
+static uint32_t FRAMTEXT_CODE_SECTION revbit(uint32_t data) {
+    uint32_t result;
+    __ASM volatile("rbit %0, %1" : "=r"(result) : "r"(data));
+    return result;
+}
+
+uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size) {
+    uint32_t i, j;
+    uint32_t ui32x;
+
+    RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
 #endif
+
+    CRC->CR = 1;
+    asm("NOP");
+    asm("NOP");
+    asm("NOP");
+
+    i = size >> 2;
+    while (i--) {
+        ui32x = *((uint32_t *)buffer);
+        buffer += 4;
+        ui32x = revbit(ui32x); /* Reverse the bit order of input data */
+        CRC->DR = ui32x;  
     }
-    return FLASH->SR;
+    ui32x = CRC->DR;
+
+    ui32x = revbit(ui32x); /* Reverse the bit order of output data */
+    i = size & 3;
+    while (i--) {
+        ui32x ^= (uint32_t)*buffer++;
+
+        for (j = 0; j < 8; j++) {
+            if (ui32x & 1) {
+                ui32x = (ui32x >> 1) ^ 0xEDB88320;
+            }
+            else {
+                ui32x >>= 1;
+            }
+        }
+    }
+    ui32x ^= 0xffffffff; /* XOR with 0xFFFFFFFF */
+    return ui32x;        /* Now the output is compatible with windows/winzip/winrar */
 }
 
-static __attribute__ ((section (".ramtext"))) void flash_Erase_sector1(int sector) {
-    // assume VDD>2.7V
-    FLASH->CR &= ~FLASH_CR_PSIZE;
-    FLASH->CR |= FLASH_CR_PSIZE_1;
-    FLASH->CR &= ~FLASH_CR_SNB;
-    FLASH->CR |= FLASH_CR_SER | (sector << 3);
-    FLASH->CR |= FLASH_CR_STRT;
-    flash_WaitForLastOperation();
 
-    FLASH->CR &= (~FLASH_CR_SER);
-    FLASH->CR &= ~FLASH_CR_SER;
-    flash_WaitForLastOperation();
+void FRAMTEXT_CODE_SECTION KsolotiSleepMilliseconds(uint32_t uMiliseconds) {
+    uint32_t uTotalTicks = MS2RTT(uMiliseconds);
+    uint32_t uStartTick = DWT->CYCCNT;
+    while (DWT->CYCCNT - uStartTick < uTotalTicks) {;}
 }
 
-int flash_Erase_sector(int sector) {
-    /* interrupts would cause flash execution, stall */
-    /* and cause watchdog trigger */
-    chSysLock();
-    flash_Erase_sector1(sector);
-    chSysUnlock();
-    return 0;
+
+void FRAMTEXT_CODE_SECTION FlashSystemReset(void) {
+    __DSB(); /* Ensure all outstanding memory accesses included
+                buffered write are completed before reset */
+    SCB->AIRCR = (uint32_t)((0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
+                            (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+                            SCB_AIRCR_SYSRESETREQ_Msk); /* Keep priority group unchanged */
+    __DSB();                                            /* Ensure completion of memory access */
+
+    for (;;) {
+        __NOP(); /* wait until reset */
+    }
 }
 
-int flash_ProgramWord(uint32_t Address, uint32_t Data) {
-    int status;
 
-    flash_WaitForLastOperation();
+bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, uint32_t uDataAddress, uint32_t uBytes) {
+    RED_LED(1);
+    FlashUnlock(bank);
+    bool bResult = true;
 
-    /* if the previous operation is completed, proceed to program the new data */
-    FLASH->CR &= ~FLASH_CR_PSIZE;
-    FLASH->CR |= FLASH_CR_PSIZE_1;
-    FLASH->CR |= FLASH_CR_PG;
+    uint32_t uFlashLoc = uFlashAddress;
+    uint32_t uSourceLoc = uDataAddress;
+    uint32_t uBlockByteSize = FlashGetBlockBytesize();
+    uint32_t uBlocks = uBytes / uBlockByteSize;
+    if (uBytes % uBlockByteSize) {
+        uBlocks++;
+    }
 
-    *(__IO uint32_t*)Address = Data;
+    /* First calculate header size for patches, not for firmware */
+    uint32_t uHeaderLoc = 0;
+    uint32_t uHeaderSizeBytes = 0;
+    uint32_t uHeaderBlocks = 0;
+    uint32_t uHeaderFlashByteSize =0;
 
-    /* Wait for last operation to be completed */
-    status = flash_WaitForLastOperation();
+    if (bank == fbPatch) {
+        uHeaderLoc = GetPatchHeaderLoc();
+        uHeaderSizeBytes = GetPatchHeaderByteSize();;
+        uHeaderBlocks = uHeaderSizeBytes / uBlockByteSize;
+        if (uHeaderSizeBytes % uBlockByteSize) {
+            uHeaderBlocks++;
+        }
 
-    /* if the program operation is completed, disable the PG Bit */
-    FLASH->CR &= (~FLASH_CR_PG);
+        /* Leave space for header */
+        uHeaderFlashByteSize = uHeaderBlocks * uBlockByteSize;
+        SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
+        uFlashLoc += uHeaderFlashByteSize;
+    }
 
-    watchdog_feed();
 
-    /* Return the Program Status */
-    return status;
+    /* Now write patch code */
+    if (bResult) {
+        int32_t nLedWordCount = 1024*16;
+
+        for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++) {
+            bResult = FlashProgramBlock(bank, uFlashLoc, uSourceLoc);
+            uFlashLoc += uBlockByteSize;
+            uSourceLoc += uBlockByteSize;
+            nLedWordCount -= uBlockByteSize;
+
+            if (nLedWordCount < 0) {
+                nLedWordCount = 1024*16;
+                RED_LED_TOGGLE;
+            }
+        }
+    }
+
+    /* Validate flash, just the patch code */
+    if (bResult) {
+        uint32_t uFlashLoc = uFlashAddress + uHeaderFlashByteSize;
+        uint32_t uSourceLoc = uDataAddress;
+
+        uint32_t *pFlash = (uint32_t *)uFlashLoc;
+        uint32_t *pSource = (uint32_t *)uSourceLoc;
+        uint32_t uWords = (uBlocks * uBlockByteSize) / 4;
+
+        for (uint32_t i = 0; bResult && (i < uWords); i++) {
+            bResult = *pFlash == *pSource;
+            pFlash++;
+            pSource++;
+        }
+    }
+
+    /* Now write header if all ok */
+    if (bResult && (bank == fbPatch)) {
+        uFlashLoc = uFlashAddress;
+        for (uint32_t uHeaderBlock = 0; bResult && (uHeaderBlock < uHeaderBlocks); uHeaderBlock++) {
+            bResult = FlashProgramBlock(bank, uFlashLoc, uHeaderLoc);
+            uFlashLoc += uBlockByteSize;
+            uHeaderLoc += uBlockByteSize;
+        }
+    }
+
+    FlashLock(bank);
+    RED_LED(0);
+    return bResult;
 }
 
-void flash_unlock(void) {
-    /* Unlock sequence as per reference manual*/
-    FLASH->KEYR = 0x45670123;
-    FLASH->KEYR = 0xCDEF89AB;
+
+void FRAMTEXT_CODE_SECTION DisplayAbortErr(int err) {
+    /* Blink red slowly, green off */
+    palWritePad(LED1_PORT, LED1_PIN, 0);
+
+    int i = 20;
+    while (i--) {
+        RED_LED_TOGGLE;
+        KsolotiSleepMilliseconds(1000);
+    }
+
+    FlashSystemReset();
 }
 
-void flash_lock(void) {
-    /* Set the LOCK Bit in the FLASH control register (FLASH_CR) */
-    FLASH->CR |= FLASH_CR_LOCK;
+
+void FRAMTEXT_CODE_SECTION FlashFirmware(void) {
+    __disable_irq();
+
+    FLASH->SR = 0xFFFFFFFF;
+
+    RED_LED(1);
+
+    uint32_t *sdram32 = (uint32_t *)SDRAM_BANK_ADDR;
+    uint8_t *sdram8 = (uint8_t *)SDRAM_BANK_ADDR;
+
+    if ((sdram8[0] != 'f') || (sdram8[1] != 'l') || (sdram8[2] != 'a') || (sdram8[3] != 's') || (sdram8[4] != 'c') || (sdram8[5] != 'o') || (sdram8[6] != 'p') || (sdram8[7] != 'y')) {
+        DisplayAbortErr(1);
+    }
+
+    uint32_t flength = sdram32[2];
+    uint32_t fcrc = sdram32[3];
+
+    if (flength > 1 * 1024 * 1024) {
+        DisplayAbortErr(2);
+    }
+
+    uint32_t ccrc = FlashCalcCRC32((uint8_t *)(SDRAM_BANK_ADDR + 0x010), flength);
+
+    if (ccrc != fcrc) {
+        DisplayAbortErr(3);
+    }
+
+    /* Erase flash */
+    uint32_t uFlashSectors = 12;
+
+    FlashUnlock(fbFirmware);
+    uint32_t uSector;
+    bool bResult = true;
+    for (uSector = 0; bResult && (uSector < uFlashSectors); uSector++) {
+        bResult = FlashEraseSector(fbFirmware, uSector);
+        RED_LED_TOGGLE;
+    }
+    FlashLock(fbFirmware);
+    if (!bResult) {
+        DisplayAbortErr(4);
+    }
+
+    uint32_t uDest = FLASH_BASE_ADDR;
+    uint32_t uSrc  = SDRAM_BANK_ADDR + 0x010;
+    if (!bResult) {
+        DisplayAbortErr(4);
+    }
+
+    bResult = FlashProgram(fbFirmware, uDest, uSrc, flength);
+
+    FlashLock(fbFirmware);
+    if (!bResult) {
+        DisplayAbortErr(5);
+    }
+
+    RED_LED(1);
+
+    ccrc = FlashCalcCRC32((uint8_t *)(FLASH_BASE_ADDR), flength);
+    if (ccrc != fcrc) {
+        DisplayAbortErr(6);
+    }
+
+    FlashSystemReset();
 }

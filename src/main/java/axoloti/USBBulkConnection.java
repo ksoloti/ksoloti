@@ -141,6 +141,7 @@ public class USBBulkConnection extends Connection {
     private final static byte[] Axow_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('w')};
     private final static byte[] Axoy_pckt =  new byte[] {(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('y')};
     private final static byte[] Axom_pckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('m')};
+    private final static byte[] AxoH_pckt = new byte[]{(byte) ('A'), (byte) ('x'), (byte) ('o'), (byte) ('H')};
 
     private static int useBulkInterfaceNumber = 2;
 
@@ -1278,6 +1279,16 @@ public class USBBulkConnection extends Connection {
          */
         ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(AxoF_pckt);
+        return writeBytes(buffer);
+    }
+    
+    @Override
+    public int TransmitStartFlasher() {
+        /* Total size (bytes):
+           "AxoH"           (4)
+         */
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(AxoH_pckt);
         return writeBytes(buffer);
     }
 

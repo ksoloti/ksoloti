@@ -18,14 +18,24 @@
  */
 package qcmds;
 
+import axoloti.Connection;
+
 /**
  *
  * @author Johannes Taelman
  */
 public class SCmdStartFlasher extends SCmdStart {
 
+    private boolean useInbuiltFlasher;
+
     public SCmdStartFlasher() {
         super(null);
+        this.useInbuiltFlasher = false;
+    }
+
+    public SCmdStartFlasher(boolean useInbuiltFlasher) {
+        super(null);
+        this.useInbuiltFlasher = useInbuiltFlasher;
     }
 
     @Override
@@ -36,5 +46,13 @@ public class SCmdStartFlasher extends SCmdStart {
     @Override
     public String GetDoneMessage() {
         return "\n>>> FIRMWARE UPDATE IN PROGRESS. DO NOT UNPLUG THE BOARD! <<<\n>>>  You can connect again after the LEDs stop flashing.  <<<\n";
+    }
+
+    @Override
+    public SCmd Do(Connection connection) {
+        if(this.useInbuiltFlasher) {
+            connection.TransmitStartFlasher();
+        }
+        return this;
     }
 }

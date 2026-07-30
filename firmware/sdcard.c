@@ -186,14 +186,19 @@ int sdcard_loadPatch1(char* fname) {
         return -1;
     }
 
-    err = f_read(&FileObject, (uint8_t*) PATCHMAINLOC, PATCHFLASHSIZE, (void*) &bytes_read);
-    if (err != FR_OK) {
-        report_fatfs_error(err, fname);
-        return -1;
+    /* Read the patch header */
+    err = f_read(&FileObject, (uint8_t*) GetPatchHeaderLoc(), GetPatchHeaderByteSize(), (void*) &bytes_read);
+
+    if (err == FR_OK) {
+        /* Now check header */
+        if (!CheckPatchBinHeader()) {
+            return -1;
+        }
+
+        err = f_read(&FileObject, (uint8_t*) GetPatchMainLoc(), GetPatchBinSize(), (void*) &bytes_read); 
     }
 
-    err = f_close(&FileObject);
-        if (err != FR_OK) {
+    if (err != FR_OK) {
         report_fatfs_error(err, fname);
         return -1;
     }
@@ -213,14 +218,14 @@ int sdcard_loadPatch1(char* fname) {
         return 0; /* No error */
     }
 
-    err = f_read(&FileObject, (uint8_t*) PATCHMAINLOC_SRAM3, PATCHFLASHSIZE_SRAM3, (void*) &bytes_read);
+    err = f_read(&FileObject, (uint8_t*) GetPatchMainLoc_SRAM3(), GetPatchFlashSize_SRAM3(), (void*) &bytes_read);
     if (err != FR_OK) {
         report_fatfs_error(err, fname_sram3);
         return -1;
     }
 
     err = f_close(&FileObject);
-        if (err != FR_OK) {
+    if (err != FR_OK) {
         report_fatfs_error(err, fname_sram3);
         return -1;
     }

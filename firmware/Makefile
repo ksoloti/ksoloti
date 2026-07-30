@@ -240,6 +240,7 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/parameters.c \
   ${FIRMWARE}/main.c \
   ${FIRMWARE}/patch.c \
+  ${FIRMWARE}/flash_functions.c \
   ${FIRMWARE}/flash.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_bitreversal.c \
   ${CMSIS}/DSP/Source/TransformFunctions/arm_cfft_q15.c \

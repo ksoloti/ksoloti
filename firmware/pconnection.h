@@ -38,6 +38,7 @@ void PExTransmit(void);
 void PExReceive(void);
 void InitPConnection(void);
 extern void BootLoaderInit(void);
+extern void StartFlasher(void);
 extern void StartMounter(void);
 void LogTextMessage(const char* format, ...);
 uint32_t GetFirmwareID(void);
