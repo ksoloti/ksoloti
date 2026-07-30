@@ -154,7 +154,7 @@ void InitPConnection(void) {
 }
 
 
-int GetFirmwareID(void) {
+uint32_t GetFirmwareID(void) {
     return fwid;
 }
 
