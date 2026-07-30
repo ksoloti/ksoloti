@@ -44,6 +44,19 @@
 #define STM32F427_MCUCONF
 
 
+#define DEBUG_DATA_SECTION      __attribute__((section (".sram3")))
+#define CODEC_DMA_SECTION       __attribute__((section (".sram2")))
+#define USB_AUDIO_DATA_SECTION  __attribute__((section (".sram2")))
+#define ADC_DMA_DATA_SECTION1   __attribute__((section (".sram2")))
+#define ADC_DMA_DATA_SECTION3   __attribute__((section (".sram2")))
+#define LCD_DATA_SECTION        __attribute__((section (".sram2")))
+#define KVP_DATA_SECTION        __attribute__((section (".sram2")))
+#define SPILINK_DMA_SECTION     __attribute__((section (".sram2")))
+#define MSD_DATA_SECTION        __attribute__((section (".sram2")))
+#define FAST_DATA_SECTION       __attribute__((section (".ccmramend")))
+#define SDCARD_DATA_SECTION     __attribute__((section (".sram3")))
+#define FRAMTEXT_CODE_SECTION   __attribute__((section (".framtext"))) 
+
 /*
  * HAL driver system settings.
  */
