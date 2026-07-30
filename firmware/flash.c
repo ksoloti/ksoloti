@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013, 2014 Johannes Taelman
- * Edited 2023 - 2025 by Ksoloti
+ * Edited 2023 - 2026 by Ksoloti, AndyCap
  *
  * This file is part of Axoloti.
  *
@@ -69,7 +69,7 @@ uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size) {
             }
         }
     }
-    ui32x ^= 0xffffffff; /* XOR with 0xFFFFFFFF */
+    ui32x ^= 0xFFFFFFFF; /* XOR with 0xFFFFFFFF */
     return ui32x;        /* Now the output is compatible with windows/winzip/winrar */
 }
 
@@ -87,10 +87,10 @@ void FRAMTEXT_CODE_SECTION FlashSystemReset(void) {
     SCB->AIRCR = (uint32_t)((0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
                             (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
                             SCB_AIRCR_SYSRESETREQ_Msk); /* Keep priority group unchanged */
-    __DSB();                                            /* Ensure completion of memory access */
+    __DSB(); /* Ensure completion of memory access */
 
     for (;;) {
-        __NOP(); /* wait until reset */
+        __NOP(); /* Wait until reset */
     }
 }
 
@@ -127,7 +127,6 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
         SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
         uFlashLoc += uHeaderFlashByteSize;
     }
-
 
     /* Now write patch code */
     if (bResult) {
@@ -241,7 +240,6 @@ void FRAMTEXT_CODE_SECTION FlashFirmware(void) {
     }
 
     bResult = FlashProgram(fbFirmware, uDest, uSrc, flength);
-
     FlashLock(fbFirmware);
     if (!bResult) {
         DisplayAbortErr(5);
