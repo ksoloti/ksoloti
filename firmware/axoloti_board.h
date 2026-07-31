@@ -64,8 +64,6 @@ void adc_convert(void);
 #define SPILINK_JUMPER_PIN 10
 #endif /* BOARD_*OLOTI_CORE */
 
-#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define SDMIDI SD6
-#endif /* BOARD_* */
 
 #endif /* __AXOBOARD_H */
