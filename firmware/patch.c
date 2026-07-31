@@ -369,7 +369,8 @@ void ReportThreadStacks(void) {
 
         if (nfree < 70) {
             LogTextMessage("%s 0x%x CRITICAL: %u free", name, (uint32_t)thd, nfree);
-        } else {
+        }
+        else {
             LogTextMessage("%s 0x%x: %u free", name, (uint32_t)thd, nfree);
         }
 

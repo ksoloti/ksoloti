@@ -804,7 +804,8 @@ static bool specialRequestsHook(USBDriver *usbp) {
     ) {
     usbSetupTransfer(usbp, (uint8_t *)&mscompatid, usbp->setup[6], NULL);
     return TRUE;
-  } else   if (
+  }
+  else if (
       (usbp->setup[0] == 0xC1) &&
       (usbp->setup[1] == 0x14) &&
       (usbp->setup[2] == 0x00) &&

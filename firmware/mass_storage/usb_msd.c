@@ -574,7 +574,8 @@ static bool msd_scsi_process_test_unit_ready(USBMassStorageDriver *msdp) {
     if (blkIsInserted(msdp->config->bbdp)) {
         /* device inserted and ready */
         msdp->result = TRUE;
-    } else {
+    }
+    else {
         /* device not present or not ready */
         msd_scsi_set_sense(msdp,
                            SCSI_SENSE_KEY_NOT_READY,
@@ -677,7 +678,8 @@ static bool msd_read_command_block(USBMassStorageDriver *msdp, uint8_t** buff) {
     case SCSI_CMD_SYNCHRONIZE_CACHE:
         if (blkSync(msdp->config->bbdp)) {
             msdp->result = TRUE; /* Indicate success to the host */
-        } else {
+        }
+        else {
             /* Handle error if blkSync fails */
             msd_scsi_set_sense(msdp,
                             SCSI_SENSE_KEY_MEDIUM_ERROR,

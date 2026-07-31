@@ -833,7 +833,8 @@ void PExReceiveByte(unsigned char c) {
                         send_AxoResult('w', FR_OK);
                         state = 0; header = 0;
                     }
-                } else {
+                }
+                else {
                     send_AxoResult('w', FR_INVALID_PARAMETER);
                     state = 0; header = 0;
                 }
@@ -889,11 +890,13 @@ void PExReceiveByte(unsigned char c) {
                 if (FileName[1] == 'c' || FileName[1] == 'f' || FileName[1] == 'k') {
                     /* These expect fdate/ftime next (FileName[2]...[5]) */
                     state = 10; /* Go to state to receive FileName[2] (fdate byte 0) */
-                } else if (FileName[1] == 'h' || FileName[1] == 'D' || FileName[1] == 'I') {
+                }
+                else if (FileName[1] == 'h' || FileName[1] == 'D' || FileName[1] == 'I') {
                     /* These skip fdate/ftime and go straight to filename (FileName[6]+) */
                     current_filename_idx = 6; /* Start filename parsing from FileName[6] */
                     state = 14; /* Go to state to receive FileName[6] (filename byte 0) */
-                } else {
+                }
+                else {
                     /* Unknown sub-command for AxoC */
                     state = 0; header = 0;
                 }

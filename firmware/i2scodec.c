@@ -199,7 +199,8 @@ void i2s_init(void) {
         
         dmaStreamEnable(i2s_rx_dma);
         dmaStreamEnable(i2s_tx_dma);
-    } else {
+    }
+    else {
         /* Timed out - Core codec error? */
         setErrorFlag(ERROR_CODEC_I2C);
         while(1);
