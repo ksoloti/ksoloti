@@ -22,14 +22,12 @@ echo. & echo Building all firmware modes for the current board.
 set BUILD_NORMAL=1
 set BUILD_USBAUDIO=1
 set BUILD_SPILINK=1
-set BUILD_FLASHER=1
 set BUILD_I2SCODEC=1
 ) else (
 set BUILD_NORMAL=%2
 set BUILD_USBAUDIO=%3
 set BUILD_SPILINK=%4
-set BUILD_FLASHER=%5
-set BUILD_I2SCODEC=%6
+set BUILD_I2SCODEC=%5
 )
 
 cd %axoloti_firmware%
@@ -42,21 +40,6 @@ set NAME=axoloti
 )
 
 set FLASHER_PROJECT=%NAME%_flasher
-
-if %BUILD_FLASHER%==1 (
-cd flasher
-echo. & echo Compiling %FLASHER_PROJECT%
-set BUILDDIR=flasher_build\%FLASHER_PROJECT%
-if not exist flasher_build\%FLASHER_PROJECT%\.dep mkdir flasher_build\%FLASHER_PROJECT%\.dep
-if not exist flasher_build\%FLASHER_PROJECT%\lst  mkdir flasher_build\%FLASHER_PROJECT%\lst
-if not exist flasher_build\%FLASHER_PROJECT%\obj  mkdir flasher_build\%FLASHER_PROJECT%\obj
-make -j8 BOARDDEF=%1 axoloti_firmware="%FW_DIR%" axoloti_home="%HOME_DIR%"
-if %ERRORLEVEL% neq 0 (
-exit /b 1
-)
-copy /y flasher_build\%FLASHER_PROJECT%\%FLASHER_PROJECT%.* flasher_build 1>NUL
-cd ..
-)
 
 if %BUILD_NORMAL%==1 (
 echo. & echo Compiling %1

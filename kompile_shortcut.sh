@@ -45,7 +45,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -56,7 +56,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -73,7 +73,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -84,7 +84,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -101,7 +101,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            ./firmware/compile_firmware_win.bat BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            ./firmware/compile_firmware_win.bat BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -112,7 +112,7 @@ case "$platform" in
             printf "********************\n"
 
             # compile board mode and firmware options
-            ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_FLASHER $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+            ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
