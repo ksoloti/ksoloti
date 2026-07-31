@@ -38,6 +38,16 @@ public class FirmwareID {
     private static final Logger LOGGER = Logger.getLogger(FirmwareID.class.getName());
 
     static public String getFirmwareID() {
+        int firmwareId = getIntFirmwareID();
+        if (firmwareId == 0) {
+            return "(not found)";
+        }
+        else {
+            return String.format("%08X", firmwareId);
+        }
+    }
+
+    static public int getIntFirmwareID() {
         try {
             String boarddef = System.getProperty(Axoloti.FIRMWARE_DIR) + File.separator + "build";
 
@@ -60,8 +70,8 @@ public class FirmwareID {
             File f = new File(boarddef);
 
             if (f == null || !f.canRead()) {
-                LOGGER.log(Level.SEVERE, "Could not find " + boarddef + ".\nPlease compile the firmware first.");
-                return "(" + boarddef + " not found)";
+                LOGGER.log(Level.WARNING, "Could not find " + boarddef + ".\nPlease compile the firmware first.");
+                return 0;
             }
             int tlength = (int) f.length();
             FileInputStream inputStream = new FileInputStream(f);
@@ -74,11 +84,11 @@ public class FirmwareID {
             CRC32 zcrc = new CRC32();
             zcrc.update(bb);
             int zcrcv = (int) zcrc.getValue();
-            return String.format("%08X", zcrcv);
+            return zcrcv;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error trying to get firmware ID: " + ex.getMessage());
             ex.printStackTrace(System.out);
         }
-        return "";
+        return 0;
     }
 }
