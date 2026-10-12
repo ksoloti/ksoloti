@@ -516,17 +516,27 @@ INCDIR = \
   $(FATFSINC) \
   $(OSALINC) \
   $(CHIBIOS)/os/various \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
   ${MUTABLE_INSTRUMENTS} \
   ${MUTABLE_INSTRUMENTS}/warps \
   ${MUTABLE_INSTRUMENTS}/braids \
   ${MUTABLE_INSTRUMENTS}/rings \
   ${MUTABLE_INSTRUMENTS}/elements \
   ${MUTABLE_INSTRUMENTS}/stmlib \
-  $(CHIBIOS)/os/hal/lib/streams \
+	$(CHIBIOS)/os/hal/lib/streams \
   ${CHIBIOS}/os/common/abstractions/cmsis_os
+
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti Geko H743
+  INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Inc 
+else
+  # Axoloti and Ksoloti F427
+  INCDIR += ${FIRMWARE}/STM32F4xx_HAL_Driver/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library/Core/Inc \
+            ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Inc 
+endif
 
 #
 # Project, sources and paths
@@ -604,15 +614,27 @@ DLIBS =
 
 # List all user C define here, like -D_DEBUG=1
 UDEFS = \
-  -D$(BOARDDEF) \
-  -DARM_MATH_CM4 \
+  -D$(BOARDDEF)=1 \
   -DCORTEX_USE_FPU=TRUE \
   -DCRT0_AREAS_NUMBER=0 \
   -DCRT1_AREAS_NUMBER=0 \
   -DTHUMB \
   -DTHUMB_NO_INTERWORKING \
   -DTHUMB_PRESENT \
+  -DENABLE_EXCPT_DUMP \
   -DANALYSE_USB_AUDIO=0
+  
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H743)
+  # Ksoloti Geko H743
+  UDEFS += -DPATCH_ITCM=1 \
+           -DSTM32H743xx \
+           -DARM_MATH_CM7 \
+           -DCORE_CM7 
+else
+  # Axoloti and Ksoloti F427
+  UDEFS += -DSTM32F427xx \
+           -DARM_MATH_CM4
+endif
 
 # Define ASM defines here
 UADEFS =
