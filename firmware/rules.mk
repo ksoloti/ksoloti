@@ -90,20 +90,22 @@ ifdef SREC
 endif
 
 # Source files groups and paths
-SRC      := $(CSRC) $(CPPSRC)
-SRCPATHS += $(sort $(dir $(ASMXSRC)) $(dir $(ASMSRC)) $(dir $(SRC)))
+TCSRC     += $(CSRC)
+TCPPSRC   += $(CPPSRC)
+TSRC      := $(TCSRC) $(TCPPSRC)
+SRCPATHS  := $(sort $(dir $(ASMXSRC)) $(dir $(ASMSRC)) $(dir $(TSRC)))
 
 # Various directories
 OBJDIR    := $(BUILDDIR)/obj
 LSTDIR    := $(BUILDDIR)/lst
 
 # Object files groups
-COBJS    := $(addprefix $(OBJDIR)/, $(notdir $(CSRC:.c=.o)))
-CPPOBJS  := $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.cpp, %.o, $(filter %.cpp, $(CPPSRC)))))
-CCOBJS   := $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.cc, %.o, $(filter %.cc, $(CPPSRC)))))
-ASMOBJS  := $(addprefix $(OBJDIR)/, $(notdir $(ASMSRC:.s=.o)))
-ASMXOBJS := $(addprefix $(OBJDIR)/, $(notdir $(ASMXSRC:.S=.o)))
-OBJS     += $(ASMXOBJS) $(ASMOBJS) $(COBJS) $(CPPOBJS) $(CCOBJS)
+TCOBJS    := $(addprefix $(OBJDIR)/, $(notdir $(TCSRC:.c=.o)))
+TCPPOBJS  := $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.cpp, %.o, $(filter %.cpp, $(TCPPSRC)))))
+TCCOBJS   := $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.cc, %.o, $(filter %.cc, $(TCPPSRC)))))
+ASMOBJS   := $(addprefix $(OBJDIR)/, $(notdir $(ASMSRC:.s=.o)))
+ASMXOBJS  := $(addprefix $(OBJDIR)/, $(notdir $(ASMXSRC:.S=.o)))
+OBJS      := $(ASMXOBJS) $(ASMOBJS) $(ACOBJS) $(TCOBJS) $(ACPPOBJS) $(TCPPOBJS) $(TCCOBJS)
 
 # Paths
 IINCDIR   := $(sort $(patsubst %,-I%,$(INCDIR) $(DINCDIR) $(UINCDIR)))
@@ -129,7 +131,7 @@ else
   CFLAGS    = $(MCFLAGS) $(OPT) $(COPT) $(CWARN) $(DEFS)
   CPPFLAGS  = $(MCFLAGS) $(OPT) $(CPPOPT) $(CPPWARN) $(DEFS)
 endif
-LDFLAGS   = $(MCFLAGS) $(OPT) -nostartfiles $(LLIBDIR) -Wl,-Map=$(BUILDDIR)/$(PROJECT).map,--cref,--no-warn-mismatch,--library-path=$(RULESPATH),--script=$(LDSCRIPT)$(LDOPT),--print-memory-usage
+LDFLAGS   = $(MCFLAGS) $(OPT) -nostartfiles $(LLIBDIR) -Wl,-Map=$(BUILDDIR)/$(PROJECT).map,--cref,--no-warn-mismatch,--library-path=$(STARTUPLD),--script=$(LDSCRIPT)$(LDOPT),--print-memory-usage
 
 # Generate dependency information
 ASFLAGS  += -MD -MP -MF $(DEPDIR)/$(@F).d
@@ -169,7 +171,7 @@ $(LSTDIR):
 $(DEPDIR):
 	@mkdir -p $(DEPDIR)
 
-$(CPPOBJS) : $(OBJDIR)/%.o : %.cpp $(MAKEFILE_LIST)
+$(TCPPOBJS) : $(OBJDIR)/%.o : %.cpp $(MAKEFILE_LIST)
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
 	$(CPPC) -c $(CPPFLAGS) -I. $(IINCDIR) $< -o $@
@@ -178,7 +180,7 @@ else
 	@$(CPPC) -c $(CPPFLAGS) -I. $(IINCDIR) $< -o $@
 endif
 
-$(CCOBJS) : $(OBJDIR)/%.o : %.cc $(MAKEFILE_LIST)
+$(TCCOBJS) : $(OBJDIR)/%.o : %.cc $(MAKEFILE_LIST)
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
 	$(CPPC) -c $(CPPFLAGS) -I. $(IINCDIR) $< -o $@
@@ -187,7 +189,7 @@ else
 	@$(CPPC) -c $(CPPFLAGS) -I. $(IINCDIR) $< -o $@
 endif
 
-$(COBJS) : $(OBJDIR)/%.o : %.c $(MAKEFILE_LIST)
+$(TCOBJS) : $(OBJDIR)/%.o : %.c $(MAKEFILE_LIST)
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
 	$(CC) -c $(CFLAGS) -I. $(IINCDIR) $< -o $@
