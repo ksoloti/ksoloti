@@ -39,13 +39,26 @@ ifeq ($(USE_OPT),)
     -fno-unsafe-math-optimizations \
     -fomit-frame-pointer \
     -ggdb3 \
-    -mcpu=cortex-m4 \
     -mfloat-abi=hard \
-    -mfpu=fpv4-sp-d16 \
     -mno-thumb-interwork \
     -mthumb \
-    -mtune=cortex-m4 \
     -mword-relocations
+endif
+
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
+  # Ksoloti Geko H743
+  USE_OPT +=  -mcpu=cortex-m7 \
+              -mfpu=fpv5-sp-d16 \
+              -mtune=cortex-m7 
+  MCU  = cortex-m7
+else
+  # Axoloti and Ksoloti Core F427
+  USE_OPT +=  -mcpu=cortex-m4 \
+              -mfpu=fpv4-sp-d16 \
+              -mtune=cortex-m4 
+
+  MCU  = cortex-m4
+
 endif
 
 ifneq ($(FWOPTIONDEF),)
@@ -145,6 +158,8 @@ ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
   PROJECT = ksoloti
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
   PROJECT = axoloti
+else ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
+  PROJECT = geko
 endif
 
 ifeq ($(FWOPTIONDEF),FW_SPILINK)
@@ -463,8 +478,6 @@ INCDIR = \
 ##############################################################################
 # Compiler settings
 #
-
-MCU  = cortex-m4
 
 TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc 
