@@ -68,11 +68,6 @@ remove_temp_files()
     rm     ./firmware/build/*.list
     rm     ./firmware/build/*.map
 
-    rm     ./firmware/*/*_build/*.dmp
-    rm     ./firmware/*/*_build/*.hex
-    rm     ./firmware/*/*_build/*.list
-    rm     ./firmware/*/*_build/*.map
-
     rm -rf ./platform_*/build.sh
     rm -rf ./platform_*/notes.txt
     rm -rf ./platform_win*/build*.bat
