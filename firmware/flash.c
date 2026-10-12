@@ -39,7 +39,6 @@ uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size) {
     uint32_t ui32x;
 
     RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
-#endif
 
     CRC->CR = 1;
     asm("NOP");
