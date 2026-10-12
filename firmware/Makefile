@@ -190,24 +190,48 @@ CMSIS               = ${HOME}/CMSIS
 MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 
-include board.mk
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
 
-# Licensing files.
-include $(CHIBIOS)/os/license/license.mk
-# Startup files.
-include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
-# HAL-OSAL files (optional).
-include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
-include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
-# RTOS files (optional).
-include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
-# Other files (optional).
-include $(CHIBIOS)/os/hal/lib/streams/streams.mk
-include $(CHIBIOS)/os/various/shell/shell.mk
-# FAT stuff
-include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  # Ksoloti H743
+  include board_h7.mk
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+  include $(CHIBIOS)/os/various/shell/shell.mk
+
+else
+
+  # Axoloti and Ksoloti F427
+  include board.mk
+
+  # Licensing files.
+  include $(CHIBIOS)/os/license/license.mk
+  # Startup files.
+  include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+  # HAL-OSAL files (optional).
+  include $(CHIBIOS)/os/hal/hal.mk
+  include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
+  include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
+  # RTOS files (optional).
+  include $(CHIBIOS)/os/rt/rt.mk
+  include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
+  # Other files (optional).
+  include $(CHIBIOS)/os/hal/lib/streams/streams.mk
+  include $(CHIBIOS)/os/various/shell/shell.mk
+  # FAT stuff
+  include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+endif
 
 # get the same binary as openOCD flashes from elf
 override BIN = $(CP) -O binary --gap-fill 0xff
