@@ -99,7 +99,7 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
     FlashUnlock(bank);
     bool bResult = true;
 
-    uint32_t uFlashLoc = uFlashAddress;
+    uint32_t uFlashLoc = GetPatchFlashLoc();
     uint32_t uSourceLoc = uDataAddress;
     uint32_t uBlockByteSize = FlashGetBlockBytesize();
     uint32_t uBlocks = uBytes / uBlockByteSize;
@@ -107,46 +107,24 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
         uBlocks++;
     }
 
-    /* First calculate header size for patches, not for firmware */
-    uint32_t uHeaderLoc = 0;
-    uint32_t uHeaderSizeBytes = 0;
-    uint32_t uHeaderBlocks = 0;
-    uint32_t uHeaderFlashByteSize =0;
+    /* Write patch code */
+    int32_t nLedWordCount = 1024*16;
 
-    if (bank == fbPatch) {
-        uHeaderLoc = GetPatchHeaderLoc();
-        uHeaderSizeBytes = GetPatchHeaderByteSize();;
-        uHeaderBlocks = uHeaderSizeBytes / uBlockByteSize;
-        if (uHeaderSizeBytes % uBlockByteSize) {
-            uHeaderBlocks++;
-        }
+    for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++) {
+        bResult = FlashProgramBlock(bank, uFlashLoc, uSourceLoc);
+        uFlashLoc += uBlockByteSize;
+        uSourceLoc += uBlockByteSize;
+        nLedWordCount -= uBlockByteSize;
 
-        /* Leave space for header */
-        uHeaderFlashByteSize = uHeaderBlocks * uBlockByteSize;
-        SetPatchHeaderFlashByteSize(uHeaderFlashByteSize);
-        uFlashLoc += uHeaderFlashByteSize;
-    }
-
-    /* Now write patch code */
-    if (bResult) {
-        int32_t nLedWordCount = 1024*16;
-
-        for (uint32_t uBlock = 0; bResult && (uBlock < uBlocks); uBlock++) {
-            bResult = FlashProgramBlock(bank, uFlashLoc, uSourceLoc);
-            uFlashLoc += uBlockByteSize;
-            uSourceLoc += uBlockByteSize;
-            nLedWordCount -= uBlockByteSize;
-
-            if (nLedWordCount < 0) {
-                nLedWordCount = 1024*16;
-                RED_LED_TOGGLE;
-            }
+        if (nLedWordCount < 0) {
+            nLedWordCount = 1024*16;
+            RED_LED_TOGGLE;
         }
     }
 
-    /* Validate flash, just the patch code */
+    /* Validate flash */
     if (bResult) {
-        uint32_t uFlashLoc = uFlashAddress + uHeaderFlashByteSize;
+        uint32_t uFlashLoc = uFlashAddress;
         uint32_t uSourceLoc = uDataAddress;
 
         uint32_t *pFlash = (uint32_t *)uFlashLoc;
@@ -157,16 +135,6 @@ bool FRAMTEXT_CODE_SECTION FlashProgram(FlashBank bank, uint32_t uFlashAddress, 
             bResult = *pFlash == *pSource;
             pFlash++;
             pSource++;
-        }
-    }
-
-    /* Now write header if all ok */
-    if (bResult && (bank == fbPatch)) {
-        uFlashLoc = uFlashAddress;
-        for (uint32_t uHeaderBlock = 0; bResult && (uHeaderBlock < uHeaderBlocks); uHeaderBlock++) {
-            bResult = FlashProgramBlock(bank, uFlashLoc, uHeaderLoc);
-            uFlashLoc += uBlockByteSize;
-            uHeaderLoc += uBlockByteSize;
         }
     }
 
