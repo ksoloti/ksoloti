@@ -69,10 +69,6 @@ int main(void) {
     memcpy((char*) 0x20000000, (const char*) 0x00000000, 0x200); /* Copy vector table to SRAM1! */
     SYSCFG->MEMRMP |= 0x03; /* Remap SRAM1 to 0x00000000 */
 
-    /* Clear patch RAM */
-    memset((char*) PATCHMAINLOC, 0xFFFFFFFF, PATCHFLASHSIZE);
-    memset((char*) PATCHMAINLOC_SRAM2, 0xFFFFFFFF, PATCHFLASHSIZE_SRAM2);
-    memset((char*) PATCHMAINLOC_SRAM3, 0xFFFFFFFF, PATCHFLASHSIZE_SRAM3);
 #pragma GCC diagnostic pop
 
     halInit();
