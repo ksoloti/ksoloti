@@ -192,7 +192,7 @@ MUTABLE_INSTRUMENTS = ${FIRMWARE}/mutable_instruments
 
 ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
 
-  # Ksoloti H743
+  # Ksoloti Geko H743
   include board_h7.mk
 
   # Licensing files.
@@ -242,6 +242,8 @@ ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE)
 LDSCRIPT = STM32F427xG_ksoloti.ld
 else ifeq ($(BOARDDEF),BOARD_AXOLOTI_CORE)
 LDSCRIPT = STM32F427xG_axoloti.ld
+else ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
+LDSCRIPT = STM32H743xI.ld
 endif
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
@@ -338,11 +340,6 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
   ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
-  ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
   ${FIRMWARE}/usbh_midi_core.c \
   ${FIRMWARE}/usbh_vendor.c \
   ${FIRMWARE}/usbh_conf.c \
@@ -361,6 +358,42 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/boot_options.c \
   ${FIRMWARE}/mounter.c \
   ${FIRMWARE}/mass_storage/usb_msd.c 
+
+ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+
+  # Ksoloti Geko H743
+  CSRC += ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hcd.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c \
+          ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_core.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_ctlreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_ioreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Src/usbh_pipes.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_keybd.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_mouse.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_parser.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Src/usbh_audio.c \
+else
+  # Axoloti and Ksoloti F427
+  CSRC += ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
+          ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
+endif
 
 #optional modules
 ifneq (,$(findstring BRAIDS,$(AXO_OPT_MODULES)))
