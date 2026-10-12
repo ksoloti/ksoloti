@@ -4,6 +4,7 @@ set -e
 # supported boards
 BUILD_AXOLOTI_CORE=1
 BUILD_KSOLOTI_CORE=1
+BUILD_KSOLOTI_GEKO=0
 
 # supported firmware modes
 BUILD_NORMAL=1
@@ -60,6 +61,17 @@ case "$platform" in
 
         fi
 
+        if [ $BUILD_KSOLOTI_GEKO -eq 1 ]; then
+            printf "\n\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Geko *\n"
+            printf "*************************\n"
+
+            # compile board mode and firmware options
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_GEKO $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+
+        fi
+
     ;;
 
     linux)
@@ -85,6 +97,17 @@ case "$platform" in
 
             # compile board mode and firmware options
             sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+
+        fi
+
+        if [ $BUILD_KSOLOTI_GEKO -eq 1 ]; then
+            printf "\n\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Geko *\n"
+            printf "*************************\n"
+
+            # compile board mode and firmware options
+            sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_GEKO $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
@@ -116,5 +139,15 @@ case "$platform" in
 
         fi
 
+        if [ $BUILD_KSOLOTI_GEKO -eq 1 ]; then
+            printf "\n\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Geko *\n"
+            printf "*************************\n"
+
+            # compile board mode and firmware options
+            ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_GEKO $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
+
+        fi
     ;;
 esac

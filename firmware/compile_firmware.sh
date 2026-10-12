@@ -64,6 +64,9 @@ if [ $1 = "BOARD_KSOLOTI_CORE" ]; then
   NAME=ksoloti
 else if [ $1 = "BOARD_AXOLOTI_CORE" ]; then
   NAME=axoloti
+else if [ $1 = "BOARD_KSOLOTI_GEKO" ]; then
+  NAME=ksoloti_geko
+fi
 fi
 fi
 

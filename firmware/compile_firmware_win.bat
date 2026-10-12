@@ -37,6 +37,8 @@ if %1==BOARD_KSOLOTI_CORE (
 set NAME=ksoloti
 ) else if %1==BOARD_AXOLOTI_CORE (
 set NAME=axoloti
+) else if %1==BOARD_KSOLOTI_GEKO (
+set NAME=ksoloti_geko
 )
 
 if %BUILD_NORMAL%==1 (
