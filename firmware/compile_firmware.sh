@@ -67,8 +67,6 @@ else if [ $1 = "BOARD_AXOLOTI_CORE" ]; then
 fi
 fi
 
-FLASHER_PROJECT="$NAME"_flasher
-
 if [ $BUILD_NORMAL -eq 1 ]; then
     printf "\nCompiling $1\n"
     export BUILDDIR=build/$NAME/normal

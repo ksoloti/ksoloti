@@ -39,8 +39,6 @@ set NAME=ksoloti
 set NAME=axoloti
 )
 
-set FLASHER_PROJECT=%NAME%_flasher
-
 if %BUILD_NORMAL%==1 (
 echo. & echo Compiling %1
 set BUILDDIR=build\%NAME%\normal
