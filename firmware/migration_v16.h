@@ -18,10 +18,17 @@
 
 #define hal_lld_get_counter_value port_rt_get_counter_value
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define RTT2US(ticks) ((ticks) / (STM32_SYSCLK / 1000000UL))
 #define RTT2MS(ticks) ((ticks) / (STM32_SYSCLK / 1000UL))
 #define US2RTT(usec) (((STM32_SYSCLK + 999999UL) / 1000000UL) * (usec))
 #define MS2RTT(msec) (((STM32_SYSCLK + 999UL) / 1000UL) * (msec))
+#elif defined(BOARD_KSOLOTI_GEKO)
+#define RTT2US(ticks) ((ticks) / (STM32_HCLK / 1000000UL))
+#define RTT2MS(ticks) ((ticks) / (STM32_HCLK / 1000UL))
+#define US2RTT(usec) (((STM32_HCLK + 999999UL) / 1000000UL) * (usec))
+#define MS2RTT(msec) (((STM32_HCLK + 999UL) / 1000UL) * (msec))
+#endif
 
 
 // V16 here down
