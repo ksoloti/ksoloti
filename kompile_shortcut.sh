@@ -2,8 +2,8 @@
 set -e
 
 # supported boards
-BUILD_AXOLOTI=1
-BUILD_KSOLOTI=1
+BUILD_AXOLOTI_CORE=1
+BUILD_KSOLOTI_CORE=1
 
 # supported firmware modes
 BUILD_NORMAL=1
@@ -38,22 +38,22 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [ $BUILD_AXOLOTI -eq 1 ]; then
+        if [ $BUILD_AXOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Axoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Axoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ]; then
+        if [ $BUILD_KSOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Ksoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
@@ -66,22 +66,22 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [ $BUILD_AXOLOTI -eq 1 ]; then
+        if [ $BUILD_AXOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Axoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Axoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             sh ./firmware/compile_firmware.sh BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ]; then
+        if [ $BUILD_KSOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Ksoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             sh ./firmware/compile_firmware.sh BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
@@ -94,22 +94,22 @@ case "$platform" in
         rm -f ./firmware/build/*.*
         rm -f ./firmware.log
 
-        if [ $BUILD_AXOLOTI -eq 1 ]; then
+        if [ $BUILD_AXOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Axoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Axoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             ./firmware/compile_firmware_win.bat BOARD_AXOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
 
         fi
 
-        if [ $BUILD_KSOLOTI -eq 1 ]; then
+        if [ $BUILD_KSOLOTI_CORE -eq 1 ]; then
             printf "\n\n"
-            printf "********************\n"
-            printf "* Building Ksoloti *\n"
-            printf "********************\n"
+            printf "*************************\n"
+            printf "* Building Ksoloti Core *\n"
+            printf "*************************\n"
 
             # compile board mode and firmware options
             ./firmware/compile_firmware_win.bat BOARD_KSOLOTI_CORE $BUILD_NORMAL $BUILD_USBAUDIO $BUILD_SPILINK $BUILD_I2SCODEC 2>&1 | tee -a firmware.log
