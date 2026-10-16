@@ -331,15 +331,6 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${CMSIS}/DSP/Source/FilteringFunctions/arm_iir_lattice_q31.c\
   ${CMSIS}/DSP/Source/CommonTables/arm_common_tables.c \
   ${CMSIS}/DSP/Source/CommonTables/arm_const_structs.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_core.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_joystick.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
-  ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
   ${FIRMWARE}/usbh_midi_core.c \
   ${FIRMWARE}/usbh_vendor.c \
   ${FIRMWARE}/usbh_conf.c \
@@ -359,7 +350,7 @@ CSRC = ${FIRMWARE}/exceptions.c \
   ${FIRMWARE}/mounter.c \
   ${FIRMWARE}/mass_storage/usb_msd.c 
 
-ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
 
   # Ksoloti Geko H743
   CSRC += ${FIRMWARE}/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
@@ -390,6 +381,7 @@ else
           ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_joystick.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c
@@ -525,7 +517,7 @@ INCDIR = \
 	$(CHIBIOS)/os/hal/lib/streams \
   ${CHIBIOS}/os/common/abstractions/cmsis_os
 
-ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H743)
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
   # Ksoloti Geko H743
   INCDIR += ${FIRMWARE}/STM32H7xx_HAL_Driver/Inc \
             ${FIRMWARE}/STM32_USB_Host_Library_H7/Core/Inc \
@@ -624,7 +616,7 @@ UDEFS = \
   -DENABLE_EXCPT_DUMP \
   -DANALYSE_USB_AUDIO=0
   
-ifeq ($(BOARDDEF),BOARD_KSOLOTI_CORE_H743)
+ifeq ($(BOARDDEF),BOARD_KSOLOTI_GEKO)
   # Ksoloti Geko H743
   UDEFS += -DPATCH_ITCM=1 \
            -DSTM32H743xx \
