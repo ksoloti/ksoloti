@@ -34,7 +34,12 @@ uint32_t CalcCRC32(uint8_t *buffer, uint32_t size) {
   uint32_t i, j;
   uint32_t ui32x;
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
   RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+#elif defined(BOARD_KSOLOTI_GEKO)
+  RCC->AHB4ENR |= RCC_AHB4ENR_CRCEN;
+#endif
+
   CRC->CR = 1;
   asm("NOP");
   asm("NOP");

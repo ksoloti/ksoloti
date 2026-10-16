@@ -24,12 +24,16 @@
 #if defined(BOARD_KSOLOTI_CORE)
 #define ADC_GRP1_NUM_CHANNELS   14
 #define ADC_GRP2_NUM_CHANNELS   5
-#else
+#elif defined(BOARD_AXOLOTI_CORE)
 #define ADC_GRP1_NUM_CHANNELS   16
 #define ADC_GRP2_NUM_CHANNELS   0
+#elif defined(BOARD_KSOLOTI_GEKO)
+#define ADC_GRP1_NUM_CHANNELS   13
+#define ADC_GRP2_NUM_CHANNELS   6
 #endif /* BOARD_KSOLOTI_CORE */
 
 #define ADC_GRP1_BUF_DEPTH      1
+#define ADC_GRP2_BUF_DEPTH      1
 
 extern uint16_t adcvalues[ADC_GRP1_NUM_CHANNELS + ADC_GRP2_NUM_CHANNELS];
 
@@ -56,7 +60,7 @@ void adc_convert(void);
 
 #endif /* BOARD_* */
 
-#if defined(BOARD_KSOLOTI_CORE)
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_KSOLOTI_GEKO)
 #define SPILINK_JUMPER_PORT GPIOD
 #define SPILINK_JUMPER_PIN 12
 #elif defined(BOARD_AXOLOTI_CORE)

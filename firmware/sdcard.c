@@ -182,24 +182,16 @@ int sdcard_loadPatch1(char* fname) {
      */
     uint32_t size = f_size(&FileObject);
     if (size < 128) { /* Arbitrary size, just needs to be smaller than the smallest possible bin size */
+        f_close(&FileObject);
         report_fatfs_error(FR_INVALID_OBJECT, fname);
         return -1;
     }
 
-    /* Read the patch header */
-    err = f_read(&FileObject, (uint8_t*) GetPatchHeaderLoc(), GetPatchHeaderByteSize(), (void*) &bytes_read);
-
-    if (err == FR_OK) {
-        /* Now check header */
-        if (!CheckPatchBinHeader()) {
-            return -1;
-        }
-
-        err = f_read(&FileObject, (uint8_t*) GetPatchMainLoc(), GetPatchBinSize(), (void*) &bytes_read); 
-    }
-
+    err = f_read(&FileObject, (uint8_t*) GetPatchMainLoc(), GetPatchFlashSize(), (void*) &bytes_read); 
+    
     if (err != FR_OK) {
         report_fatfs_error(err, fname);
+        f_close(&FileObject);
         return -1;
     }
 
@@ -215,6 +207,7 @@ int sdcard_loadPatch1(char* fname) {
     size = f_size(&FileObject);
     if (size < 1) { /* Minimum size, just needs to be smaller than the smallest possible bin size */
         // report_fatfs_error(FR_INVALID_OBJECT, fname_sram3);
+        f_close(&FileObject);
         return 0; /* No error */
     }
 

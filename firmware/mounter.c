@@ -189,8 +189,10 @@ static uint8_t serialNumberDescriptorData[] = {
     '0', 0, '0', 0, '0', 0, '0', 0,
   #if defined(BOARD_KSOLOTI_CORE)
     'K', 0, '0', 0, '0', 0, '0', 0,
-  #else
+  #elif defined(BOARD_AXOLOTI_CORE)
     'A', 0, '0', 0, '0', 0, '0', 0,
+  #elif defined(BOARD_KSOLOTI_GEKO)
+    'G', 0, '0', 0, '0', 0, '0', 0,
   #endif
     '0', 0, '0', 0, '0', 0, '0', 0,
     '0', 0, '0', 0, '0', 0, '0', 0,
@@ -226,9 +228,16 @@ static const USBDescriptor *getDescriptor(USBDriver *usbp, uint8_t type, uint8_t
                 case 2:
                     return &productDescriptor;
                 case 3: {
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
                     inttohex(*((uint32_t*)0x1FFF7A10),&serialNumberDescriptorData[2]);
                     inttohex(*((uint32_t*)0x1FFF7A14),&serialNumberDescriptorData[2+16]);
                     inttohex(*((uint32_t*)0x1FFF7A18),&serialNumberDescriptorData[2+32]);
+#elif defined(BOARD_KSOLOTI_GEKO)
+                    uint32_t *pUid = (uint32_t *)UID_BASE;
+                    inttohex(*pUid++,&serialNumberDescriptorData[2]);
+                    inttohex(*pUid++,&serialNumberDescriptorData[2+16]);
+                    inttohex(*pUid,&serialNumberDescriptorData[2+32]);
+#endif    
                     return &serialNumberDescriptor;
                 }
             }

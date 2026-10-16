@@ -60,12 +60,21 @@ extern "C" {
 #define STM32F427xx
 
   /* Includes ------------------------------------------------------------------*/
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #include "stm32f4xx.h"
+#elif defined(BOARD_KSOLOTI_GEKO)
+#include "stm32h7xx.h"
+#endif
+
 
   /**
    * @brief  FMC SDRAM Bank address
    */
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #define SDRAM_BANK_ADDR     ((uint32_t)0xC0000000)
+#elif defined(BOARD_KSOLOTI_GEKO)
+#define SDRAM_BANK_ADDR     ((uint32_t)0xD0000000)
+#endif
 
   /**
    * @brief  FMC SDRAM Memory Width

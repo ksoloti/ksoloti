@@ -776,7 +776,7 @@ void PExReceiveByte(unsigned char c) {
             case 4: offset = c; state++; break; /* Address byte 0 */
             case 5: offset |= (uint32_t)c <<  8; state++; break;
             case 6: offset |= (uint32_t)c << 16; state++; break;
-            case 7: offset |= (uint32_t)c << 24; state++; SetPatchOffset(offset); break;
+            case 7: offset |= (uint32_t)c << 24; state++; break;
             case 8: value = c; state++; break; /* Length byte 0 */
             case 9: value |= (int32_t)c <<  8; state++; break;
             case 10: value |= (int32_t)c << 16; state++; break;

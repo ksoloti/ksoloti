@@ -24,13 +24,26 @@
 #include "ch.h"
 #include "hal.h"
 #include "ui.h"
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #include "stm32f4xx_hal_i2c.h"
+#elif defined(BOARD_KSOLOTI_GEKO)
+#include "stm32h7xx.h"
+#include "stm32h7xx_hal_dma.h"
+#include "stm32h7xx_hal_i2c.h"
+#endif
+
 #include "axoloti_board.h"
 #include "midi.h"
 #include "crc32.h"
 #include "exceptions.h"
 #include "ff.h"
 #include "chprintf.h"
+
+#if defined(BOARD_KSOLOTI_GEKO)
+#define DAC DAC1
+#define APB1ENR APB1LENR
+#endif
 
 typedef void (*fptr_patch_init_t) (uint32_t fwID);
 typedef void (*fptr_patch_dispose_t) (void);
@@ -65,19 +78,6 @@ typedef struct {
   uint32_t npreset_entries;
   PresetParamChange_t* pPresets; // is a npreset array of npreset_entries of PresetParamChange_t
 } patchMeta_t;
-
-typedef enum {
-  btInvalid,
-  btF4,
-  btH7,
-} binType;
-
-typedef struct {
-  binType  type;
-  uint32_t fwid;  
-  uint32_t headerSize;
-  uint32_t codeSize;
-} binHeader_type;
 
 
 extern patchMeta_t patchMeta;
@@ -140,6 +140,17 @@ void start_dsp_thread(void);
 #define PATCHFLASHLOC_F4_SRAM3   0x080D0000 /* Saved in second half of sector 10 (64k of 128k) */
 #define PATCHFLASHSIZE_F4_SRAM3  0x00010000 /* 64kB */
 
+/* Ksoloti Geko */
+#define PATCHMAINLOC_H7          0x24020000 /* Area in AXISRAM */
+#define PATCHFLASHLOC_H7         0x08100000 /* Saved at start of second flash bank*/
+#define PATCHFLASHSIZE_H7        0x00040000 /* 256kB */
+
+#define PATCHMAINLOC_H7_SRAM2    0x30020000 /* DMA-safe RAM: D2 Domain SRAM2 */
+#define PATCHFLASHSIZE_H7_SRAM2  0x00028000 /* 160kB. Called "FLASH" for consistency, however never saved in flash */
+
+#define PATCHMAINLOC_H7_SRAM3    0x38000000 /* Actually SRAM4 on H7 */
+#define PATCHFLASHLOC_H7_SRAM3   0x08140000 /* Saved right after PATCHFLASHLOC_H7 */
+#define PATCHFLASHSIZE_H7_SRAM3  0x00010000 /* 64kB */
 
 extern uint32_t GetPatchMainLoc(void);
 extern uint32_t GetPatchMainLoc_SRAM2(void);
@@ -151,13 +162,7 @@ extern uint32_t GetPatchFlashSize(void);
 extern uint32_t GetPatchFlashSize_SRAM2(void);
 extern uint32_t GetPatchFlashSize_SRAM3(void);
 extern uint32_t GetPatchFlashSlots(void);
-extern uint32_t GetPatchHeaderLoc(void);
-extern uint32_t GetPatchHeaderByteSize(void);
-extern uint32_t GetPatchBinSize(void);
 
-extern bool     CheckPatchBinHeader(void);
-extern void     SetPatchOffset(uint32_t uOffset);
-extern void     SetPatchHeaderFlashByteSize(uint32_t uSize);
 
 void StartLoadPatchTread(void);
 void LoadPatch(const char* name);

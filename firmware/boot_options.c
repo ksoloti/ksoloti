@@ -38,11 +38,17 @@ extern void flasher(void);
 
 static void SetStartupFlags(uint64_t uValue) {
     g_startup_flags = uValue;
+#if defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+#endif
     NVIC_SystemReset();
 }
 
 static void FRAMTEXT_CODE_SECTION ResetStartupFlags(void) {
     g_startup_flags = 0;
+#if defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+#endif
 }
 
 static uint64_t FRAMTEXT_CODE_SECTION GetStartupFlags(void) {
@@ -60,9 +66,15 @@ void StartMounter(void) {
 void CheckForReset(void) {
     if (g_reset_flags == RESETER_MAGIC) {
         g_reset_flags = 0;
+#if defined(BOARD_KSOLOTI_GEKO)
+        SCB_CleanInvalidateDCache();
+#endif
     }
     else {
         g_reset_flags = RESETER_MAGIC;
+#if defined(BOARD_KSOLOTI_GEKO)
+        SCB_CleanInvalidateDCache();
+#endif
         NVIC_SystemReset();
     }
 }

@@ -20,7 +20,12 @@
 #include "axoloti_defines.h"
 
 #include "sdram.h"
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #include "stm32f4xx_fmc.h"
+#elif defined(BOARD_KSOLOTI_GEKO)
+#include "stm32h7xx_ll_fmc.h"
+#endif
 
 #include "ch.h"
 #include "hal.h"
@@ -61,13 +66,38 @@ extern void MY_USBH_Init(void);
 extern void i2s_init(void);
 #endif
 
+#if defined(BOARD_KSOLOTI_GEKO)
+extern uint32_t _itcm_text_start;
+extern uint32_t _itcm_text_end;
+extern uint32_t _itcm_text_load;
+
+void copy_itcm_code(void) {
+    uint32_t *src = &_itcm_text_load;
+    uint32_t *dst = &_itcm_text_start;
+    
+    while (dst < &_itcm_text_end) {
+        *dst++ = *src++;
+    }
+    
+    __DSB();
+    __ISB();
+}
+#endif
+
 
 int main(void) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     memcpy((char*) 0x20000000, (const char*) 0x00000000, 0x200); /* Copy vector table to SRAM1! */
     SYSCFG->MEMRMP |= 0x03; /* Remap SRAM1 to 0x00000000 */
+
+#elif defined(BOARD_KSOLOTI_GEKO)
+    copy_itcm_code(); // TODOH7 - More investigation needed
+    // Will have to mark certain fast functions and irq handlers with __attribute__((section(".itcm_text")))
+    // for ITCM to have any effect
+#endif
 
 #pragma GCC diagnostic pop
 
@@ -86,6 +116,21 @@ int main(void) {
     
 #ifdef FW_SPILINK
     pThreadSpilink = 0;
+#endif
+
+#if defined(BOARD_KSOLOTI_GEKO)
+    /* Use the MPU to turn cache off for the memory
+       we use to store the sdcard io buffers in. */
+    extern uint32_t *__ram0nc_base__;
+    mpuConfigureRegion(
+        MPU_REGION_7,
+        &__ram0nc_base__,
+        MPU_RASR_ATTR_AP_RW_RW |
+        MPU_RASR_ATTR_SHARED_DEVICE |
+        MPU_RASR_ATTR_NON_CACHEABLE |
+        MPU_RASR_SIZE_8K |
+        MPU_RASR_ENABLE
+    );
 #endif
 
     /* Check if Mounter start is scheduled. */

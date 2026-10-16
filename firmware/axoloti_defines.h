@@ -27,6 +27,7 @@
  * depending on the board setting in the Patcher preferences.
  * #define BOARD_KSOLOTI_CORE
  * #define BOARD_AXOLOTI_CORE
+ * #define BOARD_KSOLOTI_GEKO
  */
 
 /* Currenty supported firmware add-on options: 

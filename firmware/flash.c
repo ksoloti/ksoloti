@@ -38,7 +38,11 @@ uint32_t FRAMTEXT_CODE_SECTION FlashCalcCRC32(uint8_t *buffer, uint32_t size) {
     uint32_t i, j;
     uint32_t ui32x;
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    RCC->AHB4ENR |= RCC_AHB4ENR_CRCEN;
+#endif
 
     CRC->CR = 1;
     asm("NOP");
@@ -161,7 +165,13 @@ void FRAMTEXT_CODE_SECTION DisplayAbortErr(int err) {
 void FRAMTEXT_CODE_SECTION FlashFirmware(void) {
     __disable_irq();
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     FLASH->SR = 0xFFFFFFFF;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    /* STM32H7 clears status flags by writing to the CCRx registers, NOT SR */
+    FLASH->CCR1 = 0x0FEF0000; /* Clears all status/error flags for Bank 1 */
+    FLASH->CCR2 = 0x0FEF0000; /* Clears flags for Bank 2 */
+#endif
 
     RED_LED(1);
 
@@ -186,7 +196,11 @@ void FRAMTEXT_CODE_SECTION FlashFirmware(void) {
     }
 
     /* Erase flash */
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     uint32_t uFlashSectors = 12;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    uint32_t uFlashSectors = 8;
+#endif 
 
     FlashUnlock(fbFirmware);
     uint32_t uSector;

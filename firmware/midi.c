@@ -21,7 +21,20 @@
 #include "axoloti_board.h"
 #include "midi.h"
 #include "serial_midi.h"
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #include "usbh_midi_core.h"
+#elif defined(BOARD_KSOLOTI_GEKO)
+// TODOH7
+#define usbh_MidiSend1(a,b)
+#define usbh_MidiSend2(a,b,c)
+#define usbh_MidiSend3(a,b,c,d)
+#define usbh_MidiSendSysEx(port, bytes, len)
+#define usbh_midi_init()
+#define usbh_MidiGetOutputBufferPending()
+#define usbh_MidiGetOutputBufferAvailable()
+#endif
+
 #include "midi_usb.h"
 #include "patch.h"
 

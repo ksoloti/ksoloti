@@ -47,11 +47,20 @@
  */
 
 #include "sdram.h"
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 #include "stm32f4xx_fmc.h"
+#elif defined(BOARD_KSOLOTI_GEKO)
+#include "stm32h7xx_ll_fmc.h"
+#include "stm32h7xx_hal_cortex.h"
+#endif
+
 #include "ch.h"
 #include "hal.h"
 #include "axoloti_board.h"
 #include "sysmon.h"
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 /**
  * @brief  Configures the FMC and GPIOs to interface with the SDRAM memory.
  *         This function must be called before any read/write operation
@@ -362,3 +371,178 @@ void SDRAM_ReadBuffer(uint32_t* pBuffer, uint32_t uwReadAddress,
     write_pointer += 4;
   }
 }
+
+#elif defined(BOARD_KSOLOTI_GEKO)
+// kept MPU in for testing for the moment.
+// void HAL_MPU_ConfigRegion(const MPU_Region_InitTypeDef *MPU_Init)
+// {
+//   /* Set the Region number */
+//   MPU->RNR = MPU_Init->Number;
+
+//   /* Disable the Region */
+//   CLEAR_BIT(MPU->RASR, MPU_RASR_ENABLE_Msk);
+
+//   /* Apply configuration */
+//   MPU->RBAR = MPU_Init->BaseAddress;
+//   MPU->RASR = ((uint32_t)MPU_Init->DisableExec             << MPU_RASR_XN_Pos)   |
+//               ((uint32_t)MPU_Init->AccessPermission        << MPU_RASR_AP_Pos)   |
+//               ((uint32_t)MPU_Init->TypeExtField            << MPU_RASR_TEX_Pos)  |
+//               ((uint32_t)MPU_Init->IsShareable             << MPU_RASR_S_Pos)    |
+//               ((uint32_t)MPU_Init->IsCacheable             << MPU_RASR_C_Pos)    |
+//               ((uint32_t)MPU_Init->IsBufferable            << MPU_RASR_B_Pos)    |
+//               ((uint32_t)MPU_Init->SubRegionDisable        << MPU_RASR_SRD_Pos)  |
+//               ((uint32_t)MPU_Init->Size                    << MPU_RASR_SIZE_Pos) |
+//               ((uint32_t)MPU_Init->Enable                  << MPU_RASR_ENABLE_Pos);
+// }
+
+extern void HAL_Delay(uint32_t Delay);
+
+static FMC_SDRAM_TypeDef *pSdramInstance = (FMC_SDRAM_TypeDef *)FMC_SDRAM_DEVICE;
+
+void SDRAM_Init(void) {
+  // kept MPU in for testing for the moment.
+  // MPU_Region_InitTypeDef MPU_InitStruct;
+
+  // /* Configure the MPU attributes as WB for SDRAM */
+  // MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  // MPU_InitStruct.BaseAddress = SDRAM_BANK_ADDR;
+  // MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+  // MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  // MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  // MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  // MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  // MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+  // MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  // MPU_InitStruct.SubRegionDisable = 0x00;
+  // MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+  // HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  FMC_SDRAM_InitTypeDef FMC_SDRAMInitStructure;
+  FMC_SDRAM_TimingTypeDef FMC_SDRAMTimingInitStructure;
+
+  /* Enable FMC clock */
+  rccEnableAHB3(RCC_AHB3ENR_FMCEN, FALSE);
+
+  FMC_SDRAMTimingInitStructure.LoadToActiveDelay = 2;
+  FMC_SDRAMTimingInitStructure.ExitSelfRefreshDelay = 7;
+  FMC_SDRAMTimingInitStructure.SelfRefreshTime = 4;
+  FMC_SDRAMTimingInitStructure.RowCycleDelay = 7;
+  FMC_SDRAMTimingInitStructure.WriteRecoveryTime = 3;
+  FMC_SDRAMTimingInitStructure.RPDelay = 2;
+  FMC_SDRAMTimingInitStructure.RCDDelay = 2;
+
+  FMC_SDRAMInitStructure.SDBank = FMC_SDRAM_BANK1;
+  FMC_SDRAMInitStructure.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_9;
+  FMC_SDRAMInitStructure.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_13;
+  FMC_SDRAMInitStructure.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_16;
+  FMC_SDRAMInitStructure.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
+  FMC_SDRAMInitStructure.CASLatency = FMC_SDRAM_CAS_LATENCY_2;
+  FMC_SDRAMInitStructure.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
+  FMC_SDRAMInitStructure.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
+  FMC_SDRAMInitStructure.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
+  FMC_SDRAMInitStructure.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
+
+  /* FMC SDRAM bank initialization */
+  FMC_SDRAM_Init(pSdramInstance, &FMC_SDRAMInitStructure);
+  FMC_SDRAM_Timing_Init(pSdramInstance, &FMC_SDRAMTimingInitStructure, FMC_SDRAM_BANK1);
+
+  __FMC_ENABLE();
+
+  /* FMC SDRAM device initialization sequence */
+  SDRAM_InitSequence();
+}
+
+#define SDRAM_TIMEOUT 0xffff
+#define REFRESH_COUNT ((uint32_t)0x0603)
+
+void SDRAM_InitSequence(void) {
+  FMC_SDRAM_CommandTypeDef CommandStorage;
+  FMC_SDRAM_CommandTypeDef *Command = &CommandStorage;
+
+  __IO uint32_t tmpmrd =0;
+  /* Step 1:  Configure a clock configuration enable command */
+  Command->CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  FMC_SDRAM_SendCommand(pSdramInstance, Command, SDRAM_TIMEOUT);
+
+  /* Step 2: Insert 100 us minimum delay */
+  /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
+  KsolotiSleepMilliseconds(1);
+
+  /* Step 3: Configure a PALL (precharge all) command */
+  Command->CommandMode = FMC_SDRAM_CMD_PALL;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  FMC_SDRAM_SendCommand(pSdramInstance, Command, SDRAM_TIMEOUT);
+
+  /* Step 4 : Configure a Auto-Refresh command */
+  Command->CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 8;
+  Command->ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  FMC_SDRAM_SendCommand(pSdramInstance, Command, SDRAM_TIMEOUT);
+
+  /* Step 5: Program the external memory mode register */
+  tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
+                      SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+                      SDRAM_MODEREG_CAS_LATENCY_2           |
+                      SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+                      SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+
+  Command->CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = tmpmrd;
+
+  /* Send the command */
+  FMC_SDRAM_SendCommand(pSdramInstance, Command, SDRAM_TIMEOUT);
+
+  /* Step 6: Set the refresh rate counter */
+  /* Set the device refresh rate */
+  FMC_SDRAM_ProgramRefreshRate(pSdramInstance, REFRESH_COUNT);
+}
+
+void SDRAM_WriteBuffer(uint32_t* pBuffer, uint32_t uwWriteAddress,uint32_t uwBufferSize) {
+  __IO uint32_t
+  write_pointer = (uint32_t)uwWriteAddress;
+
+  /* Disable write protection */
+  FMC_SDRAM_WriteProtection_Disable(pSdramInstance, FMC_SDRAM_BANK1);
+
+
+  /* While there is data to write */
+  for (; uwBufferSize != 0; uwBufferSize--) 
+  {
+    /* Transfer data to the memory */
+    *(uint32_t *)(SDRAM_BANK_ADDR + write_pointer) = *pBuffer++;
+
+    /* Increment the address*/
+    write_pointer += 4;
+  }
+}
+
+void SDRAM_ReadBuffer(uint32_t* pBuffer, uint32_t uwReadAddress, uint32_t uwBufferSize) 
+{
+  __IO uint32_t
+  write_pointer = (uint32_t)uwReadAddress;
+
+  /* Read data */
+  for (; uwBufferSize != 0x00; uwBufferSize--) 
+  {
+    *pBuffer++ = *(__IO uint32_t *)(SDRAM_BANK_ADDR + write_pointer );
+
+    /* Increment the address*/
+    write_pointer += 4;
+  }
+}
+#endif

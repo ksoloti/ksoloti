@@ -28,7 +28,14 @@
 #include "ff.h"
 
 #define ERROR_MAGIC_NUMBER 0xE1212012
+
+#if defined(BOARD_KSOLOTI_GEKO)
+exceptiondump_t _exceptiondump __attribute__((section(".noinit")));
+#define exceptiondump ((exceptiondump_t*) &_exceptiondump)
+#define BKPSRAM_BASE &_exceptiondump
+#else
 #define exceptiondump ((exceptiondump_t*) BKPSRAM_BASE)
+#endif
 
 __attribute__((naked)) static void report_exception(void) {
     __asm volatile (
@@ -75,6 +82,7 @@ typedef struct {
     char msg_buffer[256];
 } exceptiondump_t;
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 /**
 * @brief   Jumps into the System ROM bootloader
 * @details This will only work before other initializations!
@@ -167,6 +175,60 @@ void exception_init(void) {
 #endif
 }
 
+#elif defined(BOARD_KSOLOTI_GEKO)
+void BootLoaderInit() {
+    void (*SysMemBootJump)(void);
+
+    /* Re-enable all interrupts */
+    __enable_irq();
+
+    /* Set up the jump to boot loader address + 4 */
+    SysMemBootJump = (void (*)(void)) (*((uint32_t *) ((0x1FF09800 + 4))));
+
+    /* Set the main stack pointer to the boot loader stack */
+    __set_MSP(*(uint32_t *)0x1FF09800);
+
+    /* Turn privilaged mode off */
+    __ASM volatile ("movs r0,4");
+    __ASM volatile ("msr  CONTROL, r0");
+    __ASM volatile ("isb");
+    
+    /* Call the function to jump to boot loader location */
+    SysMemBootJump();
+}
+
+void exception_check_DFU(void) {
+    if (exception_check() && (exceptiondump->type == goto_DFU)) {
+        exception_clear();
+        BootLoaderInit();
+    }
+}
+
+void exception_init(void) {
+    chThdSleepMilliseconds(1);
+
+    if (!exception_check()) {
+        if ((RCC->RSR & RCC_RSR_BORRSTF) && !(RCC->RSR & RCC_RSR_PORRSTF)) {
+            exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
+            exceptiondump->type = brownout;
+        }
+        else {
+            exceptiondump->type = -1;
+            exceptiondump->lr = 0;
+            exceptiondump->pc = 0;
+            exceptiondump->psr = 0;
+            exceptiondump->ipsr = 0;
+        }
+        // clear reset flags
+        RCC->RSR |= RCC_RSR_RMVF;
+    }
+#if WATCHDOG_ENABLED
+    WWDG->SR = 0;
+    WWDG->CR = 0x7F;
+#endif
+    SCB_CleanInvalidateDCache();
+}
+#endif /* BOARD_*OLOTI* */
 
 int exception_check(void) {
     if (exceptiondump->magicnumber == ERROR_MAGIC_NUMBER) {
@@ -179,6 +241,9 @@ int exception_check(void) {
 
 void exception_clear(void) {
     exceptiondump->magicnumber = 0;
+#if defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+#endif
 }
 
 /**
@@ -208,6 +273,9 @@ void exception_initiate_dfu(void) {
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
     exceptiondump->type = goto_DFU;
 
+#if defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+#endif
     NVIC_SystemReset();
 }
 
@@ -418,10 +486,18 @@ void prvGetRegistersFromStack(uint32_t* pulFaultStackAddress) {
     psr = pulFaultStackAddress[7];
 
     exceptiondump->magicnumber = ERROR_MAGIC_NUMBER;
-    if (WWDG->SR & WWDG_SR_EWIF)
+
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    if (WWDG->SR & WWDG_SR_EWIF) {
+#elif defined(BOARD_KSOLOTI_GEKO)
+    if (WWDG1->SR & WWDG_SR_EWIF) {
+#endif
         exceptiondump->type = watchdog_soft;
-    else
+    }
+    else {
         exceptiondump->type = fault;
+    }
+
     exceptiondump->r0 = r0;
     exceptiondump->r1 = r1;
     exceptiondump->r2 = r2;

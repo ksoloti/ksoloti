@@ -208,7 +208,12 @@ extern void *_fram_text_end;
 void __early_init(void)
 {
     exception_check_DFU();
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)    
+    /* Workaround for after DFU flashing where the bootloader
+       screws something up and the firmware won't start correctly.
+       H7 does not need this. */
     CheckForReset();
+#endif
     stm32_clock_init();
     stm32_gpio_init();
 
@@ -224,6 +229,10 @@ void __early_init(void)
         pSrc++;
     }
     
+#if defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+    SCB_InvalidateICache();
+#endif
 #endif
 }
 

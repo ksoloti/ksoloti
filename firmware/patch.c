@@ -56,10 +56,6 @@ enum DSPThreadSignal {
 
 patchMeta_t patchMeta;
 
-binHeader_type binHeader = {
-    btInvalid, 0, 0, 0
-};
-
 volatile patchStatus_t patchStatus;
 
 uint32_t dspLoad200; // DSP load: Values 0-200 correspond to 0-100%
@@ -83,9 +79,11 @@ static int32_t* i2s_outbuf;
 uint32_t GetPatchMainLoc(void) {
     uint32_t loc = 0;
 
-    if (binHeader.type == btF4) {
-        loc = PATCHMAINLOC_F4;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    loc = PATCHMAINLOC_F4;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    loc = PATCHMAINLOC_H7;
+#endif
 
     return loc;
 }
@@ -93,9 +91,11 @@ uint32_t GetPatchMainLoc(void) {
 uint32_t GetPatchMainLoc_SRAM2(void) {
     uint32_t loc = 0;
 
-    if (binHeader.type == btF4) {
-        loc = PATCHMAINLOC_F4_SRAM2;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    loc = PATCHMAINLOC_F4_SRAM2;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    loc = PATCHMAINLOC_H7_SRAM2;
+#endif
 
     return loc;
 }
@@ -103,26 +103,34 @@ uint32_t GetPatchMainLoc_SRAM2(void) {
 uint32_t GetPatchMainLoc_SRAM3(void) {
     uint32_t loc = 0;
 
-    if (binHeader.type == btF4) {
-        loc = PATCHMAINLOC_F4_SRAM3;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    loc = PATCHMAINLOC_F4_SRAM3;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    loc = PATCHMAINLOC_H7_SRAM3;
+#endif
 
     return loc;
 }
 
 
 uint32_t GetPatchFlashLoc(void) {
+
+#if defined (BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     uint32_t loc = PATCHFLASHLOC_F4;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    uint32_t loc = PATCHFLASHLOC_H7;
+#endif
 
     return loc;
 }
 
-uint32_t GetPatchFlashCodeLoc(void) {
-    return GetPatchFlashLoc() + binHeader.headerSize;
-}
+uint32_t GetPatchFlashLoc_SRAM3(void) {
 
-uint32_t GetPatchFlashCodeLoc_SRAM3(void) {
+#if defined (BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
     uint32_t loc = PATCHFLASHLOC_F4_SRAM3;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    uint32_t loc = PATCHFLASHLOC_H7_SRAM3;
+#endif
 
     return loc;
 }
@@ -130,9 +138,11 @@ uint32_t GetPatchFlashCodeLoc_SRAM3(void) {
 uint32_t GetPatchFlashSize(void) {
     uint32_t size = 0;
 
-    if (binHeader.type == btF4) {
-        size = PATCHFLASHSIZE_F4;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    size = PATCHFLASHSIZE_F4;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    size = PATCHFLASHSIZE_H7;
+#endif
 
     return size;
 }
@@ -140,9 +150,11 @@ uint32_t GetPatchFlashSize(void) {
 uint32_t GetPatchFlashSize_SRAM2(void) {
     uint32_t size = 0;
 
-    if (binHeader.type == btF4) {
-        size = PATCHFLASHSIZE_F4_SRAM2;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    size = PATCHFLASHSIZE_F4_SRAM2;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    size = PATCHFLASHSIZE_H7_SRAM2;
+#endif
 
     return size;
 }
@@ -150,88 +162,37 @@ uint32_t GetPatchFlashSize_SRAM2(void) {
 uint32_t GetPatchFlashSize_SRAM3(void) {
     uint32_t size = 0;
 
-    if (binHeader.type == btF4) {
-        size = PATCHFLASHSIZE_F4_SRAM3;
-    }
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    size = PATCHFLASHSIZE_F4_SRAM3;
+#elif defined(BOARD_KSOLOTI_GEKO)
+    size = PATCHFLASHSIZE_H7_SRAM3;
+#endif
 
     return size;
 }
 
-uint32_t GetPatchHeaderLoc(void) {
-    return (uint32_t)&binHeader;
-}
+static uint8_t CopyPatchInFlashToRam(void) {
+    
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnonnull"  
 
-uint32_t GetPatchHeaderByteSize(void) {
-    return sizeof (binHeader_type);
-}
+    /* Copy code */
+    memcpy((uint8_t*) GetPatchMainLoc(), (uint8_t*) GetPatchFlashLoc(), GetPatchFlashSize());
 
-uint32_t GetPatchBinSize(void) {
-    return binHeader.codeSize;
-}
-
-bool CheckPatchBinHeader(void) {
-    bool result = (binHeader.fwid == GetFirmwareID());
-    if (result) {
-        result = (binHeader.type == btF4); 
-        if (!result) {
-            LogTextMessage("Patch binary was made for different board model.");
-        }
+    /* Check if patch includes SRAM3 code in flash (64k, after main patch code), if yes load it */
+    if ((*(uint32_t*) GetPatchFlashLoc_SRAM3() != 0xFFFFFFFF) && (*(uint32_t*) GetPatchFlashLoc_SRAM3() != 0)) {
+        memcpy((uint8_t*) GetPatchMainLoc_SRAM3(), (uint8_t*) GetPatchFlashLoc_SRAM3(), GetPatchFlashSize_SRAM3());
     }
-    else {
-        LogTextMessage("Patch binary was made for different firmware version.");
+    #pragma GCC diagnostic pop
+
+    /* Now check if RAM is uninitialized/empty (all 0s or all 0xFFs) */
+    uint32_t *patch_addr = (uint32_t*) GetPatchMainLoc();
+    if (patch_addr[0] == 0x00000000 || patch_addr[0] == 0xFFFFFFFF) {
+        return 1; /* No valid patch */
     }
 
-    return result;
-}
-
-void SetPatchOffset(uint32_t uOffset) {
-    if (uOffset == PATCHMAINLOC_F4) {
-        binHeader.type = btF4;
-        binHeader.codeSize = PATCHFLASHSIZE_F4;
-        binHeader.fwid = GetFirmwareID();
-    }
-}
-
-void SetPatchHeaderFlashByteSize(uint32_t uSize) {
-    binHeader.headerSize = uSize;
-}
-
-uint32_t ValidPatchInFlash(void) {
-    uint32_t codeSize = 0;
-    binHeader_type *pHdr = (binHeader_type *)GetPatchFlashLoc();
-
-    if (pHdr->type == btF4) { /* Got correct binary, now check firmware */
-        if (pHdr->fwid == GetFirmwareID()) { /* Got correct firmware version */
-            codeSize = pHdr->codeSize;
-            LogTextMessage("Valid patch found in flash.");
-        }
-        else {
-            LogTextMessage("Patch found in flash is for different firmware version.");
-        }
-    } 
-
-    return codeSize;
-}
-
-bool CopyPatchInFlashToRam(void) {
-    uint32_t codeSize = ValidPatchInFlash();
-
-    if (codeSize) {
-        LogTextMessage("Loading patch from flash.");
-
-        /* Copy header */
-        memcpy((uint8_t*) GetPatchHeaderLoc(), (uint8_t*) GetPatchFlashLoc(), GetPatchHeaderByteSize());
-
-        /* Copy code */
-        memcpy((uint8_t*) GetPatchMainLoc(), (uint8_t*) GetPatchFlashCodeLoc(), codeSize);
-
-        /* Check if patch includes SRAM3 code in flash (64k, after main patch code), if yes load it */
-        if ((*(uint32_t*) GetPatchMainLoc_SRAM3() != 0xFFFFFFFF) && (*(uint32_t*) GetPatchMainLoc_SRAM3() != 0)) {
-            memcpy((uint8_t*) GetPatchMainLoc_SRAM3(), (uint8_t*) GetPatchFlashCodeLoc_SRAM3(), GetPatchFlashSize_SRAM3());
-        }
-    }
-
-    return codeSize;
+    LogTextMessage("Loading patch from flash.");
+    return 0; /* OK */
 };
 
 
@@ -427,10 +388,15 @@ static int StartPatch1(void) {
     adc_configpads();
 #endif
 
-    uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
+    volatile uint32_t* ccm; /* Clear CCMRAM area declared in ramlink_*.ld */
     for (ccm = (uint32_t*) 0x10000000; ccm < (uint32_t*) 0x1000C800; ccm++) {
         *ccm = 0;
     }
+#elif defined(BOARD_KSOLOTI_GEKO)
+    SCB_CleanInvalidateDCache();
+    SCB_InvalidateICache();
+#endif
 
     patchMeta.fptr_dsp_process = 0;
     nThreadsBeforePatch = GetNumberOfThreads();
@@ -583,7 +549,6 @@ static int StartPatch1(void) {
             #endif
 
             StopPatch1();
-            SetPatchStatus(STOPPED);
 
             if (loadPatchIndex == START_SD) {
                 strcpy(&loadFName[0], startbin_fn);
@@ -593,9 +558,8 @@ static int StartPatch1(void) {
                 }
             }
             else if (loadPatchIndex == START_FLASH) {
-                #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wnonnull"  
-                if(CopyPatchInFlashToRam()) {
+                /* Check if RAM is uninitialized/empty (all 0s or all 0xFFs) */
+                if (!CopyPatchInFlashToRam()) { /* Patch exists in flash and was copied to RAM */
                     StartPatch1();
                 }
             }
@@ -605,7 +569,8 @@ static int StartPatch1(void) {
                     StartPatch1();
                 }
             }
-            else { /* Patch load from patchbank index (index.axb) triggered */
+            else {
+                /* Patch load from patchbank index (index.axb) triggered */
                 FRESULT err;
                 FIL f;
                 uint32_t bytes_read;
@@ -615,7 +580,7 @@ static int StartPatch1(void) {
                     report_fatfs_error(err, index_fn);
                 }
 
-                err = f_read(&f, (uint8_t*) GetPatchMainLoc(), GetPatchBinSize(), (void*) &bytes_read);
+                err = f_read(&f, (uint8_t*) GetPatchMainLoc(), GetPatchFlashSize(), (void*) &bytes_read);
                 if (err != FR_OK) {
                     report_fatfs_error(err, index_fn);
                     continue;

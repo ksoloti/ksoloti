@@ -23,10 +23,11 @@
 
 //#define ENABLE_SERIAL_DEBUG
 
-#if defined(BOARD_KSOLOTI_CORE)
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_GEKO)
 uint8_t adc3_ch = 8; /* We start with the conversion of channel 8 (voltage supervisor) */
-#endif /* BOARD_KSOLOTI_CORE */
+#endif /* BOARD_KSOLOTI_* */
 
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
 void axoloti_board_init(void) {
     /* initialize DMA2D engine */
     RCC->AHB1ENR |= RCC_AHB1ENR_DMA2DEN;
@@ -147,7 +148,7 @@ void adc_configpads(void) {
     palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
     palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
 
-#endif /* BOARD_* */
+#endif /* BOARD_*OLOTI_CORE */
 
 }
 
@@ -248,3 +249,157 @@ void adc_convert(void) {
     adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
 
 }
+
+#elif defined(BOARD_KSOLOTI_GEKO)
+
+#define ADC_CHANNEL_VREFINT ADC_CHANNEL_IN19
+#define ADC_SMPR2_SMP_VREF ADC_SMPR2_SMP_AN19
+#define ADC_SMPR2_SMP_SENSOR ADC_SMPR2_SMP_AN16
+
+void axoloti_board_init(void) {
+    RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+    RCC->AHB1RSTR |= RCC_AHB1RSTR_DMA2RST;
+    RCC->AHB1RSTR &= ~RCC_AHB1RSTR_DMA2RST;
+};
+
+/* Currently sticking with adcvalues of 20 bits
+ * This setup is 20 bits, then 16, then 12
+ * Seems to be a nice setting for least noise
+ */
+#define KSOLOTI_GEKO_ADC1_SMP_RATE ADC_SMPR_SMP_64P5
+#define KSOLOTI_GEKO_ADC1_OVERSAMPLE (16-1)
+#define KSOLOTI_GEKO_ADC1_OVERSAMPLE_SHIFT (4 + 4) 
+
+#define KSOLOTI_GEKO_ADC3_SMP_RATE ADC_SMPR_SMP_64P5
+#define KSOLOTI_GEKO_ADC3_OVERSAMPLE (16-1)
+#define KSOLOTI_GEKO_ADC3_OVERSAMPLE_SHIFT (4 + 4)
+
+const ADCConversionGroup adcgrpcfg1 = {
+    .circular = false,
+    .num_channels = ADC_GRP1_NUM_CHANNELS,
+    .end_cb = NULL,
+    .error_cb = NULL,
+    .cfgr = ADC_CFGR_RES_16BITS,
+    .cfgr2 = ADC_CFGR2_OVSS_N(KSOLOTI_GEKO_ADC1_OVERSAMPLE_SHIFT) | ADC_CFGR2_OVSR_N(KSOLOTI_GEKO_ADC1_OVERSAMPLE) | 0x1, 
+    .ccr = 0U,
+    .pcsel = (  
+        ADC_SELMASK_IN16 | ADC_SELMASK_IN17 |
+        ADC_SELMASK_IN14 | ADC_SELMASK_IN15 |
+        ADC_SELMASK_IN18 | ADC_SELMASK_IN19 |
+        ADC_SELMASK_IN3  | ADC_SELMASK_IN7 |
+        ADC_SELMASK_IN9  | ADC_SELMASK_IN5 |
+        ADC_SELMASK_IN11 | ADC_SELMASK_IN4 |
+        ADC_SELMASK_IN8
+    ),
+    .ltr1 = 0x00000000U,
+    .htr1 = 0x03FFFFFFU,
+    .ltr2 = 0x00000000U,
+    .htr2 = 0x03FFFFFFU,
+    .ltr3 = 0x00000000U,
+    .htr3 = 0x03FFFFFFU,
+    .smpr = {
+        /* SMPR1 */
+        ADC_SMPR1_SMP_AN0(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN1(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR1_SMP_AN2(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN3(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR1_SMP_AN4(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN5(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR1_SMP_AN6(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN7(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR1_SMP_AN8(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR1_SMP_AN9(KSOLOTI_GEKO_ADC1_SMP_RATE),
+        /* SMPR2 */
+        ADC_SMPR2_SMP_AN10(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN11(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR2_SMP_AN12(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN13(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR2_SMP_AN14(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN15(KSOLOTI_GEKO_ADC1_SMP_RATE) |
+        ADC_SMPR2_SMP_AN16(KSOLOTI_GEKO_ADC1_SMP_RATE) | ADC_SMPR2_SMP_AN17(KSOLOTI_GEKO_ADC1_SMP_RATE)
+    },
+    .sqr = {
+        /* 16, 17, 14, 15 - 18, 19, 3, 7, 9 -  5, 11, 4, 8 */
+        /* SQR1 */
+        ADC_SQR1_SQ1_N(ADC_CHANNEL_IN16) | ADC_SQR1_SQ2_N(ADC_CHANNEL_IN17) |
+        ADC_SQR1_SQ3_N(ADC_CHANNEL_IN14) | ADC_SQR1_SQ4_N(ADC_CHANNEL_IN15) |
+        ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS),
+        /* SQR2 */
+        ADC_SQR2_SQ5_N(ADC_CHANNEL_IN18) | ADC_SQR2_SQ6_N(ADC_CHANNEL_IN19) |
+        ADC_SQR2_SQ7_N(ADC_CHANNEL_IN3)  | ADC_SQR2_SQ8_N(ADC_CHANNEL_IN7)  |
+        ADC_SQR2_SQ9_N(ADC_CHANNEL_IN9),
+        /* SQR3 */
+        ADC_SQR3_SQ10_N(ADC_CHANNEL_IN5) | ADC_SQR3_SQ11_N(ADC_CHANNEL_IN11) |
+        ADC_SQR3_SQ12_N(ADC_CHANNEL_IN4) | ADC_SQR3_SQ13_N(ADC_CHANNEL_IN8),
+        /* SQR4 */
+        0U
+    }
+};
+
+
+const ADCConversionGroup adcgrpcfg3 = {
+    .circular = false,
+    .num_channels = ADC_GRP2_NUM_CHANNELS,
+    .end_cb = NULL,
+    .error_cb = NULL,
+    .cfgr = ADC_CFGR_RES_16BITS,
+    .cfgr2 = ADC_CFGR2_OVSS_N(KSOLOTI_GEKO_ADC3_OVERSAMPLE_SHIFT) | ADC_CFGR2_OVSR_N(KSOLOTI_GEKO_ADC3_OVERSAMPLE) | 0x1, 
+    .ccr = 0U,
+    .pcsel = (  
+        ADC_SELMASK_IN2 | ADC_SELMASK_IN3 |
+        ADC_SELMASK_IN6 | ADC_SELMASK_IN7 |
+        ADC_SELMASK_IN8 | ADC_SELMASK_IN19 
+    ),
+    .ltr1 = 0x00000000U,
+    .htr1 = 0x03FFFFFFU,
+    .ltr2 = 0x00000000U,
+    .htr2 = 0x03FFFFFFU,
+    .ltr3 = 0x00000000U,
+    .htr3 = 0x03FFFFFFU,
+    .smpr = {
+        /* SMPR1 */
+        ADC_SMPR1_SMP_AN2(KSOLOTI_GEKO_ADC3_SMP_RATE) | ADC_SMPR1_SMP_AN3(KSOLOTI_GEKO_ADC3_SMP_RATE) |
+        ADC_SMPR1_SMP_AN6(KSOLOTI_GEKO_ADC3_SMP_RATE) | ADC_SMPR1_SMP_AN7(KSOLOTI_GEKO_ADC3_SMP_RATE) |
+        ADC_SMPR1_SMP_AN8(KSOLOTI_GEKO_ADC3_SMP_RATE),
+        /* SMPR2 */
+        ADC_SMPR2_SMP_AN19(KSOLOTI_GEKO_ADC3_SMP_RATE),
+    },
+    .sqr = {
+        /* 19, 8, 3, 7, 2, 6 */
+        /* SQR1 */
+        ADC_SQR1_SQ1_N(ADC_CHANNEL_IN19) | ADC_SQR1_SQ2_N(ADC_CHANNEL_IN8) |
+        ADC_SQR1_SQ3_N(ADC_CHANNEL_IN3)  | ADC_SQR1_SQ4_N(ADC_CHANNEL_IN7) |
+        ADC_SQR1_NUM_CH(ADC_GRP2_NUM_CHANNELS),
+        /* SQR2 */
+        ADC_SQR2_SQ5_N(ADC_CHANNEL_IN2) | ADC_SQR2_SQ6_N(ADC_CHANNEL_IN6),
+        /* SQR3 */
+        0U,
+        /* SQR4 */
+        0U
+    }
+};
+
+void adc_init(void) {
+    adc_configpads();
+
+    adcStart(&ADCD1, NULL);
+    adcStart(&ADCD3, NULL);
+ 
+    adcSTM32DisableVREF(&ADCD1);
+    adcSTM32EnableVREF(&ADCD3);
+    adcSTM32DisableTS(&ADCD1);
+    adcSTM32DisableTS(&ADCD3);
+}
+
+void adc_convert(void) {
+    /* Restart ADCD1 and ADCD3 */
+    adcStopConversion(&ADCD1); 
+    adcStopConversion(&ADCD3); 
+    adcStartConversion(&ADCD1, &adcgrpcfg1, adcvalues, ADC_GRP1_BUF_DEPTH);
+    adcStartConversion(&ADCD3, &adcgrpcfg3, adc3_values, ADC_GRP2_BUF_DEPTH);
+
+    /* ADC3 requires the use of sram4 and our dma region is in sram3
+       so we need to invalidate the cache for the ADC3 values. */
+    cacheBufferInvalidate(adc3_values, sizeof(adc3_values) / sizeof(adcsample_t));
+
+    /* Copy ADC3 values to adcvalues. */
+    for(int i = 0; i < ADC_GRP2_NUM_CHANNELS; i++) {
+        adcvalues[13+i] = adc3_values[i];
+    }
+
+    // LogTextMessage("F %u = %u", 12, adcvalues[12]);
+    // cacheBufferInvalidate(adcvalues, sizeof(adcvalues) / sizeof(adcsample_t));
+}
+#endif /* BOARD_*OLOTI* */

@@ -23,8 +23,15 @@
 #include "hal.h"
 
 #include "codec.h"
+
+#if defined(BOARD_KSOLOTI_GEKO)
+#include "stm32h7xx.h"
+#include "stm32h7xx_hal_dma.h"
+#include "stm32h7xx_hal_i2c.h"
+#else
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal_i2c.h"
+#endif
 #include "axoloti_board.h"
 #include "sysmon.h"
 #ifdef FW_SPILINK
@@ -59,7 +66,7 @@
 
 #ifdef FW_SPILINK
 
-#if defined(BOARD_KSOLOTI_CORE)
+#if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_KSOLOTI_GEKO)
 #define SPILINK_FSYNC_PORT GPIOD
 #define SPILINK_FSYNC_PIN 5
 #elif defined(BOARD_AXOLOTI_CORE)
@@ -204,6 +211,24 @@ void lock_SAI_to_SPI_FS(void) {
 
 
 static void ADAU_I2C_Init(void) {
+#if defined(BOARD_KSOLOTI_GEKO)
+
+    if(HAL_I2C_GetState(&onboard_i2c_handle) == HAL_I2C_STATE_RESET) {
+        // onboard_i2c_handle.Init.Timing = 0x703074FF; /* Ksoloti, probably 400000 clock: */
+        onboard_i2c_handle.Init.Timing = 0x307075B1; /* Akso, probably 100000 clock: */
+        onboard_i2c_handle.Init.OwnAddress1 = 0x33;
+        onboard_i2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+        onboard_i2c_handle.Instance = I2C2;
+        /* SCL: PB10, SDA: PB11 */
+        palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_INPUT_PULLUP);
+        rccEnableI2C2(FALSE);
+
+        HAL_I2C_Init(&onboard_i2c_handle);
+    }
+
+#else /* BOARD_*OLOTI_CORE */
+
     if(HAL_I2C_GetState(&onboard_i2c_handle) == HAL_I2C_STATE_RESET) {
         /* DISCOVERY_I2Cx peripheral configuration */
         onboard_i2c_handle.Init.ClockSpeed = 400000;
@@ -226,6 +251,7 @@ static void ADAU_I2C_Init(void) {
 
         HAL_I2C_Init(&onboard_i2c_handle);
     }
+#endif /* BOARD_*OLOTI* */
 }
 
 
@@ -472,7 +498,7 @@ void codec_ADAU1961_hw_init(uint16_t samplerate, bool isMaster) {
     ADAU1961_WriteRegister(ADAU1961_REG_R13_ALC2,    0x00);
     ADAU1961_WriteRegister(ADAU1961_REG_R14_ALC3,    0x00);
 
-#if defined(BOARD_KSOLOTI_CORE) && defined(USING_ADAU1761)
+#if (defined(BOARD_KSOLOTI_CORE) || defined(BOARD_KSOLOTI_GEKO)) && defined(USING_ADAU1761)
     ADAU1961_WriteRegister(ADAU1761_REG_R3_RECPWMGMT, 0x00);
     ADAU1961_WriteRegister(ADAU1761_REG_R58_SERINRT,  0x01);
     ADAU1961_WriteRegister(ADAU1761_REG_R59_SEROUTRT, 0x01);
@@ -691,6 +717,11 @@ void codec_ADAU1961_SAI_init(uint16_t samplerate, bool isMaster) {
     dmaStreamSetMode(sai_a_dma, sai_a_dma_mode | STM32_DMA_CR_MINC);
 
     sai_b_dma = dmaStreamAlloc(STM32_SAI_B_DMA_STREAM, STM32_SAI_B_IRQ_PRIORITY, (stm32_dmaisr_t)0, (void *)0);
+
+#if defined(BOARD_KSOLOTI_GEKO)
+    dmaSetRequestSource(sai_a_dma, STM32_DMAMUX1_SAI1_A);
+    dmaSetRequestSource(sai_b_dma, STM32_DMAMUX1_SAI1_B);
+#endif
 
     if (!sai_a_dma || !sai_b_dma) {
         setErrorFlag(ERROR_CODEC_I2C);

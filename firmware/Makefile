@@ -377,7 +377,7 @@ ifeq ($(SUBBOARDDEF),BOARD_KSOLOTI_CORE_H743)
           ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_keybd.c \
           ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_mouse.c \
           ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/HID/Src/usbh_hid_parser.c \
-          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Src/usbh_audio.c \
+          ${FIRMWARE}/STM32_USB_Host_Library_H7/Class/AUDIO/Src/usbh_audio.c
 else
   # Axoloti and Ksoloti F427
   CSRC += ${FIRMWARE}/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
@@ -392,7 +392,7 @@ else
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
           ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
-          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c \
+          ${FIRMWARE}/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c
 endif
 
 #optional modules
