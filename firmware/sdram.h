@@ -57,7 +57,6 @@ extern "C" {
 
 //FIXME this should not be needed
 #define STM32F427_437xx
-#define STM32F427xx
 
   /* Includes ------------------------------------------------------------------*/
 #if defined(BOARD_KSOLOTI_CORE) || defined(BOARD_AXOLOTI_CORE)
